@@ -6,5 +6,5 @@
 # @File    : __init__.py.py
 
 
-from BeSS.BeSS import bess_lm
+from BeSS.BeSS import *
 
