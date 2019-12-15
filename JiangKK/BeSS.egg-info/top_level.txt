@@ -1,3 +1,0 @@
-BeSS
-build
-src
