@@ -16,7 +16,8 @@
 // [[Rcpp::depends(RcppEigen)]]
 //using namespace Rcpp;
 using namespace std;
-void bess_lm_pdas(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eigen::VectorXd& beta, Eigen::VectorXi& A_out, int& l) {
+void bess_lm_pdas(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eigen::VectorXd& beta, Eigen::VectorXi& A_out, int& l)
+{
   int n = X.rows();
   int p = X.cols();
   vector<int>A(T0);
@@ -64,8 +65,10 @@ void bess_lm_pdas(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps,
     A_out(i) = A[i] + 1;
   }
 }
+
 // [[Rcpp::export]]
-List bess_lm(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eigen::VectorXd& beta, Eigen::VectorXd& weights, bool normal){
+List bess_lm(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eigen::VectorXd& beta, Eigen::VectorXd& weights, bool normal)
+{
   int n = X.rows();
   int p = X.cols();
   int l;
@@ -108,62 +111,66 @@ List bess_lm(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eige
   mylist.add("A", A_out);
   return mylist;
 }
+
 // [[Rcpp::export]]
-//List bess_lms(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXi& T_list, int max_steps, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start = false, bool normal = true){
-//  int n = X.rows();
-//  int p = X.cols();
-//  int l;
-//  int m = T_list.size();
-//  double nullmse;
-//  Eigen::VectorXd mse(m);
-//  Eigen::VectorXd aic(m);
-//  Eigen::VectorXd bic(m);
-//  Eigen::VectorXd gic(m);
-//  Eigen::VectorXd coef0(m);
-//  Eigen::VectorXd meanx(p);
-//  Eigen::VectorXd normx(p);
-//  Eigen::VectorXi A_out(p);
-//  Eigen::VectorXd beta = beta0;
-//  Eigen::MatrixXd beta_out(p, m);
-//  double meany = 0.0;
-//  if(normal){
-//    Normalize(X, y, weights, meanx, meany, normx);
-//  }
-//  int i = 0;
-//  for(i=0;i<n;i++){
-//    X.row(i) = X.row(i)*sqrt(weights(i));
-//    y(i) = y(i)*sqrt(weights(i));
-//  }
-//  for(i=0;i<m;i++){
-//    bess_lm_pdas(X, y, T_list(i), max_steps, beta, A_out, l);
-//    beta_out.col(i) = beta;
-//    if(!warm_start) beta = beta0;
-//    mse(i) = (y-X*beta_out.col(i)).squaredNorm()/double(n);
-//    aic(i) = double(n)*log(mse(i))+2.0*T_list(i);
-//    bic(i) = double(n)*log(mse(i))+log(double(n))*T_list(i);
-//    gic(i) = double(n)*log(mse(i))+log(double(p))*log(log(double(n)))*T_list(i);
-//  }
-//  nullmse = y.squaredNorm()/double(n);
-//  // cout<<m<<endl;
-//  if(normal){
-//    for(i=0;i<m;i++){
-//      beta_out.col(i) = sqrt(double(n))*beta_out.col(i).cwiseQuotient(normx);
-//      coef0(i) = meany - beta_out.col(i).dot(meanx);
-//    }
-//  }
-////  return List::create(Named("beta")=beta_out, Named("coef0")=coef0, Named("mse")=mse, Named("nullmse")=nullmse, Named("aic")=aic, Named("bic")=bic, Named("gic")=gic);
-//  List mylist;
-//  mylist.add("beta", beta_out);
-//  mylist.add("coef0", coef0);
-//  mylist.add("mse", mse);
-//  mylist.add("nullmse", nullmse);
-//  mylist.add("aic", aic);
-//  mylist.add("bic", bic);
-//  mylist.add("gic", gic);
-//  return mylist;
-//}
+List bess_lms(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXi& T_list, int max_steps, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start, bool normal)
+{
+  int n = X.rows();
+  int p = X.cols();
+  int l;
+  int m = T_list.size();
+  double nullmse;
+  Eigen::VectorXd mse(m);
+  Eigen::VectorXd aic(m);
+  Eigen::VectorXd bic(m);
+  Eigen::VectorXd gic(m);
+  Eigen::VectorXd coef0(m);
+  Eigen::VectorXd meanx(p);
+  Eigen::VectorXd normx(p);
+  Eigen::VectorXi A_out(p);
+  Eigen::VectorXd beta = beta0;
+  Eigen::MatrixXd beta_out(p, m);
+  double meany = 0.0;
+  if(normal){
+    Normalize(X, y, weights, meanx, meany, normx);
+  }
+  int i = 0;
+  for(i=0;i<n;i++){
+    X.row(i) = X.row(i)*sqrt(weights(i));
+    y(i) = y(i)*sqrt(weights(i));
+  }
+  for(i=0;i<m;i++){
+    bess_lm_pdas(X, y, T_list(i), max_steps, beta, A_out, l);
+    beta_out.col(i) = beta;
+    if(!warm_start) beta = beta0;
+    mse(i) = (y-X*beta_out.col(i)).squaredNorm()/double(n);
+    aic(i) = double(n)*log(mse(i))+2.0*T_list(i);
+    bic(i) = double(n)*log(mse(i))+log(double(n))*T_list(i);
+    gic(i) = double(n)*log(mse(i))+log(double(p))*log(log(double(n)))*T_list(i);
+  }
+  nullmse = y.squaredNorm()/double(n);
+  // cout<<m<<endl;
+  if(normal){
+    for(i=0;i<m;i++){
+      beta_out.col(i) = sqrt(double(n))*beta_out.col(i).cwiseQuotient(normx);
+      coef0(i) = meany - beta_out.col(i).dot(meanx);
+    }
+  }
+//  return List::create(Named("beta")=beta_out, Named("coef0")=coef0, Named("mse")=mse, Named("nullmse")=nullmse, Named("aic")=aic, Named("bic")=bic, Named("gic")=gic);
+  List mylist;
+  mylist.add("beta", beta_out);
+  mylist.add("coef0", coef0);
+  mylist.add("mse", mse);
+  mylist.add("nullmse", nullmse);
+  mylist.add("aic", aic);
+  mylist.add("bic", bic);
+  mylist.add("gic", gic);
+  return mylist;
+}
+
 // [[Rcpp::export]]
-//List bess_lm_gs(Eigen::MatrixXd& X, Eigen::VectorXd& y, int s_min, int s_max, int K_max, int max_steps, double epsilon, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start = false, bool normal = true){
+//List bess_lm_gs(Eigen::MatrixXd& X, Eigen::VectorXd& y, int s_min, int s_max, int K_max, int max_steps, double epsilon, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start, bool normal)
+//{
 //  int n = X.rows();
 //  int p = X.cols();
 //  int l;
@@ -310,38 +317,62 @@ void pywrap_bess_lm(double* X, int X_row, int X_col, double* y, int y_len, int T
     VectorXi2Pointer(temp_VectorXi, A);
 }
 
-//void pywrap_bess_lms(double* X, int X_row, int X_col, double* y, int y_len, int* T_list, int T_list_len, int max_steps, double* beta0, int beta0_len, double* weights, int weights_len,
-//                     bool warm_start = false, bool normal = true)
+void pywrap_bess_lms(double* X, int X_row, int X_col, double* y, int y_len, int* T_list, int T_list_len, int max_steps, double* beta0, int beta0_len, double* weights, int weights_len,
+                     double* coef0, double* beta, int beta_len, double* mse, double* nullmse, double* aic, double* bic, double* gic, bool warm_start, bool normal)
+{
+    Eigen::MatrixXd X_Mat;
+    Eigen::VectorXd y_Vec;
+    Eigen::VectorXi T_list_Vec;
+    Eigen::VectorXd beta0_Vec;
+    Eigen::VectorXd weights_Vec;
+
+    X_Mat = Pointer2MatrixXd(X, X_row, X_col);
+    y_Vec = Pointer2VectorXd(y, y_len);
+    T_list_Vec = Pointer2VectorXi(T_list, T_list_len);
+    beta0_Vec = Pointer2VectorXd(beta0, beta_len);
+    weights_Vec = Pointer2VectorXd(weights, weights_len);
+
+    List mylist = bess_lms(X_Mat, y_Vec, T_list_Vec, max_steps, beta0_Vec, weights_Vec, warm_start, normal);
+
+    Eigen::VectorXd temp_VectorXd;
+    Eigen::VectorXi temp_VectorXi;
+
+    temp_VectorXd = mylist.get_value_by_name("beta", temp_VectorXd);
+    VectorXd2Pointer(temp_VectorXd, beta);
+
+    *coef0 = mylist.get_value_by_name("coef0", *coef0);
+    *mse = mylist.get_value_by_name("mse", *mse);
+    *nullmse = mylist.get_value_by_name("nullmse", *nullmse);
+    *aic = mylist.get_value_by_name("aic", *aic);
+    *bic = mylist.get_value_by_name("bic", *bic);
+    *gic = mylist.get_value_by_name("gic", *gic);
+}
+
+//void pywrap_bess_lm_gs(double* X, int X_row, int X_col, double* y, int y_len, int s_min, int s_max, int K_max, int max_steps, double epsilon, double* beta0, int beta0_len, double* weights, int weights_len,
+//                       double* coef0, double* beta, int beta_len, double* mse, double* nullmse, double* aic, double* bic, double* gic, bool warm_start, bool normal)
 //{
 //    Eigen::MatrixXd X_Mat;
 //    Eigen::VectorXd y_Vec;
-//    Eigen::VectorXi T_list_Vec;
 //    Eigen::VectorXd beta0_Vec;
 //    Eigen::VectorXd weights_Vec;
 //
 //    X_Mat = Pointer2MatrixXd(X, X_row, X_col);
 //    y_Vec = Pointer2VectorXd(y, y_len);
-//    T_list_Vet = Pointer2VectorXi(T_list, T_list_len);
-//    beta_Vec = Pointer2VectorXd(beta, beta_len);
+//    beta0_Vec = Pointer2VectorXd(beta0, beta_len);
 //    weights_Vec = Pointer2VectorXd(weights, weights_len);
 //
-//    List result = bess_cox(X_Mat, status_Vec, T0, max_steps, beta_Vec, weights_Vec, normal);
+//    List mylist = bess_lm_gs(X_Mat, y_Vec, s_min, s_max, K_max, max_steps, epsilon, beta0_Vec, weights_Vec, warm_start, normal);
 //
 //    Eigen::VectorXd temp_VectorXd;
 //    Eigen::VectorXi temp_VectorXi;
 //
 //    temp_VectorXd = mylist.get_value_by_name("beta", temp_VectorXd);
-//    beta_return = VectorXd2Pointer(temp_VectorXd);
-//    beta_return_len = temp_VectorXd.size();
+//    VectorXd2Pointer(temp_VectorXd, beta);
 //
-//    coef0 = mylist.get_value_by_name("coef0", coef0);
-//    mse = mylist.get_value_by_name("mse", mse);
-//    nullmse = mylist.get_value_by_name("nullmse", nullmse);
-//    aic = mylist.get_value_by_name("aic", aic);
-//    bic = mylist.get_value_by_name("bic", bic);
-//    gic = mylist.get_value_by_name("gic", gic);
-//
-//    temp_VectorXi = mylist.get_value_by_name("A", temp_VectorXi);
-//    A = VectorXi2Pointer(temp_VectorXi);
-//    A_len = temp_VectorXi.size();
+//    *coef0 = mylist.get_value_by_name("coef0", *coef0);
+//    *mse = mylist.get_value_by_name("mse", *mse);
+//    *nullmse = mylist.get_value_by_name("nullmse", *nullmse);
+//    *aic = mylist.get_value_by_name("aic", *aic);
+//    *bic = mylist.get_value_by_name("bic", *bic);
+//    *gic = mylist.get_value_by_name("gic", *gic);
 //}

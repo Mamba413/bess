@@ -13,3 +13,4 @@ src/bess_lm.cpp
 src/cbess.py
 src/normalize.cpp
 src/utilities.cpp
+test/test.py

@@ -65,4 +65,10 @@ class _SwigNonDynamicMeta(type):
 def pywrap_bess_lm(IN_ARRAY2, arg2, T0, max_steps, arg5, arg6, arg7, arg8, normal):
     return _cbess.pywrap_bess_lm(IN_ARRAY2, arg2, T0, max_steps, arg5, arg6, arg7, arg8, normal)
 
+def pywrap_bess_lms(IN_ARRAY2, arg2, arg3, max_steps, arg5, arg6, ARGOUT_ARRAY1, warm_start=False, normal=True):
+    return _cbess.pywrap_bess_lms(IN_ARRAY2, arg2, arg3, max_steps, arg5, arg6, ARGOUT_ARRAY1, warm_start, normal)
+
+def pywrap_bess_lm_gs(IN_ARRAY2, arg2, s_min, s_max, K_max, max_steps, epsilon, arg8, arg9, ARGOUT_ARRAY1, warm_start=False, normal=True):
+    return _cbess.pywrap_bess_lm_gs(IN_ARRAY2, arg2, s_min, s_max, K_max, max_steps, epsilon, arg8, arg9, ARGOUT_ARRAY1, warm_start, normal)
+
 
