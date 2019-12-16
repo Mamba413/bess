@@ -1,9 +1,16 @@
+#ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
+using namespace Rcpp;
+// [[Rcpp::depends(RcppEigen)]]
+#else
+#include <Eigen\Eigen>
+#include "List.h"
+#endif
+
 #include <algorithm>
 #include <vector>
-// [[Rcpp::depends(RcppEigen)]]
-using namespace Rcpp;
+
 using namespace std;
 vector<int> uniqueR(vector<int> x){
   vector<int>::iterator it;

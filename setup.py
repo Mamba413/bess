@@ -16,7 +16,9 @@ if sys.platform.startswith('win32'):
     os.system('bash pre.sh ' + python_path + ' ' + version)
 
     cbess_module = Extension(name='BeSS._cbess',
-                          sources=['src/bess_lm.cpp', 'src/List.cpp', 'src/utilities.cpp', 'src/normalize.cpp', 'src/bess.i'],
+                          sources=['src/bess_lm.cpp', 'src/List.cpp', 'src/utilities.cpp', 'src/normalize.cpp', 'src/bess.i',
+                                   'src/bess_cox.cpp', 'src/bess_cox_group.cpp', 'src/bess_glm.cpp', 'src/bess_glm_group.cpp',
+                                   'src/logistic.cpp', 'src/tmp.cpp', 'src/coxph.cpp'],
                           language='c++',
                           extra_compile_args=["-DNDEBUG", "-fopenmp", "-O2", "-Wall", "-std=c++11", "-mtune=generic", "-D%s" % os_type, path1, path2],
                           extra_link_args=['-lgomp'],

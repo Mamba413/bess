@@ -1,15 +1,17 @@
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
+using namespace Rcpp;
 #else
 #include <Eigen\Eigen>
 #include "List.h"
 #endif
+
 #include <algorithm>
 #include <vector>
 #include "tmp.h"
 // [[Rcpp::depends(RcppEigen)]]
-using namespace Rcpp;
+
 using namespace std;
 // [[Rcpp::export]]
 List gget_A(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXi G, Eigen::VectorXi index, int T0, Eigen::VectorXd beta0, double coef0, int n, int p, int N, Eigen::VectorXd weights, Eigen::VectorXi B00){

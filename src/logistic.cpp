@@ -1,14 +1,16 @@
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
+using namespace Rcpp;
+// [[Rcpp::depends(RcppEigen)]]
 #else
-#include <Eigen.h>
+#include <Eigen\Eigen>
 #include "List.h"
 #endif
 #include <algorithm>
 #include <vector>
-// [[Rcpp::depends(RcppEigen)]]
-//using namespace Rcpp;
+
+
 using namespace std;
 Eigen::VectorXd logistic(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, int max_steps = 20, double err = 10e-7) {
   int n = X.rows();

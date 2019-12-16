@@ -162,7 +162,7 @@ List bess_cox(Eigen::MatrixXd& X, Eigen::VectorXd& status, int T0, int max_steps
   mylist.add("aic", aic);
   mylist.add("bic", bic);
   mylist.add("gic", gic);
-  mylist.add("A", A);
+  mylist.add("A", A_out);
   mylist.add("l", l);
   return mylist;
 }
@@ -318,35 +318,35 @@ List bess_cox_gs(Eigen::MatrixXd& X, Eigen::VectorXd& status, int s_min, int s_m
     return List::create(Named("beta")=beta, Named("coef0")=coef0, Named("deviance")=deviance, Named("aic")=aic, Named("bic")=bic, Named("gic")=gic, Named("A")=A_out, Named("l")=l);
   #else
     List mylist;
-    mylist.add("beta", beta_out.leftCols(k+1));
-    mylist.add("s_list", T_list.head(k+1))
-    mylist.add("dev", deviance.head(k+1));
-    mylist.add("nulldev", nulldev)
-    mylist.add("aic", aic.head(k+1));
-    mylist.add("bic", bic.head(k+1));
-    mylist.add("gic", gic.head(k+1));
+    mylist.add("beta", beta_out.leftCols(k+1).eval());
+    mylist.add("s_list", T_list.head(k+1).eval());
+    mylist.add("dev", deviance.head(k+1).eval());
+    mylist.add("nulldev", nulldev);
+    mylist.add("aic", aic.head(k+1).eval());
+    mylist.add("bic", bic.head(k+1).eval());
+    mylist.add("gic", gic.head(k+1).eval());
     return mylist;
   #endif
 }
 
-void pywrap_bess_cox(double* X, int X_row, int X_col, double * status, int status_len, int T0, int max_steps, double * beta, int beta_len, double * weights, int weights_len, int cox_max = 10, double eta = 0.5, bool normal = true)
-{
-    Eigen::MatrixXd X_Mat;
-    Eigen::VectorXd status_Vec;
-    Eigen::VectorXd beta_Vec;
-    Eigen::VectorXd weights_Vec;
-
-    X_Mat = array2MatrixXd(X, X_row, X_col);
-    status_Vec = array2VectorXd(status, status_len);
-    beta_Vec = array2VectorXd(beta, beta_len);
-    weights_Vec = array2VectorXd(weights, weights_len);
-
-    List result = bess_cox(X_Mat, status_Vec, T0, max_steps, beta_Vec, weights_Vec, cox_max, eta, normal);
-
-
-
-
-}
+//void pywrap_bess_cox(double* X, int X_row, int X_col, double * status, int status_len, int T0, int max_steps, double * beta, int beta_len, double * weights, int weights_len, int cox_max = 10, double eta = 0.5, bool normal = true)
+//{
+//    Eigen::MatrixXd X_Mat;
+//    Eigen::VectorXd status_Vec;
+//    Eigen::VectorXd beta_Vec;
+//    Eigen::VectorXd weights_Vec;
+//
+//    X_Mat = array2MatrixXd(X, X_row, X_col);
+//    status_Vec = array2VectorXd(status, status_len);
+//    beta_Vec = array2VectorXd(beta, beta_len);
+//    weights_Vec = array2VectorXd(weights, weights_len);
+//
+//    List result = bess_cox(X_Mat, status_Vec, T0, max_steps, beta_Vec, weights_Vec, cox_max, eta, normal);
+//
+//
+//
+//
+//}
 
 
 

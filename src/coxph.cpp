@@ -1,14 +1,15 @@
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
+//[[Rcpp::depends(RcppEigen)]]
+using namespace Rcpp;
 #else
-#include <Eigen.h>
+#include <Eigen\Eigen>
 #include "List.h"
 #endif
 #include <algorithm>
 #include <vector>
-// [[Rcpp::depends(RcppEigen)]]
-//using namespace Rcpp;
+
 using namespace std;
 Eigen::VectorXd coxPH(Eigen::MatrixXd& X, Eigen::VectorXd& status, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, int max_steps = 20, double eta = 0.2, double err = 10e-7) {
   int n = X.rows();

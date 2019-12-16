@@ -115,7 +115,7 @@ List bess_glm(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eig
     mylist.add("aic", aic);
     mylist.add("bic", bic);
     mylist.add("gic", gic);
-    mylist.add("A", A);
+    mylist.add("A", A_out);
     mylist.add("l", l);
     return mylist;
   #endif
@@ -173,7 +173,7 @@ List bess_glms(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXd& T_list, 
     mylist.add("aic", aic);
     mylist.add("bic", bic);
     mylist.add("gic", gic);
-    mylist.add("A", A);
+    mylist.add("A", A_out);
     mylist.add("l", l);
     return mylist;
   #endif
@@ -298,14 +298,14 @@ List bess_glm_gs(Eigen::MatrixXd& X, Eigen::VectorXd& y, int s_min, int s_max, i
     return List::create(Named("beta")=beta, Named("coef0")=coef0, Named("deviance")=deviance, Named("aic")=aic, Named("bic")=bic, Named("gic")=gic, Named("A")=A_out, Named("l")=l);
   #else
     List mylist;
-    mylist.add("beta", beta_out.leftCols(k+1));
-    mylist.add("coef0", coef0_out.head(k+1));
-    mylist.add("s_list", T_list.head(k+1))
-    mylist.add("deviance", deviance.head(k+1));
-    mylist.add("nulldev", nulldev)
-    mylist.add("aic", aic.head(k+1));
-    mylist.add("bic", bic.head(k+1));
-    mylist.add("gic", gic.head(k+1));
+    mylist.add("beta", beta_out.leftCols(k+1).eval());
+    mylist.add("coef0", coef0_out.head(k+1).eval());
+    mylist.add("s_list", T_list.head(k+1).eval());
+    mylist.add("deviance", deviance.head(k+1).eval());
+    mylist.add("nulldev", nulldev);
+    mylist.add("aic", aic.head(k+1).eval());
+    mylist.add("bic", bic.head(k+1).eval());
+    mylist.add("gic", gic.head(k+1).eval());
     return mylist;
   #endif
 }

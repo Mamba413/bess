@@ -12,14 +12,15 @@ void bess_lm_pdas(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps,
 List bess_lm(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eigen::VectorXd& beta, Eigen::VectorXd& weights, bool normal=true);
 
 // [[Rcpp::export]]
-//List bess_lms(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXi& T_list, int max_steps, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start = false, bool normal = true);
+List bess_lms(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXi& T_list, int max_steps, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start = false, bool normal = true);
 
 // [[Rcpp::export]]
-List bess_lm_gs(Eigen::MatrixXd& X, Eigen::VectorXd& y, int s_min, int s_max, int K_max, int max_steps, double epsilon, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start = false, bool normal = true);
+//List bess_lm_gs(Eigen::MatrixXd& X, Eigen::VectorXd& y, int s_min, int s_max, int K_max, int max_steps, double epsilon, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start = false, bool normal = true);
 
 void pywrap_bess_lm(double* X, int X_row, int X_col, double* y, int y_len, int T0, int max_steps, double* beta, int beta_len, double* weights, int weights_len, double* coef0, double* beta_return, int beta_return_len, double* mse, double* nullmse, double* aic,double* bic, double* gic, int* A, int A_len, bool normal=true);
-void pywrap_bess_lms(double* X, int X_row, int X_col, double* y, int y_len, int* T_list, int T_list_len, int max_steps, double* beta0, int beta0_len, double* weights, int weights_len,
-                     double* coef0, double* beta, int beta_len, double* mse, double* nullmse, double* aic, double* bic, double* gic, bool warm_start, bool normal);
-//void pywrap_bess_lm_gs(double* X, int X_row, int X_col, double* y, int y_len, int s_min, int s_max, int K_max, int max_steps, double epsilon, double* beta0, int beta0_len, double* weights, int weights_len,
-//                       double* coef0, double* beta, int beta_len, double* mse, double* nullmse, double* aic, double* bic, double* gic, bool warm_start, bool normal);
+void pywrap_bess_lms(double* X, int X_row, int X_col, double* y, int y_len, int* T_list, int T_list_len, int max_steps, double* beta0, int beta0_len, double* weights, int weights_len, double* coef0, double* beta, int beta_len, double* mse, double* nullmse, double* aic, double* bic, double* gic, bool warm_start, bool normal);
+//void pywrap_bess_lm_gs(double* X, int X_row, int X_col, double* y, int y_len, int s_min, int s_max, int K_max, int max_steps, double epsilon, double* beta0, int beta0_len, double* weights, int weights_len, double* coef0, double* beta, int beta_len, double* mse, double* nullmse, double* aic, double* bic, double* gic, bool warm_start, bool normal);
+//void pywrap_bess_lm_gs(double* IN_ARRAY2, int DIM1, int DIM2, double* IN_ARRAY1, int DIM1, int s_min, int s_max, int K_max, int max_steps, double epsilon, double* IN_ARRAY1, int DIM1, double* IN_ARRAY1, int DIM1, double* OUTPUT, double* ARGOUT_ARRAY1, int DIM1, double* OUTPUT, double* OUTPUT, double* OUTPUT, double* OUTPUT, double* OUTPUT, bool warm_start = false, bool normal = true);
+
+// .h和.cpp的默认变量只用声明1个
 #endif
