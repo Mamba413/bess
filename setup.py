@@ -23,7 +23,7 @@ if sys.platform.startswith('win32'):
                           extra_compile_args=["-DNDEBUG", "-fopenmp", "-O2", "-Wall", "-std=c++11", "-mtune=generic", "-D%s" % os_type, path1, path2],
                           extra_link_args=['-lgomp'],
                           libraries=["vcruntime140"],
-                          include_dirs = ["BeSS", numpy.get_include()],
+                          include_dirs = ["BeSS", numpy.get_include(), "include"],
                           swig_opts=["-c++"]
                           )
 
