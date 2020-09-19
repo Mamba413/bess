@@ -767,7 +767,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
             ic1 = dloss;
             train_loss1 = train_loss_temp2;
 		}
-        cout<<"``c[1]: "<<c[1]<<endl;
+        // cout<<"``c[1]: "<<c[1]<<endl;
         cout<<"abs((invphi2 - invphi) * h[0]): "<<abs((invphi2 - invphi) * h[0])<<endl;
         cout<<"c[1]: "<<c[1]<<endl;
         for(int i=1;i<abs((invphi2 - invphi) * h[0]);i++)
