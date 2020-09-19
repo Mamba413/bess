@@ -322,12 +322,12 @@ class PdasLm(bess_base):
         >>> model.predict(x)
         """
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(PdasLm, self).__init__(
             algorithm_type="Pdas", model_type="Lm", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 1
 
 
@@ -407,12 +407,12 @@ class PdasLogistic(bess_base):
 
 
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(PdasLogistic, self).__init__(
             algorithm_type="Pdas", model_type="Logistic", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 2
 
 
@@ -490,12 +490,12 @@ class PdasPoisson(bess_base):
     """
 
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(PdasPoisson, self).__init__(
             algorithm_type="Pdas", model_type="Poisson", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 2
 
 
@@ -570,12 +570,12 @@ class PdasCox(bess_base):
     """
 
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(PdasCox, self).__init__(
             algorithm_type="Pdas", model_type="Cox", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 3
 
 
@@ -652,12 +652,12 @@ class L0L2Lm(bess_base):
         >>> model.predict(x)
         """
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(L0L2Lm, self).__init__(
             algorithm_type="L0L2", model_type="Lm", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 1
 
 
@@ -734,12 +734,12 @@ class L0L2Logistic(bess_base):
         >>> model.predict(x)
         """
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(L0L2Logistic, self).__init__(
             algorithm_type="L0L2", model_type="Logistic", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 2
 
 
@@ -816,12 +816,12 @@ class L0L2Poisson(bess_base):
         >>> model.predict(x)
     """
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(L0L2Poisson, self).__init__(
             algorithm_type="L0L2", model_type="Poisson", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 2
 
 
@@ -896,12 +896,12 @@ class L0L2Cox(bess_base):
     """
 
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(L0L2Cox, self).__init__(
             algorithm_type="L0L2", model_type="Cox", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening ,powell_path=powell_path)
         self.data_type = 3
 
 class GroupPdasLm(bess_base):
@@ -977,12 +977,12 @@ class GroupPdasLm(bess_base):
         >>> model.predict(x)
         """
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(GroupPdasLm, self).__init__(
             algorithm_type="GroupPdas", model_type="Lm", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 1
 
 
@@ -1062,12 +1062,12 @@ class GroupPdasLogistic(bess_base):
 
 
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(GroupPdasLogistic, self).__init__(
             algorithm_type="GroupPdas", model_type="Logistic", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 2
 
 
@@ -1145,12 +1145,12 @@ class GroupPdasPoisson(bess_base):
     """
 
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(GroupPdasPoisson, self).__init__(
             algorithm_type="GroupPdas", model_type="Poisson", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 2
 
 
@@ -1225,12 +1225,12 @@ class GroupPdasCox(bess_base):
     """
 
     def __init__(self, max_iter=20, exchange_num=0, path_type="seq", is_warm_start=True, sequence=None, lambda_sequence=None, s_min=None, s_max=None,
-                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False
+                 K_max=None, epsilon=0.0001, lambda_min=None, lambda_max=None, ic_type="ebic", is_cv=False, K=5, is_screening=False, powell_path=1
                  ):
         super(GroupPdasCox, self).__init__(
             algorithm_type="GroupPdas", model_type="Cox", path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
             is_warm_start=is_warm_start, sequence=sequence, lambda_sequence=lambda_sequence, s_min=s_min, s_max=s_max, K_max=K_max,
-            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening)
+            epsilon=epsilon, lambda_min=lambda_min, lambda_max=lambda_max, ic_type=ic_type, is_cv=is_cv, K=K, is_screening=is_screening, powell_path=powell_path)
         self.data_type = 3
 
 
