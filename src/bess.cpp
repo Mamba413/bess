@@ -48,7 +48,7 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              Eigen::VectorXi g_index) {
 
     //#ifndef R_BUILD
-        srand(123);
+    srand(123);
     //#endif
     int p = x.cols();
     int sequence_max = sequence[sequence.size() - 1];
