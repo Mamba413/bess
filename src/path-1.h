@@ -39,10 +39,10 @@ void line_intersection(double line1[2][2], double line2[2][2], double intersecti
 void cal_intersections(double p[], double u[], int s_min, int s_max, double lambda_min, double lambda_max, int a[], int b[]);
 
 void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], double u[], int s_min, int s_max, double lambda_min, double lambda_max, double best_arg,
-                            Eigen::VectorXd &beta1, double &coef01, double &train_loss1, double &ic1);
+                            Eigen::VectorXd beta1, double coef01, double train_loss1, double ic1, double lambda1);
 
 void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], double u[], int s_min, int s_max, double log_lambda_min, double log_lambda_max, double best_arg[],
-                Eigen::VectorXd &beta1, double &coef01, double &train_loss1, double &ic1);
+                Eigen::VectorXd beta1, double coef01, double train_loss1, double ic1, double lambda1);
 
 List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, double log_lambda_min, double log_lambda_max, int powell_path);
 

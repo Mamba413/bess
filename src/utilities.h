@@ -1,5 +1,9 @@
-#ifndef UTILITIES_H_
-#define UTILITIES_H_
+//
+// Created by jiangkangkang on 2020/3/9.
+//
+
+#ifndef BESS_UTILITIES_H
+#define BESS_UTILITIES_H
 
 #include <iostream>
 #include <Eigen/Eigen>
@@ -14,5 +18,4 @@ void MatrixXi2Pointer(Eigen::MatrixXi x_matrix, int* x);
 void VectorXd2Pointer(Eigen::VectorXd x_vector, double*x);
 void VectorXi2Pointer(Eigen::VectorXi x_vector, int* x);
 
-#endif  /* UTILITIES_H_ */
-
+#endif //BESS_UTILITIES_H

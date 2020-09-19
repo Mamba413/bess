@@ -6,324 +6,49 @@
 
 using namespace Rcpp;
 
-// bess_cox
-List bess_cox(Eigen::MatrixXd& X, Eigen::VectorXd& status, int T0, int max_steps, Eigen::VectorXd& beta, Eigen::VectorXd& weights, int cox_max, double eta, bool normal);
-RcppExport SEXP _BeSS_bess_cox(SEXP XSEXP, SEXP statusSEXP, SEXP T0SEXP, SEXP max_stepsSEXP, SEXP betaSEXP, SEXP weightsSEXP, SEXP cox_maxSEXP, SEXP etaSEXP, SEXP normalSEXP) {
+// bessCpp
+List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorXd weight, bool is_normal, int algorithm_type, int model_type, int max_iter, int exchange_num, int path_type, bool is_warm_start, int ic_type, bool is_cv, int K, Eigen::VectorXd state, Eigen::VectorXi sequence, Eigen::VectorXd lambda_seq, int s_min, int s_max, int K_max, double epsilon, double lambda_min, double lambda_max, bool is_screening, int powell_path, Eigen::VectorXi g_index);
+RcppExport SEXP _Rbess_bessCpp(SEXP xSEXP, SEXP ySEXP, SEXP data_typeSEXP, SEXP weightSEXP, SEXP is_normalSEXP, SEXP algorithm_typeSEXP, SEXP model_typeSEXP, SEXP max_iterSEXP, SEXP exchange_numSEXP, SEXP path_typeSEXP, SEXP is_warm_startSEXP, SEXP ic_typeSEXP, SEXP is_cvSEXP, SEXP KSEXP, SEXP stateSEXP, SEXP sequenceSEXP, SEXP lambda_seqSEXP, SEXP s_minSEXP, SEXP s_maxSEXP, SEXP K_maxSEXP, SEXP epsilonSEXP, SEXP lambda_minSEXP, SEXP lambda_maxSEXP, SEXP is_screeningSEXP, SEXP powell_pathSEXP, SEXP g_indexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type status(statusSEXP);
-    Rcpp::traits::input_parameter< int >::type T0(T0SEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< int >::type cox_max(cox_maxSEXP);
-    Rcpp::traits::input_parameter< double >::type eta(etaSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_cox(X, status, T0, max_steps, beta, weights, cox_max, eta, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bess_coxs
-List bess_coxs(Eigen::MatrixXd& X, Eigen::VectorXd& status, Eigen::VectorXi& T_list, int max_steps, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start, int cox_max, double eta, bool normal);
-RcppExport SEXP _BeSS_bess_coxs(SEXP XSEXP, SEXP statusSEXP, SEXP T_listSEXP, SEXP max_stepsSEXP, SEXP beta0SEXP, SEXP weightsSEXP, SEXP warm_startSEXP, SEXP cox_maxSEXP, SEXP etaSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type status(statusSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type T_list(T_listSEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< bool >::type warm_start(warm_startSEXP);
-    Rcpp::traits::input_parameter< int >::type cox_max(cox_maxSEXP);
-    Rcpp::traits::input_parameter< double >::type eta(etaSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_coxs(X, status, T_list, max_steps, beta0, weights, warm_start, cox_max, eta, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bess_cox_gs
-List bess_cox_gs(Eigen::MatrixXd& X, Eigen::VectorXd& status, int s_min, int s_max, int K_max, int max_steps, double epsilon, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start, int cox_max, double eta, bool normal);
-RcppExport SEXP _BeSS_bess_cox_gs(SEXP XSEXP, SEXP statusSEXP, SEXP s_minSEXP, SEXP s_maxSEXP, SEXP K_maxSEXP, SEXP max_stepsSEXP, SEXP epsilonSEXP, SEXP beta0SEXP, SEXP weightsSEXP, SEXP warm_startSEXP, SEXP cox_maxSEXP, SEXP etaSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type status(statusSEXP);
-    Rcpp::traits::input_parameter< int >::type s_min(s_minSEXP);
-    Rcpp::traits::input_parameter< int >::type s_max(s_maxSEXP);
-    Rcpp::traits::input_parameter< int >::type K_max(K_maxSEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< double >::type epsilon(epsilonSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< bool >::type warm_start(warm_startSEXP);
-    Rcpp::traits::input_parameter< int >::type cox_max(cox_maxSEXP);
-    Rcpp::traits::input_parameter< double >::type eta(etaSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_cox_gs(X, status, s_min, s_max, K_max, max_steps, epsilon, beta0, weights, warm_start, cox_max, eta, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// ggetcox_A
-List ggetcox_A(Eigen::MatrixXd X, Eigen::VectorXi G, Eigen::VectorXi index, int T0, Eigen::VectorXd beta0, int n, int p, int N, Eigen::VectorXd status, Eigen::VectorXd weights, Eigen::VectorXi B00);
-RcppExport SEXP _BeSS_ggetcox_A(SEXP XSEXP, SEXP GSEXP, SEXP indexSEXP, SEXP T0SEXP, SEXP beta0SEXP, SEXP nSEXP, SEXP pSEXP, SEXP NSEXP, SEXP statusSEXP, SEXP weightsSEXP, SEXP B00SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type index(indexSEXP);
-    Rcpp::traits::input_parameter< int >::type T0(T0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type status(statusSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type B00(B00SEXP);
-    rcpp_result_gen = Rcpp::wrap(ggetcox_A(X, G, index, T0, beta0, n, p, N, status, weights, B00));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bess_glm
-List bess_glm(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eigen::VectorXd& beta, double& coef0, Eigen::VectorXd& weights, int glm_max, bool normal);
-RcppExport SEXP _BeSS_bess_glm(SEXP XSEXP, SEXP ySEXP, SEXP T0SEXP, SEXP max_stepsSEXP, SEXP betaSEXP, SEXP coef0SEXP, SEXP weightsSEXP, SEXP glm_maxSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type T0(T0SEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< double& >::type coef0(coef0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< int >::type glm_max(glm_maxSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_glm(X, y, T0, max_steps, beta, coef0, weights, glm_max, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bess_glms
-List bess_glms(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXd& T_list, int max_steps, Eigen::VectorXd& beta0, double& intercept, Eigen::VectorXd& weights, bool warm_start, int glm_max, bool normal);
-RcppExport SEXP _BeSS_bess_glms(SEXP XSEXP, SEXP ySEXP, SEXP T_listSEXP, SEXP max_stepsSEXP, SEXP beta0SEXP, SEXP interceptSEXP, SEXP weightsSEXP, SEXP warm_startSEXP, SEXP glm_maxSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type T_list(T_listSEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< double& >::type intercept(interceptSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< bool >::type warm_start(warm_startSEXP);
-    Rcpp::traits::input_parameter< int >::type glm_max(glm_maxSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_glms(X, y, T_list, max_steps, beta0, intercept, weights, warm_start, glm_max, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bess_glm_gs
-List bess_glm_gs(Eigen::MatrixXd& X, Eigen::VectorXd& y, int s_min, int s_max, int K_max, int max_steps, double epsilon, Eigen::VectorXd& beta0, double coef0, Eigen::VectorXd& weights, bool warm_start, bool normal, int glm_max);
-RcppExport SEXP _BeSS_bess_glm_gs(SEXP XSEXP, SEXP ySEXP, SEXP s_minSEXP, SEXP s_maxSEXP, SEXP K_maxSEXP, SEXP max_stepsSEXP, SEXP epsilonSEXP, SEXP beta0SEXP, SEXP coef0SEXP, SEXP weightsSEXP, SEXP warm_startSEXP, SEXP normalSEXP, SEXP glm_maxSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type s_min(s_minSEXP);
-    Rcpp::traits::input_parameter< int >::type s_max(s_maxSEXP);
-    Rcpp::traits::input_parameter< int >::type K_max(K_maxSEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< double >::type epsilon(epsilonSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< double >::type coef0(coef0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< bool >::type warm_start(warm_startSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    Rcpp::traits::input_parameter< int >::type glm_max(glm_maxSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_glm_gs(X, y, s_min, s_max, K_max, max_steps, epsilon, beta0, coef0, weights, warm_start, normal, glm_max));
-    return rcpp_result_gen;
-END_RCPP
-}
-// gget_A
-List gget_A(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXi G, Eigen::VectorXi index, int T0, Eigen::VectorXd beta0, double coef0, int n, int p, int N, Eigen::VectorXd weights, Eigen::VectorXi B00);
-RcppExport SEXP _BeSS_gget_A(SEXP XSEXP, SEXP ySEXP, SEXP GSEXP, SEXP indexSEXP, SEXP T0SEXP, SEXP beta0SEXP, SEXP coef0SEXP, SEXP nSEXP, SEXP pSEXP, SEXP NSEXP, SEXP weightsSEXP, SEXP B00SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type x(xSEXP);
     Rcpp::traits::input_parameter< Eigen::VectorXd >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type index(indexSEXP);
-    Rcpp::traits::input_parameter< int >::type T0(T0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< double >::type coef0(coef0SEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type B00(B00SEXP);
-    rcpp_result_gen = Rcpp::wrap(gget_A(X, y, G, index, T0, beta0, coef0, n, p, N, weights, B00));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bess_lm
-List bess_lm(Eigen::MatrixXd& X, Eigen::VectorXd& y, int T0, int max_steps, Eigen::VectorXd& beta, Eigen::VectorXd& weights, bool normal);
-RcppExport SEXP _BeSS_bess_lm(SEXP XSEXP, SEXP ySEXP, SEXP T0SEXP, SEXP max_stepsSEXP, SEXP betaSEXP, SEXP weightsSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type T0(T0SEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_lm(X, y, T0, max_steps, beta, weights, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bess_lms
-List bess_lms(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXi& T_list, int max_steps, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start, bool normal);
-RcppExport SEXP _BeSS_bess_lms(SEXP XSEXP, SEXP ySEXP, SEXP T_listSEXP, SEXP max_stepsSEXP, SEXP beta0SEXP, SEXP weightsSEXP, SEXP warm_startSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type T_list(T_listSEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< bool >::type warm_start(warm_startSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_lms(X, y, T_list, max_steps, beta0, weights, warm_start, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bess_lm_gs
-List bess_lm_gs(Eigen::MatrixXd& X, Eigen::VectorXd& y, int s_min, int s_max, int K_max, int max_steps, double epsilon, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, bool warm_start, bool normal);
-RcppExport SEXP _BeSS_bess_lm_gs(SEXP XSEXP, SEXP ySEXP, SEXP s_minSEXP, SEXP s_maxSEXP, SEXP K_maxSEXP, SEXP max_stepsSEXP, SEXP epsilonSEXP, SEXP beta0SEXP, SEXP weightsSEXP, SEXP warm_startSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type data_type(data_typeSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type weight(weightSEXP);
+    Rcpp::traits::input_parameter< bool >::type is_normal(is_normalSEXP);
+    Rcpp::traits::input_parameter< int >::type algorithm_type(algorithm_typeSEXP);
+    Rcpp::traits::input_parameter< int >::type model_type(model_typeSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type exchange_num(exchange_numSEXP);
+    Rcpp::traits::input_parameter< int >::type path_type(path_typeSEXP);
+    Rcpp::traits::input_parameter< bool >::type is_warm_start(is_warm_startSEXP);
+    Rcpp::traits::input_parameter< int >::type ic_type(ic_typeSEXP);
+    Rcpp::traits::input_parameter< bool >::type is_cv(is_cvSEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type state(stateSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXi >::type sequence(sequenceSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda_seq(lambda_seqSEXP);
     Rcpp::traits::input_parameter< int >::type s_min(s_minSEXP);
     Rcpp::traits::input_parameter< int >::type s_max(s_maxSEXP);
     Rcpp::traits::input_parameter< int >::type K_max(K_maxSEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
     Rcpp::traits::input_parameter< double >::type epsilon(epsilonSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< bool >::type warm_start(warm_startSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(bess_lm_gs(X, y, s_min, s_max, K_max, max_steps, epsilon, beta0, weights, warm_start, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// gbess_lm
-List gbess_lm(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXi& G, Eigen::VectorXi& index, Eigen::VectorXi orderGi, List& PhiG, List& invPhiG, int T0, int max_steps, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, int n, int p, int N, bool normal);
-RcppExport SEXP _BeSS_gbess_lm(SEXP XSEXP, SEXP ySEXP, SEXP GSEXP, SEXP indexSEXP, SEXP orderGiSEXP, SEXP PhiGSEXP, SEXP invPhiGSEXP, SEXP T0SEXP, SEXP max_stepsSEXP, SEXP beta0SEXP, SEXP weightsSEXP, SEXP nSEXP, SEXP pSEXP, SEXP NSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type index(indexSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type orderGi(orderGiSEXP);
-    Rcpp::traits::input_parameter< List& >::type PhiG(PhiGSEXP);
-    Rcpp::traits::input_parameter< List& >::type invPhiG(invPhiGSEXP);
-    Rcpp::traits::input_parameter< int >::type T0(T0SEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(gbess_lm(X, y, G, index, orderGi, PhiG, invPhiG, T0, max_steps, beta0, weights, n, p, N, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// gbess_lms
-List gbess_lms(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXi& G, Eigen::VectorXi& index, Eigen::VectorXi& orderGi, List& PhiG, List& invPhiG, Eigen::VectorXi& T_list, int max_steps, Eigen::VectorXd& beta0, Eigen::VectorXd& weights, int n, int p, int N, bool warm_start, bool normal);
-RcppExport SEXP _BeSS_gbess_lms(SEXP XSEXP, SEXP ySEXP, SEXP GSEXP, SEXP indexSEXP, SEXP orderGiSEXP, SEXP PhiGSEXP, SEXP invPhiGSEXP, SEXP T_listSEXP, SEXP max_stepsSEXP, SEXP beta0SEXP, SEXP weightsSEXP, SEXP nSEXP, SEXP pSEXP, SEXP NSEXP, SEXP warm_startSEXP, SEXP normalSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type index(indexSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type orderGi(orderGiSEXP);
-    Rcpp::traits::input_parameter< List& >::type PhiG(PhiGSEXP);
-    Rcpp::traits::input_parameter< List& >::type invPhiG(invPhiGSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type T_list(T_listSEXP);
-    Rcpp::traits::input_parameter< int >::type max_steps(max_stepsSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type beta0(beta0SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< bool >::type warm_start(warm_startSEXP);
-    Rcpp::traits::input_parameter< bool >::type normal(normalSEXP);
-    rcpp_result_gen = Rcpp::wrap(gbess_lms(X, y, G, index, orderGi, PhiG, invPhiG, T_list, max_steps, beta0, weights, n, p, N, warm_start, normal));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Normalize2
-List Normalize2(Eigen::MatrixXd& X, Eigen::VectorXd& weights);
-RcppExport SEXP _BeSS_Normalize2(SEXP XSEXP, SEXP weightsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type weights(weightsSEXP);
-    rcpp_result_gen = Rcpp::wrap(Normalize2(X, weights));
-    return rcpp_result_gen;
-END_RCPP
-}
-// EigenR
-Eigen::MatrixXd EigenR(Eigen::MatrixXd X);
-RcppExport SEXP _BeSS_EigenR(SEXP XSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(EigenR(X));
+    Rcpp::traits::input_parameter< double >::type lambda_min(lambda_minSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda_max(lambda_maxSEXP);
+    Rcpp::traits::input_parameter< bool >::type is_screening(is_screeningSEXP);
+    Rcpp::traits::input_parameter< int >::type powell_path(powell_pathSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXi >::type g_index(g_indexSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessCpp(x, y, data_type, weight, is_normal, algorithm_type, model_type, max_iter, exchange_num, path_type, is_warm_start, ic_type, is_cv, K, state, sequence, lambda_seq, s_min, s_max, K_max, epsilon, lambda_min, lambda_max, is_screening, powell_path, g_index));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BeSS_bess_cox", (DL_FUNC) &_BeSS_bess_cox, 9},
-    {"_BeSS_bess_coxs", (DL_FUNC) &_BeSS_bess_coxs, 10},
-    {"_BeSS_bess_cox_gs", (DL_FUNC) &_BeSS_bess_cox_gs, 13},
-    {"_BeSS_ggetcox_A", (DL_FUNC) &_BeSS_ggetcox_A, 11},
-    {"_BeSS_bess_glm", (DL_FUNC) &_BeSS_bess_glm, 9},
-    {"_BeSS_bess_glms", (DL_FUNC) &_BeSS_bess_glms, 10},
-    {"_BeSS_bess_glm_gs", (DL_FUNC) &_BeSS_bess_glm_gs, 13},
-    {"_BeSS_gget_A", (DL_FUNC) &_BeSS_gget_A, 12},
-    {"_BeSS_bess_lm", (DL_FUNC) &_BeSS_bess_lm, 7},
-    {"_BeSS_bess_lms", (DL_FUNC) &_BeSS_bess_lms, 8},
-    {"_BeSS_bess_lm_gs", (DL_FUNC) &_BeSS_bess_lm_gs, 11},
-    {"_BeSS_gbess_lm", (DL_FUNC) &_BeSS_gbess_lm, 15},
-    {"_BeSS_gbess_lms", (DL_FUNC) &_BeSS_gbess_lms, 16},
-    {"_BeSS_Normalize2", (DL_FUNC) &_BeSS_Normalize2, 2},
-    {"_BeSS_EigenR", (DL_FUNC) &_BeSS_EigenR, 1},
+    {"_Rbess_bessCpp", (DL_FUNC) &_Rbess_bessCpp, 26},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_BeSS(DllInfo *dll) {
+RcppExport void R_init_Rbess(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
