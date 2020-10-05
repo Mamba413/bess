@@ -5,7 +5,7 @@
 #include <RcppEigen.h>
 // [[Rcpp::depends(RcppEigen)]]
 #else
-#include <Eigen\Eigen>
+#include <Eigen/Eigen>
 #endif
 
 #include <vector>

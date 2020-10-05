@@ -9,7 +9,7 @@ using namespace Rcpp;
 // [[Rcpp::depends(RcppEigen)]]
 #else
 
-#include <Eigen\Eigen>
+#include <Eigen/Eigen>
 #include "List.h"
 
 #endif
@@ -49,10 +49,10 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
 
 
     for (i = 0; i < sequence_size; i++) {
-         std::cout<<"\n sequence= "<<sequence(i);
+        std::cout<<"\n sequence= "<<sequence(i);
         for(j=(1-pow(-1,i))*(lambda_size-1)/2; j< lambda_size && j>=0; j=j+pow(-1,i)){
         // for(j=0;j<lambda_size;j++){
-             std::cout<<" =========j: "<<j<<", lambda= "<<lambda_seq(j)<<", T: "<<sequence(i)<<endl;
+            std::cout<<" =========j: "<<j<<", lambda= "<<lambda_seq(j)<<", T: "<<sequence(i)<<endl;
             //只需要增加一个lambda维度，beta用一维向量储存，每个向量的元素是矩阵。不同的向量是不同的lambda，矩阵的列是和现在一样的T
             // All data train                                                  不管是不是最佳的参数组合，所有情况的拟合系数都要算出来，然后再在测试集，训练集上算cv误差
             algorithm->update_train_mask(full_mask);
@@ -141,14 +141,14 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
     cout<<"best_lambda: "<<lambda_seq[min_loss_index_col]<<endl;
 
    
-   /*for(i=0;i<sequence_size;i++){
+    for(i=0;i<sequence_size;i++){
        cout<<endl;
            for(j=0; j<lambda_size;j++)
        {
            cout<<"i: "<<i+1<<" "<<", j: "<<j+1<<", ";
            cout<<ic_sequence(i,j)<<endl;
        }
-       }*/
+    }
    
 
     List mylist;
@@ -178,6 +178,113 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
         return mylist;
 }
 
+
+// List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::VectorXi sequence) {
+// //    std::cout<<"sequence"<<endl;
+//     int p = data.get_p();
+//     int n = data.get_n();
+//     int i;
+//     int sequence_size = sequence.size();
+//     Eigen::VectorXi full_mask(n);
+//     for (i = 0; i < n; i++) {
+//         full_mask(i) = int(i);
+//     }
+
+// //    Eigen::VectorXd aic_sequence(sequence_size);
+// //    Eigen::VectorXd bic_sequence(sequence_size);
+// //    Eigen::VectorXd gic_sequence(sequence_size);
+
+//     Eigen::VectorXd ic_sequence(sequence_size);
+//     Eigen::VectorXd loss_sequence(sequence_size);
+
+//     Eigen::MatrixXd beta_matrix(p, sequence_size);
+//     Eigen::VectorXd coef0_sequence(sequence_size);
+// //    Eigen::VectorXd loss_sequence(sequence_size);
+
+//     Eigen::VectorXd beta_init = Eigen::VectorXd::Zero(p);
+//     double coef0_init = 0.0;
+
+//     for (i = 0; i < sequence_size; i++) {
+// //        std::cout<<"sequence_2"<<endl;
+
+//         // All data train
+//         algorithm->update_train_mask(full_mask);
+//         algorithm->update_sparsity_level(sequence(i));
+//         algorithm->update_beta_init(beta_init);
+//         algorithm->update_coef0_init(coef0_init);
+//         algorithm->fit();
+
+//         beta_matrix.col(i) = algorithm->get_beta();
+//         coef0_sequence(i) = algorithm->get_coef0();
+//         loss_sequence(i) = metric->train_loss(algorithm, data);
+
+//         ic_sequence(i) = metric->ic(algorithm, data);
+
+//         if (algorithm->warm_start) {
+//             beta_init = algorithm->get_beta();
+//             coef0_init = algorithm->get_coef0();
+//         };
+//     }
+
+//     if (data.is_normal) {
+//         if (algorithm->model_type == 1) {
+//             for (i = 0; i < sequence_size; i++) {
+//                 beta_matrix.col(i) = sqrt(double(n)) * beta_matrix.col(i).cwiseQuotient(data.x_norm);
+//                 coef0_sequence(i) = data.y_mean - beta_matrix.col(i).dot(data.x_mean);
+//             }
+//         }
+//         else
+//         {
+//             for (i = 0; i < sequence_size; i++) {
+//                 beta_matrix.col(i) = sqrt(double(n)) * beta_matrix.col(i).cwiseQuotient(data.x_norm);
+//                 coef0_sequence(i) = coef0_sequence(i) - beta_matrix.col(i).dot(data.x_mean);
+//             }
+//         }
+//     }
+
+
+// //    //    all sequence output
+// //    #ifdef R_BUILD
+// //        return List::create(Named("beta")=beta_matrix, Named("coef0")=coef0_sequence, Named("loss")=loss_sequence, Named("A")=algorithm->get_A_out(), Named("l")=sequence_size);
+// //    #else
+// //        List mylist;
+// //        mylist.add("beta", beta_matrix);
+// //        mylist.add("coef0", coef0_sequence);
+// //        mylist.add("ic", ic_sequence);
+// //        mylist.add("A", algorithm->get_A_out());
+// //        mylist.add("l", sequence_size);
+// //        return mylist;
+// //    #endif
+
+//     //  find min_loss parameter
+//     int min_loss_index = 0;
+//     ic_sequence.minCoeff(&min_loss_index);
+
+//     for(i=0;i<sequence_size;i++)
+//     {
+//         cout<<"i: "<<i+1<<" ";
+//         cout<<ic_sequence(i)<<endl;
+//     }
+
+//     List mylist;
+// #ifdef R_BUILD
+// //    mylist =  List::create(Named("beta")=beta_matrix.col(min_loss_index).eval(), Named("coef0")=coef0_sequence(min_loss_index), Named("ic")=ic_sequence(min_loss_index));
+// //    Eigen::SparseMatrix<double> beta_sparse = beta_matrix.sparseView();
+// //    mylist = List::create(Named("beta") = beta_sparse,
+// //                          Named("coef0") = coef0_sequence,
+// //                          Named("ic") = ic_sequence,
+// //                          Named("sparsity") = min_loss_index + 1);
+//     mylist = List::create(Named("beta") = beta_matrix.col(min_loss_index).eval(),
+//                           Named("coef0") = coef0_sequence(min_loss_index),
+//                           Named("ic") = ic_sequence(min_loss_index));
+// #else
+//     mylist.add("beta", beta_matrix.col(min_loss_index).eval());
+//     mylist.add("coef0", coef0_sequence(min_loss_index));
+//     mylist.add("train_loss", loss_sequence(min_loss_index));
+//     mylist.add("ic", ic_sequence(min_loss_index));
+// #endif
+//     return mylist;
+// }
 
 
 
@@ -693,14 +800,14 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
     algorithm->update_lambda_level(exp(c[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
-    cout<<"int(c[0]): "<<int(c[0])<<", exp(c[1]): "<<exp(c[1])<<endl;
-    cout<<"n p: "<<n<<", "<<data.get_p()<<endl;
+    // cout<<"int(c[0]): "<<int(c[0])<<", exp(c[1]): "<<exp(c[1])<<endl;
+    // cout<<"n p: "<<n<<", "<<data.get_p()<<endl;
     algorithm->fit();
     if (algorithm->warm_start) {
     beta_init = algorithm->get_beta();
     coef0_init = algorithm->get_coef0();
     }
-    cout<<"beta_init"<<beta_init<<endl;
+    // cout<<"beta_init"<<beta_init<<endl;
     closs = metric->ic(algorithm, data);
     coef0_temp1 = algorithm->get_coef0();
     beta_temp1 = algorithm->get_beta();
@@ -729,64 +836,64 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
 	// cout<<"u: "<<u[0]<<","<<u[1]<<endl;
 	// cout<<"a: "<<a[0]<<","<<a[1]<<endl;
 	// cout<<"b: "<<b[0]<<","<<b[1]<<endl;
-	 cout<<"c: "<<c[0]<<","<<c[1]<<endl;
+	//  cout<<"c: "<<c[0]<<","<<c[1]<<endl;
 	// cout<<"d: "<<d[0]<<","<<d[1]<<endl;
 
 
 	if(abs((invphi2 - invphi) * h[0]) <= s_tol && abs((invphi2 - invphi) * h[1]) < log_lambda_tol)
 	{
-        cout<<"abs((invphi2 - invphi) * h[0]): "<<abs((invphi2 - invphi) * h[0])<<endl;
+        // cout<<"abs((invphi2 - invphi) * h[0]): "<<abs((invphi2 - invphi) * h[0])<<endl;
         double min_loss;
         double tmp_loss;
 		if(closs < dloss)
 		{
-            cout<<"closs"<<endl;
+            // cout<<"closs"<<endl;
             best_arg[0] = c[0];
             best_arg[1] = c[1];
             min_loss = closs;
 
             beta1 = beta_temp1;
-            cout<<"beta1: "<<beta1<<endl;
+            // cout<<"beta1: "<<beta1<<endl;
             coef01 = coef0_temp1;
             ic1 = closs;
             train_loss1 = train_loss_temp1;
 		}
 		else
 		{
-            cout<<"else"<<endl;
+            // cout<<"else"<<endl;
             best_arg[0] = d[0];
-            cout<<"0";
+            // cout<<"0";
             best_arg[1] = d[1];
-            cout<<"1";
+            // cout<<"1";
             min_loss = dloss;
-            cout<<"2";
+            // cout<<"2";
 
             beta1 = beta_temp2;
-            cout<<"beta1: "<<beta1<<endl;
+            // cout<<"beta1: "<<beta1<<endl;
             coef01 = coef0_temp2;
             ic1 = dloss;
             train_loss1 = train_loss_temp2;
 		}
         // cout<<"``c[1]: "<<c[1]<<endl;
-        cout<<"abs((invphi2 - invphi) * h[0]): "<<abs((invphi2 - invphi) * h[0])<<endl;
-        cout<<"c[1]: "<<c[1]<<endl;
+        // cout<<"abs((invphi2 - invphi) * h[0]): "<<abs((invphi2 - invphi) * h[0])<<endl;
+        // cout<<"c[1]: "<<c[1]<<endl;
         for(int i=1;i<abs((invphi2 - invphi) * h[0]);i++)
         {
-            cout<<"c[1]: "<<c[1]<<endl;
+            // cout<<"c[1]: "<<c[1]<<endl;
             algorithm->update_train_mask(full_mask);
             algorithm->update_sparsity_level(int(c[0] + sign(h[0]) * i));
-             cout<<"c[0] + sign(h[0]) * i = "<<int(c[0] + sign(h[0]) * i)<<endl;
-             cout<<"c[0]: "<<c[0]<<endl;
+            //  cout<<"c[0] + sign(h[0]) * i = "<<int(c[0] + sign(h[0]) * i)<<endl;
+            //  cout<<"c[0]: "<<c[0]<<endl;
             // cout<<"h[0]: "<<h[0]<<endl;
             // cout<<"i: "<<i<<endl;
             algorithm->update_lambda_level(exp(c[1]));
-            cout<<", exp(c[1]): "<<exp(c[1])<<", ";
+            // cout<<", exp(c[1]): "<<exp(c[1])<<", ";
             algorithm->update_beta_init(beta_init);
-            cout<<"(beta_init: "<<beta_init;
+            // cout<<"(beta_init: "<<beta_init;
             algorithm->update_coef0_init(coef0_init);
-            cout<<'coef0: '<<coef0_init;
+            // cout<<"coef0: "<<coef0_init;
             algorithm->fit();
-            cout<<"fit: "<<endl;
+            // cout<<"fit: "<<endl;
             if (algorithm->warm_start) {
             beta_init = algorithm->get_beta();
             coef0_init = algorithm->get_coef0();
@@ -812,7 +919,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
 	while(tt<100)
 	{
 		tt++;
-        cout<<"tt: "<<tt;
+        // cout<<"tt: "<<tt;
         if(closs < dloss)
         {
         	b[0] = d[0];
@@ -931,17 +1038,17 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
             {
                 algorithm->update_train_mask(full_mask);
                 algorithm->update_sparsity_level(int(c[0] + sign(h[0]) * i));
-                 cout<<"c[0] + sign(h[0]) * i = "<<int(c[0] + sign(h[0]) * i)<<endl;
-                 cout<<"c[0]: "<<c[0]<<endl;
-                 cout<<"c[1]: "<<c[1]<<endl;
+                //  cout<<"c[0] + sign(h[0]) * i = "<<int(c[0] + sign(h[0]) * i)<<endl;
+                //  cout<<"c[0]: "<<c[0]<<endl;
+                //  cout<<"c[1]: "<<c[1]<<endl;
                 // cout<<"h[0]: "<<h[0]<<endl;
                 // cout<<"i: "<<i<<endl;
                 algorithm->update_lambda_level(exp(c[1]));
-                cout<<"beta";
+                // cout<<"beta";
                 algorithm->update_beta_init(beta_init);
                 algorithm->update_coef0_init(coef0_init);
                 algorithm->fit();
-                cout<<"fit";
+                // cout<<"fit";
                 if (algorithm->warm_start) {
                 beta_init = algorithm->get_beta();
                 coef0_init = algorithm->get_coef0();
@@ -956,7 +1063,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
                     beta1 = algorithm->get_beta();
                     coef01 = algorithm->get_coef0();
                     train_loss1 = metric->train_loss(algorithm, data);
-                    cout<<"train_loss1";
+                    // cout<<"train_loss1";
                     ic1 = min_loss;
                     //lambda1 = c[1];
                 }
@@ -996,7 +1103,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     train_loss_2.resize(500);*/
     beta_warm.setZero();
     
-    cout<<"i: "<<i<<endl;
+    // cout<<"i: "<<i<<endl;
     algorithm->update_train_mask(full_mask);
     algorithm->update_sparsity_level(p[0]+i*u[0]);
     algorithm->update_lambda_level(exp(p[1]+i*u[1]));
@@ -1024,7 +1131,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     //cout<<"p[0]: "<<p[0]<<", p[1]: "<<p[0]<<", u[0]: "<<u[0]<<", u[1]："<<u[0]<<endl;
     //cout<<"logmin: "<<log_lambda_min<<", lgmax: "<<log_lambda_max<<endl;
     while((p[0]+i*u[0]<=s_max)&&(p[1]+i*u[1]<=log_lambda_max)&&(p[0]+i*u[0]>=s_min)&&(p[1]+i*u[1]>=log_lambda_min)){
-         cout<<"i: "<<i<<", (p[0]+i*u[0] "<<(p[0]+i*u[0])<<", p[1]+i*u[1]"<<p[1]+i*u[1]<<", s_max: "<<s_max<<", s_min: "<<s_min<<", loglam: "<<log_lambda_max<<", loglammin: "<<log_lambda_min<<endl;
+        //  cout<<"i: "<<i<<", (p[0]+i*u[0] "<<(p[0]+i*u[0])<<", p[1]+i*u[1]"<<p[1]+i*u[1]<<", s_max: "<<s_max<<", s_min: "<<s_min<<", loglam: "<<log_lambda_max<<", loglammin: "<<log_lambda_min<<endl;
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(p[0]+i*u[0]);
         algorithm->update_lambda_level(exp(p[1]+i*u[1]));
@@ -1048,7 +1155,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     coef0_init = coef0_warm;
 
     while((p[0] - j*u[0] <= s_max)&&(p[1] - j*u[1] <= log_lambda_max) && (p[0] - j*u[0] >= s_min) && (p[1] - j*u[1] >= log_lambda_min)){
-          cout<<"j: "<<j<<", (p[0]-j*u[0] "<<(p[0]-j*u[0])<<", p[1]-j*u[1]"<<p[1]-j*u[1]<<", s_max: "<<s_max<<", s_min: "<<s_min<<", loglam: "<<log_lambda_max<<", loglammin: "<<log_lambda_min<<endl;
+        //   cout<<"j: "<<j<<", (p[0]-j*u[0] "<<(p[0]-j*u[0])<<", p[1]-j*u[1]"<<p[1]-j*u[1]<<", s_max: "<<s_max<<", s_min: "<<s_min<<", loglam: "<<log_lambda_max<<", loglammin: "<<log_lambda_min<<endl;
 
          // if(j == 0) ic_sequence_2[j] = ic_sequence_1[0];
         algorithm->update_train_mask(full_mask);
@@ -1074,7 +1181,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
    int minPosition_1 = min_element(ic_sequence_1, ic_sequence_1 + i) - ic_sequence_1;
    int minPosition_2 = min_element(ic_sequence_2, ic_sequence_2 + j) - ic_sequence_2;
    int minPosition;
-   cout<<"minPosition_1: "<<minPosition_1<<", minPosition_2: "<<minPosition_2<<endl;
+//    cout<<"minPosition_1: "<<minPosition_1<<", minPosition_2: "<<minPosition_2<<endl;
    if(ic_sequence_1[minPosition_1] < ic_sequence_2[minPosition_2]){
        minPosition = minPosition_1;
        ic1 = ic_sequence_1[minPosition];
@@ -1132,7 +1239,7 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
 	int ttt=0;
 	while(ttt<500)
 	{
-      cout<<"====================ttt: "<<ttt<<"================"<<endl;
+    //   cout<<"====================ttt: "<<ttt<<"================"<<endl;
 		for(i=0;i<2;i++)
 		{
              // cout<<"*U["<<i<<"][0], *U["<<i<<"][1]: "<<U[i][0]<<", "<<U[i][1]<<", P[i][0]"<<P[i][0]<<",  P[i][1]"<< P[i][1]<<endl;
@@ -1140,12 +1247,12 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             else 
             seq_search(data, algorithm, metric, P[i], U[i], s_min, s_max, log_lambda_min, log_lambda_max, P[i+1], beta_temp, coef0_temp, train_loss_temp, ic_temp);
             beta_all.col(ttt) = beta_temp;
-            cout<<"beta_all.col("<<ttt<<") :"<<beta_all.col(ttt)<<endl;
+            // cout<<"beta_all.col("<<ttt<<") :"<<beta_all.col(ttt)<<endl;
             coef0_all(ttt) = coef0_temp;
             train_loss_all(ttt) = train_loss_temp;
             ic_all(ttt) = ic_temp;
             lambda_chosen(ttt) = exp(P[i+1][1]);
-            cout<<"lambda, "<<lambda_chosen(ttt)<<", ";
+            // cout<<"lambda, "<<lambda_chosen(ttt)<<", ";
             ttt++;
             
         }
@@ -1167,12 +1274,12 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             else
                 seq_search(data, algorithm, metric, P[0], U[1], s_min, s_max, log_lambda_min, log_lambda_max, P[0], beta_temp, coef0_temp, train_loss_temp, ic_temp);
             beta_all.col(ttt) = beta_temp;
-             cout<<"beta_all.col("<<ttt<<") :"<<beta_all.col(ttt)<<endl;
+            //  cout<<"beta_all.col("<<ttt<<") :"<<beta_all.col(ttt)<<endl;
             coef0_all(ttt) = coef0_temp;
             train_loss_all(ttt) = train_loss_temp;
             ic_all(ttt) = ic_temp;
             lambda_chosen(ttt) = exp(P[0][1]);
-            cout<<"lambda, "<<lambda_chosen(ttt)<<", ";
+            // cout<<"lambda, "<<lambda_chosen(ttt)<<", ";
             ttt++;
         }
 		else
@@ -1181,8 +1288,8 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             algorithm->update_train_mask(full_mask);
             algorithm->update_sparsity_level(int(P[0][0]));
             algorithm->update_lambda_level(exp(P[0][1]));
-            cout<<"best_s: "<<int(P[0][0])<<endl;
-            cout<<"best_lambda: "<<exp(P[0][1])<<endl;
+            // cout<<"best_s: "<<int(P[0][0])<<endl;
+            // cout<<"best_lambda: "<<exp(P[0][1])<<endl;
             // algorithm->update_beta_init(beta_init);
             // algorithm->update_coef0_init(coef0_init);
             algorithm->fit();
@@ -1193,7 +1300,7 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             double best_ic = metric->ic(algorithm, data);
 
             beta_all.col(ttt) = best_beta;
-             cout<<"beta_all.col("<<ttt<<") :"<<beta_all.col(ttt)<<endl;
+            //  cout<<"beta_all.col("<<ttt<<") :"<<beta_all.col(ttt)<<endl;
             coef0_all(ttt) = best_coef0;
             train_loss_all(ttt) = best_train_loss;
             ic_all(ttt) = best_ic;
@@ -1205,7 +1312,7 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             train_loss_all = train_loss_all.head(ttt);
             ic_all = ic_all.head(ttt);
             lambda_chosen = lambda_chosen.head(ttt);
-            cout<<"lambda_chosen: "<<lambda_chosen<<endl;
+            // cout<<"lambda_chosen: "<<lambda_chosen<<endl;
             if (data.is_normal) {
                 if (algorithm->model_type == 1) {
                     for(int k=0;k<ttt;k++){
