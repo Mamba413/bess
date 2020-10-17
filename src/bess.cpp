@@ -33,6 +33,9 @@ using namespace std;
 using namespace Eigen;
 using namespace std;
 
+
+// to de ebic coef
+
 // [[Rcpp::export]]
 List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorXd weight,
              bool is_normal,
@@ -44,22 +47,18 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              Eigen::VectorXd lambda_seq,
              int s_min, int s_max, int K_max, double epsilon,
              double lambda_min, double lambda_max,
-             bool is_screening, int powell_path,
-             Eigen::VectorXi g_index) {
-
-    //#ifndef R_BUILD
-        srand(123);
-    //#endif
+             bool is_screening, int screening_size, int powell_path,
+             Eigen::VectorXi g_index) 
+    {
+    srand(123);
     int p = x.cols();
-    int sequence_max = sequence[sequence.size() - 1];
     vector<int> screening_A;
     if (is_screening) {
-        screening_A = screening(x, y, weight, model_type, sequence_max);
+        screening_A = screening(x, y, weight, model_type, screening_size, g_index);
     }
     //cout<<"fini"<<endl;
     Data data(x, y, data_type, weight, is_normal, g_index);
-    // cout<<"data.x;"<<data.x<<endl;  
-
+    // cout<<"data.x;"<<data.x<<endl;
 
     Algorithm *algorithm;
     if (algorithm_type == 1) {
@@ -83,7 +82,7 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
         if (model_type == 1) {
             data.add_weight();
             algorithm = new GroupPdasLm(data, max_iter);
-            algorithm->PhiG = Phi(x, g_index, data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num());
+            algorithm->PhiG = Phi(data.x, g_index, data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num());
             algorithm->invPhiG = invPhi(algorithm->PhiG, data.get_g_num());
         } else if (model_type == 2) {
             algorithm = new GroupPdasLogistic(data, max_iter);
@@ -100,7 +99,7 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
         }
         else if (model_type == 2) {
             algorithm = new L0L2Logistic(data, max_iter);
-        } 
+        }
         else if (model_type == 3) {
             algorithm = new L0L2Poisson(data, max_iter);
         } else {
@@ -158,10 +157,9 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
         }
         else
         {
-            cout<<"gs_path"<<endl;
             result = gs_path(data, algorithm, metric, s_min, s_max, K_max, epsilon);
         }
-            
+
     }
 
     // cout<<"1"<<endl;
@@ -199,7 +197,7 @@ void pywrap_bess(double *x, int x_row, int x_col, double *y, int y_len, int data
                  double *lambda_sequence, int lambda_sequence_len,
                  int s_min, int s_max, int K_max, double epsilon,
                  double lambda_min, double lambda_max,
-                 bool is_screening, int powell_path,
+                 bool is_screening, int screening_size, int powell_path,
                  double *beta_out, int beta_out_len, double *coef0_out, int coef0_out_len, double *train_loss_out,
                  int train_loss_out_len, double *ic_out, int ic_out_len, double *nullloss_out, double *aic_out,
                  int aic_out_len, double *bic_out, int bic_out_len, double *gic_out, int gic_out_len, int *A_out,
@@ -226,7 +224,7 @@ void pywrap_bess(double *x, int x_row, int x_col, double *y, int y_len, int data
                           algorithm_type, model_type, max_iter, exchange_num,
                           path_type, is_warm_start, ic_type, is_cv, K, state_Vec, sequence_Vec, lambda_sequence_Vec,
                           s_min, s_max, K_max, epsilon,
-                          lambda_min, lambda_max, is_screening, powell_path, gindex_Vec);
+                          lambda_min, lambda_max, is_screening, screening_size, powell_path, gindex_Vec);
 //    std::cout<<"pywrap_2"<<endl;
 
     // all sequence output

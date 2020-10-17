@@ -11,7 +11,7 @@
 using namespace Eigen;
 #else
 
-#include <Eigen\Eigen>
+#include <Eigen/Eigen>
 #include "List.h"
 
 #endif

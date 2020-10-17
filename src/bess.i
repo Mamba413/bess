@@ -25,7 +25,7 @@ void pywrap_bess(double* IN_ARRAY2, int DIM1, int DIM2, double* IN_ARRAY1, int D
                  double* IN_ARRAY1, int DIM1,
                  int s_min, int s_max, int K_max, double epsilon,
                  double lambda_min, double lambda_max,
-                 bool is_screening, int powell_path,
+                 bool is_screening, int screening_size, int powell_path,
                  double* ARGOUT_ARRAY1, int DIM1, double* ARGOUT_ARRAY1, int DIM1, double* ARGOUT_ARRAY1, int DIM1, double* ARGOUT_ARRAY1, int DIM1, double* OUTPUT, double* ARGOUT_ARRAY1, int DIM1, double* ARGOUT_ARRAY1, int DIM1, double* ARGOUT_ARRAY1, int DIM1, int* ARGOUT_ARRAY1, int DIM1, int*OUTPUT);
 
 // .i文件里面不能加默认变量
