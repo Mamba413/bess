@@ -1,7 +1,7 @@
 //
 // Created by Mamba on 2020/2/18.
 //
-// #define R_BUILD
+//#define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -149,14 +149,14 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
     //cout<<"best_s: "<<sequence[min_loss_index_row]<<endl;
     //cout<<"best_lambda: "<<lambda_seq[min_loss_index_col]<<endl;
 
-    for(i=0;i<sequence_size;i++){
-       cout<<endl;
-           for(j=0; j<lambda_size;j++)
-       {
-           cout<<"i: "<<i+1<<" "<<", j: "<<j+1<<", ";
-           cout<<ic_sequence(i,j)<<endl;
-       }
-       }
+    // for(i=0;i<sequence_size;i++){
+    //    cout<<endl;
+    //        for(j=0; j<lambda_size;j++)
+    //    {
+    //        cout<<"i: "<<i+1<<" "<<", j: "<<j+1<<", ";
+    //        cout<<ic_sequence(i,j)<<endl;
+    //    }
+    //    }
 
     List mylist;
 #ifdef R_BUILD
@@ -800,7 +800,6 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
                            Eigen::VectorXd &beta1, double &coef01, double &train_loss1, double &ic1, Eigen::MatrixXd &ic_sequence)
 {
     int n = data.get_n();
-    cout<<"n: "<<n<<endl;
     Eigen::VectorXi full_mask(n);
     for (int i = 0; i < n; i++)
     {
@@ -854,18 +853,18 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
 
     algorithm->update_train_mask(full_mask);
     algorithm->update_sparsity_level(int(c[0]));
-    cout << "int(c[0])： " << int(c[0]) << endl;
+    //cout << "int(c[0])： " << int(c[0]) << endl;
     algorithm->update_lambda_level(exp(c[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
-    cout<<"int(c[0]): "<<int(c[0])<<", exp(c[1]): "<<exp(c[1])<<endl;
+    //cout<<"int(c[0]): "<<int(c[0])<<", exp(c[1]): "<<exp(c[1])<<endl;
     algorithm->fit();
     if (algorithm->warm_start)
     {
         beta_init = algorithm->get_beta();
         coef0_init = algorithm->get_coef0();
     }
-    cout << "beta_init" << beta_init << endl;
+    //cout << "beta_init" << beta_init << endl;
     closs = metric->ic(algorithm, data);
     coef0_temp1 = algorithm->get_coef0();
     beta_temp1 = algorithm->get_beta();
@@ -893,7 +892,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
 
     algorithm->update_train_mask(full_mask);
     algorithm->update_sparsity_level(int(d[0]));
-     cout<<"int(d[0]): "<<int(d[0])<<endl;
+    // cout<<"int(d[0]): "<<int(d[0])<<endl;
     algorithm->update_lambda_level(exp(d[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
@@ -938,12 +937,12 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
 
     if (abs((invphi2 - invphi) * h[0]) <= s_tol && abs((invphi2 - invphi) * h[1]) < log_lambda_tol)
     {
-        cout << "abs((invphi2 - invphi) * h[0]): " << abs((invphi2 - invphi) * h[0]) << endl;
+        //cout << "abs((invphi2 - invphi) * h[0]): " << abs((invphi2 - invphi) * h[0]) << endl;
         double min_loss;
         double tmp_loss;
         if (closs < dloss)
         {
-            cout << "closs" << endl;
+            //cout << "closs" << endl;
             best_arg[0] = c[0];
             // cout<<"c[0]: "<<c[0]<<endl;
             best_arg[1] = c[1];
@@ -959,7 +958,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
         else
         {
             best_arg[0] = d[0];
-            cout << "else d[0]: " << d[0] << endl;
+            //cout << "d[0]: " << d[0] << endl;
             best_arg[1] = d[1];
             min_loss = dloss;
 
@@ -971,7 +970,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
         }
         for (int i = 1; i < abs((invphi2 - invphi) * h[0]); i++)
         {
-            cout<<"c[1]: "<<c[1]<<endl;
+            //cout<<"c[1]: "<<c[1]<<endl;
             algorithm->update_train_mask(full_mask);
             algorithm->update_sparsity_level(int(c[0] + sign(h[0]) * i));
             // cout<<"int(c[0] + sign(h[0]) * i)："<<int(c[0] + sign(h[0]) * i)<<endl;
@@ -1025,7 +1024,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
     while (tt < 100)
     {
         tt++;
-        cout << "tt: " << tt;
+        //cout << "tt: " << tt;
         if (closs < dloss)
         {
             b[0] = d[0];
@@ -1230,7 +1229,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
                     //lambda1 = exp(c[1]);
                 }
             }
-            cout<<"second part, ic1: "<<ic1<<endl;
+            //cout<<"second part, ic1: "<<ic1<<endl;
             return;
         }
     }
@@ -1813,20 +1812,20 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     double coef0_warm = 0.0;
 
     double d_lambda = (log_lambda_max - log_lambda_min) / (nlambda - 1);
-    int k_lambda = abs(u[1] / d_lambda);
+    int k_lambda = abs(round(u[1] / d_lambda));
     //cout << "------d_lambda: " << d_lambda << ", k_lambda: " << k_lambda << ", u[0]" << u[0] << ", u[1]: " << u[1] << endl;
     //cout << "u[0]: " << u[0] << ", u[1]: " << u[1] << endl;
-    if (abs(u[0]) != 1 && abs(k_lambda) != 1)
+    if (abs(u[0]) != 1 && k_lambda != 1)
     {
-        if (k_lambda == 0)
+        if (k_lambda == 0 && u[0] != 0)
         {
-            // cout << "1";
+            cout << "1";
             u[0] = u[0] / abs(u[0]);
             //u[1] = u[1] / abs(u[0]);
         }
-        else if (u[0] == 0)
+        else if (u[0] == 0 && k_lambda != 0)
         {
-            //cout << "2";
+            cout << "2";
             //u[0] = u[0] / k_lambda;
             u[1] = u[1] / k_lambda;
         }
@@ -1837,18 +1836,20 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
             //if (!(k_lambda % abs(int(u[0]))) || !(abs(int(u[0])) % k_lambda))
             if (gdc)
             {
-                if (k_lambda < abs(u[0]))
-                {
-                    // cout << "3";
-                    u[0] = u[0] / k_lambda;
-                    u[1] = u[1] / k_lambda;
-                }
-                else
-                {
-                    // cout << "4";
-                    u[1] = u[1] / abs(u[0]);
-                    u[0] = u[0] / abs(u[0]);
-                }
+                u[0] = round(u[0] / gdc);
+                u[1] = u[1] / gdc;
+                // if (k_lambda < abs(u[0]))
+                // {
+                //     // cout << "3";
+                //     u[0] = u[0] / k_lambda;
+                //     u[1] = u[1] / k_lambda;
+                // }
+                // else
+                // {
+                //     // cout << "4";
+                //     u[1] = u[1] / abs(u[0]);
+                //     u[0] = u[0] / abs(u[0]);
+                // }
             }
         }
     }
@@ -2090,7 +2091,7 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
     while (ttt < 99)
     {
         ttt++;
-        cout << "====================ttt: " << ttt << "================" << endl;
+        //cout << "====================ttt: " << ttt << "================" << endl;
         for (i = 0; i < 2; i++)
         {
             //cout << "*U[" << i << "][0], *U[" << i << "][1]: " << U[i][0] << ", " << U[i][1] << ", P[i][0]" << P[i][0] << ",  P[i][1]" << P[i][1] << endl;
@@ -2119,12 +2120,12 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
         U[0][1] = U[1][1];
         U[1][0] = P[2][0] - P[0][0];
         U[1][1] = P[2][1] - P[0][1];
-        cout<<"******P[2][0]"<<P[2][0]<<", P[0][0]"<<P[0][0]<<", P[2][0] - P[0][0]: "<<(P[2][0] - P[0][0])<<", P[2][1]"<<P[2][1]<<", P[0][1]"<<P[0][1]<<", U[1][1]: "<<U[1][1]<<endl;
+        //cout<<"******P[2][0]"<<P[2][0]<<", P[0][0]"<<P[0][0]<<", P[2][0] - P[0][0]: "<<(P[2][0] - P[0][0])<<", P[2][1]"<<P[2][1]<<", P[0][1]"<<P[0][1]<<", U[1][1]: "<<U[1][1]<<endl;
 
-        cout<<"(abs(U[1][0]),abs(U[1][1]): "<<U[1][0]<<", "<<U[1][1]<<endl;
+        //cout<<"(abs(U[1][0]),abs(U[1][1]): "<<U[1][0]<<", "<<U[1][1]<<endl;
         if ((!(abs(U[1][0]) <= 0.0001 && abs(U[1][1]) <= 0.0001)) && ttt < 99)
         {
-            cout << "==================ttt:" << ttt << "====================" << endl;
+            //cout << "==================ttt:" << ttt << "====================" << endl;
             if (powell_path == 1)
                 golden_section_search(data, algorithm, metric, P[0], U[1], s_min, s_max, log_lambda_min, log_lambda_max, P[0], beta_temp, coef0_temp, train_loss_temp, ic_temp, ic_sequence);
             // cout<<"P[2]"<<P[2][0]<<","<<P[2][1]<<endl;
