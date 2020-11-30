@@ -1,0 +1,84 @@
+@article{shih1998hypoxia,
+  title={Hypoxia-mediated regulation of gene expression in mammalian cells},
+  author={Shih, Shu-Ching and Claffey, Kevin P},
+  journal={International journal of experimental pathology},
+  volume={79},
+  number={6},
+  pages={347--357},
+  year={1998},
+  publisher={Wiley Online Library}
+}
+@article{golub1999molecular,
+  title={Molecular classification of cancer: class discovery and class prediction by gene expression monitoring},
+  author={Golub, Todd R and Slonim, Donna K and Tamayo, Pablo and Huard, Christine and Gaasenbeek, Michelle and Mesirov, Jill P and Coller, Hilary and Loh, Mignon L and Downing, James R and Caligiuri, Mark A and others},
+  journal={science},
+  volume={286},
+  number={5439},
+  pages={531--537},
+  year={1999},
+  publisher={American Association for the Advancement of Science}
+}
+@article{alizadeh2000distinct,
+  title={Distinct types of diffuse large B-cell lymphoma identified by gene expression profiling},
+  author={Alizadeh, Ash A and Eisen, Michael B and Davis, R Eric and Ma, Chi and Lossos, Izidore S and Rosenwald, Andreas and Boldrick, Jennifer C and Sabet, Hajeer and Tran, Truc and Yu, Xin and others},
+  journal={Nature},
+  volume={403},
+  number={6769},
+  pages={503--511},
+  year={2000},
+  publisher={Nature Publishing Group}
+}
+@article{akaike1974new,
+  title={A new look at the statistical model identification},
+  author={Akaike, Hirotugu},
+  journal={IEEE transactions on automatic control},
+  volume={19},
+  number={6},
+  pages={716--723},
+  year={1974},
+  publisher={Ieee}
+}
+@article{schwarz1978estimating,
+  title={Estimating the dimension of a model},
+  author={Schwarz, Gideon and others},
+  journal={The annals of statistics},
+  volume={6},
+  number={2},
+  pages={461--464},
+  year={1978},
+  publisher={Institute of Mathematical Statistics}
+}
+@article{konishi1996generalised,
+  title={Generalised information criteria in model selection},
+  author={Konishi, Sadanori and Kitagawa, Genshiro},
+  journal={Biometrika},
+  volume={83},
+  number={4},
+  pages={875--890},
+  year={1996},
+  publisher={Oxford University Press}
+}
+@article{chen2008extended,
+  title={Extended Bayesian information criteria for model selection with large model spaces},
+  author={Chen, Jiahua and Chen, Zehua},
+  journal={Biometrika},
+  volume={95},
+  number={3},
+  pages={759--771},
+  year={2008},
+  publisher={Oxford University Press}
+}
+@article{chen2012extended,
+  title={Extended BIC for small-n-large-P sparse GLM},
+  author={Chen, Jiahua and Chen, Zehua},
+  journal={Statistica Sinica},
+  pages={555--574},
+  year={2012},
+  publisher={JSTOR}
+}
+@article{wen2017bess,
+  title={BeSS: An R Package for Best Subset Selection in Linear, Logistic and CoxPH Models},
+  author={Wen, Canhong and Zhang, Aijun and Quan, Shijie and Wang, Xueqin},
+  journal={arXiv preprint arXiv:1709.06254},
+  year={2017}
+}

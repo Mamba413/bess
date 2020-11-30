@@ -1,0 +1,26 @@
+Package: BeSS
+Type: Package
+Title: Best Subset Selection in Linear, Logistic, Poisson and CoxPH Models
+Version: 0.1.0
+Author@R: c(
+  person(given = "Liyuan", family = "Hu", email = "huly5@mail2.sysu.edu.cn", role = c("aut", "cre")),
+  person(given = "Aijun", family = "Zhang", email = "ajzhang@hku.hk", role = c("aut")),
+  person(given = "Shijie", family = "Quan", email = "329773935@qq.com", role = c("aut")),
+  person(given = "Xueqin", family = "Wang", email = "wangxq20@ustc.edu.cn", role = c("aut")))
+Author: Liyuan Hu [aut, cre],
+  Aijun Zhang [aut],
+  Shijie Quan [aut],
+  Xueqin Wang [aut]
+Maintainer: Liyuan Hu <huly5@mail2.sysu.edu.cn>
+Description: An implementation of best subset selection in generalized linear model and Cox proportional hazard model via the primal dual active set algorithm proposed by Wen, C., Zhang, A., Quan, S. and Wang, X. (2020) <doi:10.18637/jss.v094.i04>The algorithm formulates coefficient parameters and residuals as primal and dual variables and utilizes efficient active set selection strategies based on the complementarity of the primal and dual variables.
+License: GPL-3
+Depends: R (>= 3.5.0)
+Encoding: UTF-8
+LazyData: true
+Imports: Rcpp (>= 1.0.3), Matrix(>= 1.2-6), MASS, plot3D, dglars, ROCR, HCmodelSets
+LinkingTo: Rcpp, RcppEigen
+RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

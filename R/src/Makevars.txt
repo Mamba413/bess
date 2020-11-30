@@ -1,0 +1,3 @@
+
+PKG_CPPFLAGS = -DR_BUILD
+PKG_CXXFLAGS = -std=c++11
