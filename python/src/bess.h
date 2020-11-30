@@ -28,7 +28,7 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              Eigen::VectorXi sequence,
              Eigen::VectorXd lambda_seq,
              int s_min, int s_max, int K_max, double epsilon,
-             double lambda_min, double lambda_max, int nlambda,
+             double lambda_min, double lambda_max,
              bool is_screening, int screening_size, int powell_path,
              Eigen::VectorXi g_index);
 
@@ -42,7 +42,7 @@ void pywrap_bess(double *x, int x_row, int x_col, double *y, int y_len, int data
                  int *sequence, int sequence_len,
                  double *lambda_sequence, int lambda_sequence_len,
                  int s_min, int s_max, int K_max, double epsilon,
-                 double lambda_min, double lambda_max, int n_lambda,
+                 double lambda_min, double lambda_max,
                  bool is_screening, int screening_size, int powell_path,
                  double *beta_out, int beta_out_len, double *coef0_out, int coef0_out_len, double *train_loss_out,
                  int train_loss_out_len, double *ic_out, int ic_out_len, double *nullloss_out, double *aic_out,

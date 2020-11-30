@@ -17,7 +17,7 @@ if sys.platform.startswith('win32'):
     cbess_module = Extension(name='bess._cbess',
                              sources=['src/bess.cpp', 'src/List.cpp', 'src/utilities.cpp', 'src/normalize.cpp', 'src/bess.i',
                                       'src/Algorithm.cpp', 'src/Data.cpp', 'src/Metric.cpp', 'src/path.cpp',
-                                      'src/logistic.cpp', 'src/coxph.cpp', 'src/poisson.cpp', 'src/screening.cpp', 'src/pdas.cpp'],
+                                      'src/logistic.cpp', 'src/coxph.cpp', 'src/poisson.cpp', 'src/screening.cpp'],
                              language='c++',
                              extra_compile_args=["-DNDEBUG", "-fopenmp", "-O2", "-Wall", "-std=c++11", "-mtune=generic", "-D%s" % os_type, path1, path2],
                              extra_link_args=['-lgomp'],
@@ -27,11 +27,11 @@ if sys.platform.startswith('win32'):
                              )
 else:
       eigen_path = CURRENT_DIR + "/include"
-      # print(eigen_path)
+      print(eigen_path)
       # eigen_path = "/usr/local/include/eigen3/Eigen"
       cbess_module = Extension(name='bess._cbess',
                               sources=['src/bess.cpp', 'src/List.cpp', 'src/utilities.cpp', 'src/normalize.cpp', 'src/bess.i',
-                                          'src/Algorithm.cpp', 'src/Data.cpp', 'src/Metric.cpp', 'src/path.cpp', 'src/pdas.cpp',
+                                          'src/Algorithm.cpp', 'src/Data.cpp', 'src/Metric.cpp', 'src/path.cpp',
                                           'src/logistic.cpp', 'src/coxph.cpp', 'src/poisson.cpp', 'src/screening.cpp'],
                               language='c++',
                               extra_compile_args=["-DNDEBUG", "-fopenmp", "-O2", "-Wall", "-std=c++11"],

@@ -13,6 +13,6 @@
 using namespace std;
 using namespace Eigen;
 
-vector<int> screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &weight, int algorithm_type, int sequence_max);
+vector<int> screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &weight, int algorithm_type, int sequence_max, Eigen::VectorXi &g_index);
 
 #endif

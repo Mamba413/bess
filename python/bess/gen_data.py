@@ -19,11 +19,13 @@ def sample(p, k):
     return select
 
 
-def gen_data(n, p, family, k, rho=0, sigma=1, beta=None, censoring =True, c=10, scal=10):
+def gen_data(n, p, family, k, rho=0, sigma=1, beta=None, censoring =True, c=1, scal=10):
     zero = np.zeros([n, 1])
     ones = np.ones([n, 1])
     X = np.random.normal(0, 1, n*p).reshape(n, p)
-    X = (X - np.matmul(ones, np.array([np.mean(X, axis=0)]))) / np.matmul(ones, np.array([np.std(X, axis=0)]))
+    X = (X - np.matmul(ones, np.array([np.mean(X, axis=0)])))
+    normX = np.sqrt(np.matmul(ones.reshape(1, n), X ** 2))
+    X = np.sqrt(n) * X / normX
 
     x = X + rho * (np.hstack((zero, X[:, 0:(p-2)], zero)) + np.hstack((zero, X[:, 2:p], zero)))
 
@@ -42,8 +44,7 @@ def gen_data(n, p, family, k, rho=0, sigma=1, beta=None, censoring =True, c=10, 
         return data(x, y, Tbeta)
 
     elif family == "binomial":
-
-        m = 5 * np.sqrt(2 * np.log(p) / n)
+        m = 5 * sigma * np.sqrt(2 * np.log(p) / n)
         if beta is None:
             Tbeta[nonzero] = np.random.uniform(2*m, 10*m, k)
         else:
@@ -58,10 +59,11 @@ def gen_data(n, p, family, k, rho=0, sigma=1, beta=None, censoring =True, c=10, 
         return data(x, y, Tbeta)
 
     elif family == "poisson":
-
-        m = 5 / 2 * sigma * np.sqrt(2 * np.log(p) / n)
+        x = x / 16
+        m = 5 * sigma * np.sqrt(2 * np.log(p) / n)
         if beta is None:
-            Tbeta[nonzero] = np.random.uniform(2*m, 5 * m, k)
+            Tbeta[nonzero] = np.random.uniform(2*m, 10*m, k)
+            # Tbeta[nonzero] = np.random.normal(0, 4*m, k)
         else:
             Tbeta = beta
 
@@ -69,7 +71,7 @@ def gen_data(n, p, family, k, rho=0, sigma=1, beta=None, censoring =True, c=10, 
         xbeta[xbeta > 30] = 30
         xbeta[xbeta < -30] = -30
 
-        lam = np.exp(np.matmul(x, Tbeta))
+        lam = np.exp(xbeta)
         y = np.random.poisson(lam=lam)
         return data(x, y, Tbeta)
 
@@ -96,6 +98,5 @@ def gen_data(n, p, family, k, rho=0, sigma=1, beta=None, censoring =True, c=10, 
         y = np.hstack((time.reshape((-1, 1)), status.reshape((-1, 1))))
 
         return data(x, y, Tbeta)
-
     else:
         raise ValueError("Family should be \'gaussian\', \'binomial\', \'possion\', or \'cox\'")
