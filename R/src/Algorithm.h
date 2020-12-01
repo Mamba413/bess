@@ -1,4 +1,4 @@
-//./
+//
 // Created by jk on 2020/3/18.
 //
 #ifndef SRC_ALGORITHM_H
@@ -12,8 +12,6 @@
 #include <iostream>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <time.h>
-
-
 
 using namespace std;
 
@@ -154,14 +152,29 @@ class Algorithm {
       //cout<<"g_index: "<<g_index<<endl;
       //cout<<"g_size: "<<g_size<<endl;
       //cout<<"train_init"<<endl;
-      for (int i = 0; i < train_n; i++) {
+
+      if(train_n == data.get_n())
+      {
+        train_x = data.x;
+        train_y = data.y;
+        train_weight = data.weight;
+      }
+      else
+      {
+        for (int i = 0; i < train_n; i++) {
       
-          train_x.row(i) = data.x.row(this->train_mask(i));
+          train_x.row(i) = data.x.row(this->train_mask(i)).eval();
           train_y(i) = data.y(this->train_mask(i));
           train_weight(i) = data.weight(this->train_mask(i));
-           // cout<<"i"<<i<<", train_x"<<train_x.row(i)<<", train_y(i):"<<train_y(i)<<", weight:"<<train_weight(i)<<endl;
+          //  cout<<"i"<<i<<", train_mask: "<<this->train_mask(i)<<", train_x"<<train_x.row(i)<<", train_y(i):"<<train_y(i)<<", weight:"<<train_weight(i)<<endl;
+        }
       }
 
+      // cout<<"train_x[29]: "<<train_x.col(29)<<endl;
+      // cout<<"train_n: "<<train_n<<endl;
+      // cout<<"p: "<<p<<endl;
+      // cout<<"N: "<<N<<endl;
+      // cout<<"train_mask: "<<this->train_mask<<endl;
       // train_x normalize
 
       //cout<<"T0: "<<T0<<endl;
@@ -187,6 +200,7 @@ class Algorithm {
           // clock_t t2 = clock();
           // printf("get A time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
           A_list.col(this->l) = A;
+          //cout<<"A: "<<A<<endl;
           for(int mm = 0;mm < T0; mm++) {
             X_A.col(mm)=train_x.col(A[mm]);
           }
@@ -1269,7 +1283,7 @@ class GroupPdasLm : public Algorithm {
                         Eigen::VectorXi index, Eigen::VectorXi gsize, int N, Eigen::VectorXi &A_out){
       int n=X.rows();
       int p=X.cols();
-      //cout<<"n: "<<n<<", p:"<<p<<endl;
+      // cout<<"n: "<<n<<", p:"<<p<<endl;
       // cout<<"coef0: "<<coef0<<endl;
       // vector<Eigen::MatrixXd> PhiG = (this->algorithm_type == 5) ? this->PhiG : Phi(X, index, gsize, n, p, N, this->lambda_level);
       // vector<Eigen::MatrixXd> invPhiG = (this->algorithm_type == 5) ? this->invPhiG : invPhi(PhiG, N);
@@ -1283,7 +1297,7 @@ class GroupPdasLm : public Algorithm {
       vector<int> A(T0, -1);
 
       for(int i=0;i<N;i++) {
-        //cout<<"i: "<<i<<", ";
+        // cout<<"i: "<<i<<", ";
         Eigen::MatrixXd phiG = PhiG[i];
         Eigen::MatrixXd invphiG = invPhiG[i];
         betabar.segment(index(i), gsize(i)) = phiG*beta.segment(index(i), gsize(i));
@@ -1297,15 +1311,40 @@ class GroupPdasLm : public Algorithm {
          //cout<<"i: "<<i<<",bd("<<i<<"): "<<bd(i)<<", ";
       }
       // cout<<"bd: "<<bd<<endl;
-      for(int k=0;k<T0;k++) {
-        bd.maxCoeff(&A[k]);
-        // cout<<"max00 "<<k<<" "<<A[k]<<" bd :"<<bd(A[k])<<" d :"<<dbar(A[k])<<" beta: "<<betabar(A[k])<<" phiG: "<<PhiG[A[k]]<<" invphiG: "<<invPhiG[A[k]]<<endl;
-        bd(A[k]) = -1.0;
-      }
-      sort(A.begin(), A.end());
-      for(int i=0;i<T0;i++) {
-        A_out(i) = A[i];
-      }
+      // for(int k=0;k<T0;k++) {
+      //   bd.maxCoeff(&A[k]);
+      //   // cout<<"max00 "<<k<<" "<<A[k]<<" bd :"<<bd(A[k])<<" d :"<<dbar(A[k])<<" beta: "<<betabar(A[k])<<" phiG: "<<PhiG[A[k]]<<" invphiG: "<<invPhiG[A[k]]<<endl;
+      //   bd(A[k]) = -1.0;
+      // }
+      // sort(A.begin(), A.end());
+      // for(int i=0;i<T0;i++) {
+      //   A_out(i) = A[i];
+
+      
+      // Eigen::VectorXd bd_tmp_1 = bd, bd_tmp_2=bd;
+      // Eigen::VectorXi A_out_1(T0);
+      // Eigen::VectorXi A_out_2(T0);
+      // clock_t t1 = clock();
+      // max_k_2(bd_tmp_1, T0, A_out_1);
+      // clock_t t2 = clock();
+      // printf("max k new time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+      // cout<<"A_out_1: "<<A_out_1<<endl;
+
+      // t1 = clock();
+      // for(int k=0;k<T0;k++) {
+      //   bd_tmp_2.maxCoeff(&A[k]);
+      //   // cout<<"max00 "<<k<<" "<<A[k]<<" bd :"<<bd(A[k])<<" dbar :"<<dbar(A[k])<<" beta: "<<betabar(A[k])<<"d: "<<d(A[k])<<endl;
+      //   bd_tmp_2(A[k])=0;
+      // }
+      // sort(A.begin(), A.end());
+      // for(int i=0;i<T0;i++) {
+      // A_out_2(i) = A[i];
+      // }
+      // t2 = clock();
+      // printf("max k old time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+      // cout<<"A_out_2: "<<A_out_2<<endl;
+
+      max_k(bd, T0, A_out);
   };
 
     void primary_model_fit(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
@@ -1438,15 +1477,16 @@ public:
         bd(i) = (temp.segment(index(i), gsize(i))).squaredNorm()/gsize(i);
       }
       // cout<<"bd"<<bd<<endl;
-      for(int k=0;k<T0;k++) {
-        bd.maxCoeff(&A[k]);
-        //cout<<"k: "<<k<<"A[k]"<<A[k]<<", ";
-        bd(A[k]) = -1.0;
-      }
-      sort(A.begin(), A.end());
-      for(int i=0;i<T0;i++) {
-        A_out(i) = A[i];
-      }
+      // for(int k=0;k<T0;k++) {
+      //   bd.maxCoeff(&A[k]);
+      //   //cout<<"k: "<<k<<"A[k]"<<A[k]<<", ";
+      //   bd(A[k]) = -1.0;
+      // }
+      // sort(A.begin(), A.end());
+      // for(int i=0;i<T0;i++) {
+      //   A_out(i) = A[i];
+      // }
+      max_k(bd, T0, A_out);
   };
 };
 
@@ -1532,14 +1572,16 @@ public:
       for(int i=0;i<N;i++) {
         bd(i) = (temp.segment(index(i), gsize(i)).squaredNorm())/gsize(i);
       }
-      for(int k=0;k<T0;k++) {
-        bd.maxCoeff(&A[k]);
-        bd(A[k])=0;
-      }
-      sort(A.begin(), A.end());
-      for(int i=0;i<T0;i++) {
-        A_out(i) = A[i];
-      }
+      // for(int k=0;k<T0;k++) {
+      //   bd.maxCoeff(&A[k]);
+      //   bd(A[k])=0;
+      // }
+      // sort(A.begin(), A.end());
+      // for(int i=0;i<T0;i++) {
+      //   A_out(i) = A[i];
+      // }
+
+      max_k(bd, T0, A_out);
   };
 
 };
@@ -1645,6 +1687,10 @@ public:
         vector<int> A(T0, -1);
 
         theta = X*beta;
+        for(int i=0;i<=n-1;i++) {
+          if(theta(i)>30.0) theta(i) = 30.0;
+          if(theta(i)<-30.0) theta(i) = -30.0;
+        }
         theta = weights.array()*theta.array().exp();
         cum_theta(n-1) = theta(n-1);
         for(int k=n-2;k>=0;k--) {
@@ -1683,15 +1729,18 @@ public:
           for(int i=0;i<N;i++) {
           bd(i) = (temp.segment(index(i), gsize(i))).squaredNorm()/(gsize(i));
         }
+        // cout<<"d[9993]"<<d(9993)<<endl;
+        // cout<<"dbar[9993]"<<dbar(9993)<<endl;
+        // cout<<"d[9993]"<<d(20906)<<endl;
+        // cout<<"dbar[9993]"<<dbar(20906)<<endl;
+        // cout<<"theta: "<<theta<<endl;
+        // cout<<"cum_theta2: "<<cum_theta2<<endl;
+        // cout<<"g: "<<g<<endl;
+        // cout<<"lambda_level"<<this->lambda_level<<endl;
+        // cout<<"N"<<N<<endl;
         // cout<<"bd: "<<bd<<endl;
-        for(int k=0;k<T0;k++) {
-          bd.maxCoeff(&A[k]);
-          bd(A[k])=0;
-        }
-        sort(A.begin(), A.end());
-        for(int i=0;i<T0;i++) {
-        A_out(i) = A[i];
-        }
+
+        max_k(bd, T0, A_out);
       }
       else if(this->algorithm_type == 1 || this->algorithm_type == 5)
       {
@@ -1748,14 +1797,16 @@ public:
         bd=beta+d;
         bd=bd.cwiseAbs();
         bd=bd.cwiseProduct(l2.cwiseSqrt());
-        for(int k=0;k<=T0-1;k++) {
-            bd.maxCoeff(&A[k]);
-            bd(A[k])=0.0;
-        }
-        sort (A.begin(),A.end());
-        for(int i=0;i<T0;i++){
-          A_out(i) = A[i];
-        }
+        // for(int k=0;k<=T0-1;k++) {
+        //     bd.maxCoeff(&A[k]);
+        //     // cout<<"max01 "<<k<<" "<<A[k]<<" bd :"<<bd(A[k])<<" d :"<<d(A[k])<<" beta: "<<beta(A[k])<<endl;
+        //     bd(A[k])=0.0;
+        // }
+        // sort (A.begin(),A.end());
+        // for(int i=0;i<T0;i++){
+        //   A_out(i) = A[i];
+        // }
+        max_k(bd, T0, A_out);
         //cout<<endl;
       }
       else

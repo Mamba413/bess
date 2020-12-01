@@ -1,4 +1,4 @@
-//#define R_BUILD
+// #define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -46,6 +46,31 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              double lambda_min, double lambda_max, int nlambda,
              bool is_screening, int screening_size, int powell_path,
              Eigen::VectorXi g_index) {
+
+
+    // cout<<"data_type"<<data_type<<endl;
+    // cout<<"is_normal"<<is_normal<<endl;
+    // cout<<"algorithm_type"<<algorithm_type<<endl;
+    // cout<<"model_type"<<model_type<<endl;
+    // cout<<"max_iter"<<max_iter<<endl;
+    // cout<<"exchange_num"<<exchange_num<<endl;
+    // cout<<"path_type"<<path_type<<endl;
+    // cout<<"ic_type"<<ic_type<<endl;
+    // cout<<"is_cv"<<is_cv<<endl;
+    // cout<<"K"<<K<<endl;
+    // cout<<"sequence"<<sequence<<endl;
+    // cout<<"lambda_seq"<<lambda_seq<<endl;
+    // cout<<"s_min"<<s_min<<endl;
+    // cout<<"s_max"<<s_max<<endl;
+    // cout<<"K_max"<<K_max<<endl;
+    // cout<<"epsilon"<<epsilon<<endl;
+    // cout<<"lambda_min"<<lambda_min<<endl;
+    // cout<<"lambda_max"<<lambda_max<<endl;
+    // cout<<"nlambda"<<nlambda<<endl;
+    // cout<<"is_screening"<<is_screening<<endl;
+    // cout<<"screening_size"<<screening_size<<endl;
+    // cout<<"powell_path"<<powell_path<<endl;
+
 
     srand(123);
     int p = x.cols();
@@ -163,6 +188,12 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
     }
 
     if (is_screening) {
+        // std::cout<<"screening_A: ";
+        // for(int i=0;i<screening_A.size();i++)
+        // {
+        //     cout<<screening_A[i]<<" ";
+        // }
+        // cout<<endl;
         Eigen::VectorXd beta_screening_A;
         Eigen::VectorXd beta = Eigen::VectorXd::Zero(p);
     #ifndef R_BUILD

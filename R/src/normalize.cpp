@@ -1,7 +1,7 @@
 //
 // Created by jk on 2020/3/8.
 //
-//#define R_BUILD
+// #define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>

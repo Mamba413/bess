@@ -1,7 +1,7 @@
 //
 // Created by Mamba on 2020/2/18.
 //
-//#define R_BUILD
+// #define R_BUILD
 #ifndef SRC_METRICS_H
 #define SRC_METRICS_H
 
@@ -11,6 +11,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include "utilities.h"
 //#include <omp.h>
 //#include <time.h>
 
@@ -62,6 +63,9 @@ public:
         }
         group_list[this->K - 1] = index_list.segment(int((this->K - 1) * group_size),
                                                      n - int(int(this->K - 1) * group_size));
+        for (int k = 0; k < this->K; k++) {
+            std::sort(group_list[k].data(), group_list[k].data() + group_list[k].size());
+        }
 
         // cv train-test partition:
         std::vector<Eigen::VectorXi> train_mask_list_tmp((unsigned int) this->K);
@@ -79,8 +83,12 @@ public:
                     }
                 }
             }
+            std::sort(train_mask.data(), train_mask.data() + train_mask.size());
             train_mask_list_tmp[k] = train_mask;
             test_mask_list_tmp[k] = group_list[k];
+            // cout<<"train_mask: "<<train_mask_list_tmp[k]<<endl;
+            // cout<<"test_mask: "<<test_mask_list_tmp[k]<<endl;
+
         }
         this->train_mask_list = train_mask_list_tmp;
         this->test_mask_list = test_mask_list_tmp;
@@ -123,6 +131,7 @@ public:
                 // t1 = clock();
                 //get test_x, test_y
                 int test_size = this->test_mask_list[k].size();
+                // cout<<"test_mask"<<test_mask_list[k]<<endl;
                 Eigen::MatrixXd test_x(test_size, p);
                 Eigen::VectorXd test_y(test_size);
                 Eigen::VectorXd test_weight(test_size);
@@ -150,9 +159,9 @@ public:
             }
             // clock_t t2 = clock();
             // printf("time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
-            //cout<<"cv end"<<endl;
-            //cout<<"loss list"<<loss_list<<endl;
-            //cout<<"loss mean"<<loss_list.mean()<<endl;
+            // cout<<"cv end"<<endl;
+            // cout<<"loss list"<<loss_list<<endl;
+            // cout<<"loss mean"<<loss_list.mean()<<endl;
             return loss_list.mean();
         }
 
@@ -451,19 +460,21 @@ public:
                 // cout<<"--------------cv, k"<<k<<", ";
                 //get test_x, test_y
                 int test_size = this->test_mask_list[k].size();
+                // cout<<"test_mask: "<<test_mask_list[k]<<endl;
+                // cout<<"train_mask: "<<train_mask_list[k]<<endl;
                 Eigen::MatrixXd test_x(test_size, p);
                 Eigen::VectorXd test_y(test_size);
                 Eigen::VectorXd test_weight(test_size);
 
                 for (i = 0; i < test_size; i++) {
-                    test_x.row(i) = data.x.row(this->test_mask_list[k](i));
+                    test_x.row(i) = data.x.row(this->test_mask_list[k](i)).eval();
                     test_y(i) = data.y(this->test_mask_list[k](i));
                     test_weight(i) = data.weight(this->test_mask_list[k](i));
                 };
                 // cout<<"test_x:"<<test_x<<endl;
 
                 if (algorithm->get_warm_start()) {
-                    algorithm->update_beta_init(this->cv_initial_model_param.row(k));
+                    algorithm->update_beta_init(this->cv_initial_model_param.row(k).eval());
                 }
                 algorithm->update_train_mask(this->train_mask_list[k]);
                 algorithm->fit();
@@ -473,8 +484,11 @@ public:
                 loss_list(k) = -2 * loglik_cox(test_x, test_y, algorithm->get_beta(), test_weight);
                 // cout<<"loss_list("<<k<<"): "<<loss_list(k)<<endl;
             }
-            for(i=0;i<loss_list.size();i++)
+            // for(i=0;i<loss_list.size();i++)
                 // std::cout<<"cv loss::::::"<<loss_list(i)<<" "<<endl;
+            // cout<<"cv end"<<endl;
+            // cout<<"loss list"<<loss_list<<endl;
+            // cout<<"loss mean"<<loss_list.mean()<<endl;
             return loss_list.sum() / double(loss_list.size());
 //            std::cout<<"cv_end"<<endl;
         }
