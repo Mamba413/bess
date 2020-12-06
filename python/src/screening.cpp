@@ -28,7 +28,7 @@ Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorX
     // int screening_size = screening_size;//floor(n / log(n)) > screening_size ? floor(n / log(n)) : screening_size;
     Eigen::VectorXi screening_A(screening_size);
 
-    int g_num = (g_index).size(); 
+    int g_num = (g_index).size();
     //cout<<"g_num: "<<this->g_num<<endl;
     Eigen::VectorXi temp = Eigen::VectorXi::Zero(g_num);
     temp.head(g_num-1) = g_index.tail(g_num-1);
@@ -56,57 +56,11 @@ Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorX
         else if(algorithm_type == 4)
         {
             beta=cox_fit(x_tmp, y, n, g_size(i), weight);
-            
+
         }
 
         coef_norm(i) = beta.tail(g_size(i)).eval().squaredNorm() / g_size(i);
     }
-
-
-
-
-    // Eigen::VectorXd coef_norm = Eigen::VectorXd::Zero(p);
-    // if(g_index.size() == p) g_index = g_index.head(screening_size).eval();
-
-    // for(int i=0;i<p;i++)
-    // {
-    //     Eigen::MatrixXd x_tmp(n, 1);
-    //     x_tmp.col(0) = x.col(i);
-    //     Eigen::VectorXd beta;
-    //     if(algorithm_type == 1)
-    //     {
-    //         beta=x_tmp.colPivHouseholderQr().solve(y);
-    //         coef_norm(i) = beta(0);
-    //     }
-    //     else if(algorithm_type == 2)
-    //     {
-    //         beta=logit_fit(x_tmp, y, n, 1, weight);
-    //         coef_norm(i) = beta(1);
-    //     }
-    //     else if(algorithm_type == 3)
-    //     {
-    //         beta=poisson_fit(x_tmp, y, n, 1, weight);
-    //         coef_norm(i) = beta(0);
-    //     }
-    //     else if(algorithm_type == 4)
-    //     {
-    //         beta=cox_fit(x_tmp, y, n, 1, weight);
-    //         coef_norm(i) = beta(0);
-    //     }
-    // }
-
-//    for(int i=0;i<p;i++)
-//    {
-//        cout<<coef_norm(i)<<" ";
-//    }
-//    cout<<endl;
-
-    // coef_norm=coef_norm.cwiseAbs();
-    // for(int k=0;k<screening_size;k++) {
-    //   coef_norm.maxCoeff(&screening_A[k]);
-    //   coef_norm(screening_A[k])=-1.0;
-    // }
-    // sort(screening_A.begin(),screening_A.end());
 
     max_k(coef_norm, screening_size, screening_A);
 
@@ -128,16 +82,9 @@ Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorX
     Eigen::MatrixXd x_A = Eigen::MatrixXd::Zero(n, new_p);
     for(int i=0;i<screening_size;i++) {
         x_A.middleCols(new_g_index(i), new_g_size(i)) = x.middleCols(g_index(screening_A(i)), g_size(screening_A(i)));
-        //cout<<"x_A.col("<<k<<"): "<<x_A.col(k)<<", x.col(screening_A[k]): "<<x.col(screening_A[k])<<endl;
     }
     x = x_A;
     g_index = new_g_index;
-    //cout<<"xmax: "<<x.maxcoef_normf()<<", min: "<<x.mincoef_normf()<<endl;
-//    for(int i=0;i<screening_size;i++)
-//    {
-//        cout<<screening_A[i]<<" ";
-//    }
-//    cout<<endl;
 
     return screening_A;
 }

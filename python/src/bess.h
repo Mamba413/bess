@@ -6,15 +6,13 @@
 #define BESS_BESS_H
 
 #ifdef R_BUILD
-#include <Rcpp.h>
-#include <RcppEigen.h>
-//[[Rcpp::depends(RcppEigen)]]
-using namespace Rcpp;
+    #include <Rcpp.h>
+    #include <RcppEigen.h>
+    //[[Rcpp::depends(RcppEigen)]]
+    using namespace Rcpp;
 #else
-
-#include <Eigen/Eigen>
-#include "List.h"
-
+    #include <Eigen/Eigen>
+    #include "List.h"
 #endif
 
 #include <iostream>

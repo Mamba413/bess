@@ -76,9 +76,6 @@ double loglik_poiss(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd coef, 
 
 Eigen::VectorXd poisson_fit(Eigen::MatrixXd x, Eigen::VectorXd y, int n, int p, Eigen::VectorXd weights)
 {
-  cout<<"poisson_fit"<<endl;
-  
-  // cout<<"poisson_fit 2"<<endl;
   Eigen::MatrixXd X = Eigen::MatrixXd::Ones(n, p+1);
   X.rightCols(p) = x;
   Eigen::MatrixXd h(p+1, p+1);
@@ -96,7 +93,6 @@ Eigen::VectorXd poisson_fit(Eigen::MatrixXd x, Eigen::VectorXd y, int n, int p, 
   int j;
   for(j=0;j<100;j++)
   {
-    // cout<<"j= "<<j<<endl;
     double step = 0.2;
     int m = 0;
     eta = X*beta0;
@@ -123,14 +119,13 @@ Eigen::VectorXd poisson_fit(Eigen::MatrixXd x, Eigen::VectorXd y, int n, int p, 
       beta1 = beta0-pow(step, m)*d;
       loglik1 = loglik_poiss(x, y, beta1, n, weights);
     }
-    // cout<<"m: "<<m<<endl;
     beta0 = beta1;
     if (abs(loglik0-loglik1)/abs(loglik0) < 1e-8)
     {
       break;
     }
   }
-  // cout<<"poisson_fit end"<<endl;
   return beta0;
 
+  }
 }

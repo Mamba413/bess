@@ -28,10 +28,6 @@ double loglik_cox(Eigen::MatrixXd X, Eigen::VectorXd status, Eigen::VectorXd bet
     }
   }
   Eigen::VectorXd expeta = eta.array().exp();
-  // cout<<"expeta: "<<expeta.head(5)<<endl;
-  // for(int i=0; i<n; i++){
-  //   if(isinf(expeta(i))) cout<<"i: "<<i<<expeta(i)<<endl;
-  // }
   Eigen::VectorXd cum_expeta(n);
   cum_expeta(n-1) = expeta(n-1);
   for (int i=n-2;i>=0;i--) {
@@ -44,7 +40,6 @@ double loglik_cox(Eigen::MatrixXd X, Eigen::VectorXd status, Eigen::VectorXd bet
 
 Eigen::VectorXd cox_fit(Eigen::MatrixXd X, Eigen::VectorXd status, int n, int p, Eigen::VectorXd weights)
 {
-//  cout<<"cox_fit"<<endl;
   Eigen::VectorXd beta0 = Eigen::VectorXd::Zero(p);
   Eigen::VectorXd beta1 = Eigen::VectorXd::Zero(p);
   Eigen::VectorXd theta(n);
