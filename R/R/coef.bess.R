@@ -24,7 +24,7 @@
 #' SNR <- 10
 #' cortype <- 1
 #' seed <- 10
-#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
+#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, snr = SNR, seed = seed)
 #' x <- Data$x[1:140, ]
 #' y <- Data$y[1:140]
 #' x_new <- Data$x[141:200, ]

@@ -1,6 +1,7 @@
 //
 // Created by jtwok on 2020/3/8.
 //
+#define R_BUILD 
 #ifndef SRC_PATH_H
 #define SRC_PATH_H
 

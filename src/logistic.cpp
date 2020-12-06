@@ -4,7 +4,7 @@
 using namespace Rcpp;
 // [[Rcpp::depends(RcppEigen)]]
 #else
-#include <Eigen/Eigen>
+#include <Eigen\Eigen>
 #include "List.h"
 #endif
 #include <algorithm>

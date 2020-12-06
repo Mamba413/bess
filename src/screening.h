@@ -5,7 +5,7 @@
 #include <RcppEigen.h>
 // [[Rcpp::depends(RcppEigen)]]
 #else
-#include <Eigen/Eigen>
+#include <Eigen\Eigen>
 #endif
 
 #include <vector>
@@ -13,6 +13,6 @@
 using namespace std;
 using namespace Eigen;
 
-vector<int> screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &weight, int algorithm_type, int sequence_max, Eigen::VectorXi &g_index);
+vector<int> screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &weight, int algorithm_type, int screening_size, Eigen::VectorXi &g_index);
 
 #endif

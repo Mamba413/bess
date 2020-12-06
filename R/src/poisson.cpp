@@ -3,7 +3,7 @@
 #include <RcppEigen.h>
 #else
 #include <Eigen/Eigen>
-#include "List.h"
+//#include "List.h"
 #endif
 
 #include <algorithm>

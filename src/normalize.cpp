@@ -1,24 +1,22 @@
 //
 // Created by jk on 2020/3/8.
 //
-// #define R_BUILD
+//#define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
 // [[Rcpp::depends(RcppEigen)]]
 using namespace Rcpp;
 #else
-#include <Eigen/Eigen>
+#include <Eigen\Eigen>
 #include "List.h"
 #endif
 #include <algorithm>
 #include <vector>
-#include <iostream>
 
 using namespace std;
 
 void Normalize(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXd& weights, Eigen::VectorXd& meanx, double& meany, Eigen::VectorXd& normx){
-    // cout<<"Normalize"<<endl;
     int n = X.rows();
     int p = X.cols();
     Eigen::VectorXd tmp(n);

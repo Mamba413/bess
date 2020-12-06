@@ -1,7 +1,7 @@
 //
 // Created by Mamba on 2020/2/18.
 //
-// #define R_BUILD
+//#define R_BUILD
 #ifndef SRC_METRICS_H
 #define SRC_METRICS_H
 
@@ -11,7 +11,6 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-#include "utilities.h"
 //#include <omp.h>
 //#include <time.h>
 
@@ -63,9 +62,6 @@ public:
         }
         group_list[this->K - 1] = index_list.segment(int((this->K - 1) * group_size),
                                                      n - int(int(this->K - 1) * group_size));
-        for (int k = 0; k < this->K; k++) {
-            std::sort(group_list[k].data(), group_list[k].data() + group_list[k].size());
-        }
 
         // cv train-test partition:
         std::vector<Eigen::VectorXi> train_mask_list_tmp((unsigned int) this->K);
@@ -83,12 +79,8 @@ public:
                     }
                 }
             }
-            std::sort(train_mask.data(), train_mask.data() + train_mask.size());
             train_mask_list_tmp[k] = train_mask;
             test_mask_list_tmp[k] = group_list[k];
-            // cout<<"train_mask: "<<train_mask_list_tmp[k]<<endl;
-            // cout<<"test_mask: "<<test_mask_list_tmp[k]<<endl;
-
         }
         this->train_mask_list = train_mask_list_tmp;
         this->test_mask_list = test_mask_list_tmp;
@@ -111,27 +103,22 @@ public:
     };
 
     double test_loss(Algorithm *algorithm, Data &data) {
-        if (! this->is_cv) {
+        if (!this->is_cv) {
             return (data.y - data.x * algorithm->get_beta()).array().square().sum() / (data.get_n());
         } else {
-            // cout<<"cross validation"<<endl;
             int k;
             int p = data.get_p();
 
             Eigen::VectorXd loss_list(this->K);
 
-            // cout<<"num_threads()"<<omp_get_num_threads()<<endl;
+//            cout<<"num_threads()"<<omp_get_num_threads()<<endl;
 
-            // omp_set_num_threads(omp_get_num_threads());
-            // clock_t t1;
-            // clock_t t2;
-            // #pragma omp parallel for
+           // omp_set_num_threads(omp_get_num_threads());
+           // clock_t t1 = clock();
+//            #pragma omp parallel for
                 for (k = 0; k < this->K; k++) {
-               //  cout<<"cv fold "<<k<<endl;
-                // t1 = clock();
                 //get test_x, test_y
                 int test_size = this->test_mask_list[k].size();
-                // cout<<"test_mask"<<test_mask_list[k]<<endl;
                 Eigen::MatrixXd test_x(test_size, p);
                 Eigen::VectorXd test_y(test_size);
                 Eigen::VectorXd test_weight(test_size);
@@ -145,7 +132,6 @@ public:
                 if (algorithm->get_warm_start()) {
                     algorithm->update_beta_init(this->cv_initial_model_param.row(k));
                 }
-                // cout<<"train_mask:  "<<this->train_mask_list[k]<<endl;
                 algorithm->update_train_mask(this->train_mask_list[k]);
                 algorithm->fit();
                 if (algorithm->get_warm_start()) {
@@ -153,15 +139,11 @@ public:
                 }
 
                 loss_list(k) = (test_y - test_x * algorithm->get_beta()).array().square().sum() / double(2 * test_size);
-                // t2 = clock();
-                // cout<<"fold "<<k<<" time: "<<(double)(t2 - t1) / CLOCKS_PER_SEC<<endl;
-                // printf("time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
             }
-            // clock_t t2 = clock();
-            // printf("time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
-            // cout<<"cv end"<<endl;
-            // cout<<"loss list"<<loss_list<<endl;
-            // cout<<"loss mean"<<loss_list.mean()<<endl;
+           // clock_t t2 = clock();
+            //printf("time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+
+
             return loss_list.mean();
         }
 
@@ -171,21 +153,21 @@ public:
         if (this->is_cv) {
             return this->test_loss(algorithm, data);
         } else {
-        if (algorithm->algorithm_type == 1 || algorithm->algorithm_type == 5) {
-            if (ic_type == 1) {
-                return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
-                    2.0 * algorithm->get_sparsity_level();
-            } else if (ic_type == 2) {
-                return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
-                    log(double(data.get_n())) * algorithm->get_sparsity_level();
-            } else if (ic_type == 3) {
-                return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
-                    log(double(data.get_p())) * log(log(double(data.get_n()))) * algorithm->get_sparsity_level();
-            } else if (ic_type == 4) {
-                return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
-                    (log(double(data.get_n())) + 2 * log(double(data.get_p()))) * algorithm->get_sparsity_level();
-            } else return 0;
-        }
+if (data.get_g_index().size() == data.get_p()) {
+                if (ic_type == 1) {
+                    return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
+                        2.0 * algorithm->get_sparsity_level();
+                } else if (ic_type == 2) {
+                    return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
+                        log(double(data.get_n())) * algorithm->get_sparsity_level();
+                } else if (ic_type == 3) {
+                    return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
+                        log(double(data.get_p())) * log(log(double(data.get_n()))) * algorithm->get_sparsity_level();
+                } else if (ic_type == 4) {
+                    return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
+                        (log(double(data.get_n())) + 2 * log(double(data.get_p()))) * algorithm->get_sparsity_level();
+                } else return 0;
+            }
         else {
                 if (ic_type == 1) {
                     return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
@@ -198,7 +180,7 @@ public:
                         log(double(data.get_g_num())) * log(log(double(data.get_n()))) * algorithm->get_group_df();
                 } else if (ic_type == 4) {
                     return double(data.get_n()) * log(this->train_loss(algorithm, data)) +
-                        (log(double(data.get_n())) + 2 * log(double(data.get_g_num()))) * algorithm->get_group_df();
+                        (log(double(data.get_n())) + log(double(data.get_g_num()))/2) * algorithm->get_group_df();
                 } else return 0;
             }
         }
@@ -222,8 +204,8 @@ public:
         }
         Eigen::VectorXd xbeta_exp = data.x * algorithm->get_beta() + coef;
         for (int i = 0; i <= n - 1; i++) {
-            if (xbeta_exp(i) > 30.0) xbeta_exp(i) = 30.0;
-            if (xbeta_exp(i) < -30.0) xbeta_exp(i) = -30.0;
+            if (xbeta_exp(i) > 30.0) xbeta_exp(i) = 25.0;
+            if (xbeta_exp(i) < -30.0) xbeta_exp(i) = -25.0;
         }
         xbeta_exp = xbeta_exp.array().exp();
         Eigen::VectorXd pr = xbeta_exp.array() / (xbeta_exp + one).array();
@@ -241,10 +223,7 @@ public:
             Eigen::VectorXd loss_list(this->K);
           //  omp_set_num_threads(omp_get_num_threads());
            // #pragma omp parallel for
-            // clock_t t1;
-            // clock_t t2;
             for (k = 0; k < this->K; k++) {
-                // t1 = clock();
                 //get test_x, test_y
                 int test_size = this->test_mask_list[k].size();
                 Eigen::MatrixXd test_x(test_size, p);
@@ -266,6 +245,8 @@ public:
                     this->update_cv_initial_model_param(algorithm->get_beta(), k);
                 }
 
+//                std::cout<<"cv_4"<<endl;
+
                 Eigen::VectorXd coef(test_size);
                 Eigen::VectorXd one = Eigen::VectorXd::Ones(test_size);
 
@@ -282,11 +263,9 @@ public:
 
                 loss_list(k) = -2 * (test_weight.array() * ((test_y.array() * pr.array().log()) +
                                                             (one - test_y).array() * (one - pr).array().log())).sum();
-                // t2 = clock();
-                // cout<<"fold "<<k<<" time: "<<(double)(t2 - t1) / CLOCKS_PER_SEC<<endl;
-
             }
-            return loss_list.mean();
+            return loss_list.sum() / loss_list.size();
+
         }
 
 
@@ -323,7 +302,7 @@ public:
                         log(double(data.get_g_num())) * log(log(double(data.get_n()))) * algorithm->get_group_df();
                 } else if (ic_type == 4) {
                     return this->train_loss(algorithm, data) +
-                        (log(double(data.get_n())) + 2 * log(double(data.get_g_num()))) * algorithm->get_group_df();
+                        (log(double(data.get_n())) + log(double(data.get_g_num()))/2) * algorithm->get_group_df();
                 } else return 0;
             }
         }
@@ -333,6 +312,7 @@ public:
 
 class PoissonMetric : public Metric {
 public:
+
     PoissonMetric(int ic_type, bool is_cv, int K = 0) : Metric(ic_type, is_cv, K) {};
 
     double train_loss(Algorithm *algorithm, Data &data) {
@@ -417,7 +397,7 @@ public:
                         (log(double(data.get_n())) + 2 * log(double(data.get_p()))) * algorithm->get_sparsity_level();
                 } else return 0;
             }
-            else {
+        else {
                 if (ic_type == 1) {
                     return this->train_loss(algorithm, data) +
                         2.0 * algorithm->get_group_df();
@@ -429,7 +409,7 @@ public:
                         log(double(data.get_g_num())) * log(log(double(data.get_n()))) * algorithm->get_group_df();
                 } else if (ic_type == 4) {
                     return this->train_loss(algorithm, data) +
-                        (log(double(data.get_n())) + 2 * log(double(data.get_g_num()))) * algorithm->get_group_df();
+                        (log(double(data.get_n())) + log(double(data.get_g_num()))/2) * algorithm->get_group_df();
                 } else return 0;
             }
         }
@@ -457,24 +437,20 @@ public:
            // omp_set_num_threads(omp_get_num_threads());
             //#pragma omp parallel for
             for (k = 0; k < this->K; k++) {
-                // cout<<"--------------cv, k"<<k<<", ";
                 //get test_x, test_y
                 int test_size = this->test_mask_list[k].size();
-                // cout<<"test_mask: "<<test_mask_list[k]<<endl;
-                // cout<<"train_mask: "<<train_mask_list[k]<<endl;
                 Eigen::MatrixXd test_x(test_size, p);
                 Eigen::VectorXd test_y(test_size);
                 Eigen::VectorXd test_weight(test_size);
 
                 for (i = 0; i < test_size; i++) {
-                    test_x.row(i) = data.x.row(this->test_mask_list[k](i)).eval();
+                    test_x.row(i) = data.x.row(this->test_mask_list[k](i));
                     test_y(i) = data.y(this->test_mask_list[k](i));
                     test_weight(i) = data.weight(this->test_mask_list[k](i));
                 };
-                // cout<<"test_x:"<<test_x<<endl;
 
                 if (algorithm->get_warm_start()) {
-                    algorithm->update_beta_init(this->cv_initial_model_param.row(k).eval());
+                    algorithm->update_beta_init(this->cv_initial_model_param.row(k));
                 }
                 algorithm->update_train_mask(this->train_mask_list[k]);
                 algorithm->fit();
@@ -482,13 +458,9 @@ public:
                     this->update_cv_initial_model_param(algorithm->get_beta(), k);
                 }
                 loss_list(k) = -2 * loglik_cox(test_x, test_y, algorithm->get_beta(), test_weight);
-                // cout<<"loss_list("<<k<<"): "<<loss_list(k)<<endl;
             }
-            // for(i=0;i<loss_list.size();i++)
-                // std::cout<<"cv loss::::::"<<loss_list(i)<<" "<<endl;
-            // cout<<"cv end"<<endl;
-            // cout<<"loss list"<<loss_list<<endl;
-            // cout<<"loss mean"<<loss_list.mean()<<endl;
+//            for(i=0;i<loss_list.size();i++)
+//                std::cout<<loss_list(i)<<" "<<endl;
             return loss_list.sum() / double(loss_list.size());
 //            std::cout<<"cv_end"<<endl;
         }
@@ -526,7 +498,7 @@ public:
                         log(double(data.get_g_num())) * log(log(double(data.get_n()))) * algorithm->get_group_df();
                 } else if (ic_type == 4) {
                     return this->train_loss(algorithm, data) +
-                        (log(double(data.get_n())) + 2 * log(double(data.get_g_num()))) * algorithm->get_group_df();
+                        (log(double(data.get_n())) + log(double(data.get_g_num()))/2) * algorithm->get_group_df();
                 } else return 0;
             }
         }

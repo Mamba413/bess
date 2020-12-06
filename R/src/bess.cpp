@@ -1,4 +1,3 @@
-// #define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -46,9 +45,9 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              double lambda_min, double lambda_max, int nlambda,
              bool is_screening, int screening_size, int powell_path,
              Eigen::VectorXi g_index) {
-
-
-    srand(123);
+    #ifndef R_BUILD
+        srand(123);
+    #endif
     int p = x.cols();
     vector<int> screening_A;
     if (is_screening) {

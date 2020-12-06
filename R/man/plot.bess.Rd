@@ -15,7 +15,7 @@ paths}
 )
 }
 \arguments{
-\item{x}{a \code{"bess"} object}
+\item{x}{A \code{"bess"} object.}
 
 \item{type}{One of \code{"loss"}, \code{"tune"}, \code{"coefficients"}, \code{"both"}. This option is only valid for \code{"bess"} object obtained from \code{"bss"}.
 If \code{type = "loss"} (\code{type = "tune"}), a path of loss function (corresponding information criterion or cross-validation loss) is provided.
@@ -45,7 +45,7 @@ rho <- 0.4
 SNR <- 10
 cortype <- 1
 seed <- 10
-Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
+Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, snr = SNR, seed = seed)
 x <- Data$x[1:140, ]
 y <- Data$y[1:140]
 x_new <- Data$x[141:200, ]

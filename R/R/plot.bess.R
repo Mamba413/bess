@@ -5,7 +5,7 @@
 #' paths
 #'
 #'
-#' @param x a \code{"bess"} object
+#' @param x A \code{"bess"} object.
 #' @param type One of \code{"loss"}, \code{"tune"}, \code{"coefficients"}, \code{"both"}. This option is only valid for \code{"bess"} object obtained from \code{"bss"}.
 #' If \code{type = "loss"} (\code{type = "tune"}), a path of loss function (corresponding information criterion or cross-validation loss) is provided.
 #' If \code{type = "coefficients"}, it provides a coefficient profile plot of the coefficient.
@@ -31,7 +31,7 @@
 #' SNR <- 10
 #' cortype <- 1
 #' seed <- 10
-#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
+#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, snr = SNR, seed = seed)
 #' x <- Data$x[1:140, ]
 #' y <- Data$y[1:140]
 #' x_new <- Data$x[141:200, ]
@@ -320,17 +320,18 @@ plot_heatmap <- function(x, sign.lambda){
     }
     if(length(x$lambda.list>15)){
       lambda_col =x$lambda.list
-      lambda_col[5*(1:ceiling(length(lambda_col)/5))] = round(lambda_col[5*(1:ceiling(length(lambda_col)/5))], 3)
-      lambda_col[-5*(1:ceiling(length(lambda_col)/5))] = ""
+
       if(sign.lambda)
         colnames(val) = exp(lambda_col)
       else
         colnames(val) = lambda_col
+      lambda_col[5*(1:ceiling(length(lambda_col)/5))] = round(lambda_col[5*(1:ceiling(length(lambda_col)/5))], 3)
+      lambda_col[-5*(1:ceiling(length(lambda_col)/5))] = ""
     } else{
       colnames(val) = round(x$lambda.list, 3)
       if(sign.lambda) colnames(val) = exp(colnames(val))
     }
-    s_row = s.list
+    s_row = x$s.list
     if(length(s_row)>15){
       s_row[-5*(1:ceiling(length(s_row)/5))] = ""
     }

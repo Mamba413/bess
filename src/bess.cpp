@@ -1,4 +1,3 @@
-// #define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -8,7 +7,7 @@ using namespace std;
 #else
 
 #include <Eigen/Eigen>
-#include "List.h"
+//#include "List.h"
 
 #endif
 
@@ -47,77 +46,43 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              bool is_screening, int screening_size, int powell_path,
              Eigen::VectorXi g_index) {
 
-
-    cout<<"data_type"<<data_type<<endl;
-    cout<<"is_normal"<<is_normal<<endl;
-    cout<<"algorithm_type"<<algorithm_type<<endl;
-    cout<<"model_type"<<model_type<<endl;
-    cout<<"max_iter"<<max_iter<<endl;
-    cout<<"exchange_num"<<exchange_num<<endl;
-    cout<<"path_type"<<path_type<<endl;
-    cout<<"ic_type"<<ic_type<<endl;
-    cout<<"is_cv"<<is_cv<<endl;
-    cout<<"K"<<K<<endl;
-    cout<<"sequence"<<sequence<<endl;
-    cout<<"lambda_seq"<<lambda_seq<<endl;
-    cout<<"s_min"<<s_min<<endl;
-    cout<<"s_max"<<s_max<<endl;
-    cout<<"K_max"<<K_max<<endl;
-    cout<<"epsilon"<<epsilon<<endl;
-    cout<<"lambda_min"<<lambda_min<<endl;
-    cout<<"lambda_max"<<lambda_max<<endl;
-    cout<<"nlambda"<<nlambda<<endl;
-    cout<<"is_screening"<<is_screening<<endl;
-    cout<<"screening_size"<<screening_size<<endl;
-    cout<<"powell_path"<<powell_path<<endl;
-
-
-    srand(123);
+    //#ifndef R_BUILD
+        srand(12);
+    //#endif
     int p = x.cols();
+    //int sequence_max = sequence[sequence.size() - 1];
     vector<int> screening_A;
     if (is_screening) {
-        //cout<<"g_index: "<<g_index<<endl;
-       // cout<<"x max: "<<x.maxCoeff()<<", min: "<<x.minCoeff()<<endl;
         screening_A = screening(x, y, weight, model_type, screening_size, g_index);
     }
+    //cout<<"fini"<<endl;
     Data data(x, y, data_type, weight, is_normal, g_index);
+    // cout<<"data.x;"<<data.x<<endl;
+
 
     Algorithm *algorithm;
-    //  1 + 5
-    // if (algorithm_type == 1 || algorithm_type == 5) {
-    //     if (model_type == 1) {
-    //         data.add_weight();
-    //         algorithm = new L0L2Lm(data, algorithm_type, max_iter);
-    //     } else if (model_type == 2) {
-    //         algorithm = new L0L2Logistic(data, algorithm_type, max_iter);
-    //     } else if (model_type == 3) {
-    //         algorithm = new L0L2Poisson(data, algorithm_type, max_iter);
-    //     } else {
-    //         algorithm = new L0L2Cox(data,algorithm_type, max_iter);
-    //     }
-    // }
-    //    else if (algorithm_type == 2 || algorithm_type == 3) {
-    //     if (model_type == 1) {
-    //         data.add_weight();
-    //         algorithm = new GroupPdasLm(data,algorithm_type, max_iter);
-    //         algorithm->PhiG = Phi(data.x, g_index, data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num(), 0.);
-    //         algorithm->invPhiG = invPhi(algorithm->PhiG, data.get_g_num());
-    //     } else if (model_type == 2) {
-    //         algorithm = new GroupPdasLogistic(data, algorithm_type, max_iter);
-    //     } else if (model_type == 3) {
-    //         algorithm = new GroupPdasPoisson(data, algorithm_type, max_iter);
-    //     } else {
-    //         algorithm = new GroupPdasCox(data, algorithm_type, max_iter);
-    //     }
-    // }
-
-    if (algorithm_type == 1 || algorithm_type == 5 || algorithm_type == 2 || algorithm_type == 3) {
+    if (algorithm_type == 1) {
         if (model_type == 1) {
-            //cout<<"algorithm: "<<algorithm_type<<endl;
+            // std::cout<<"model type "<<model_type<<endl;
+            data.add_weight();
+            algorithm = new L0L2Lm(data, algorithm_type, max_iter);
+            // cout<<"algorithm->data.x;"<<algorithm->data.x<<endl;
+        } else if (model_type == 2) {
+            // std::cout<<"model type "<<model_type<<endl;
+            algorithm = new L0L2Logistic(data, algorithm_type, max_iter);
+        } else if (model_type == 3) {
+            // std::cout<<"model type "<<model_type<<endl;
+            algorithm = new L0L2Poisson(data, algorithm_type, max_iter);
+        } else {
+            // std::cout<<"model type "<<model_type<<endl;
+            algorithm = new L0L2Cox(data,algorithm_type, max_iter);
+        }
+    }
+    else if (algorithm_type == 2) {
+        if (model_type == 1) {
             data.add_weight();
             algorithm = new GroupPdasLm(data,algorithm_type, max_iter);
-            //cout<<"endnew"<<endl;
-            algorithm->PhiG = Phi(data.x, g_index, data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num(), 0.);
+            algorithm->PhiG = Phi(x, g_index, data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num(), 0.0);
             algorithm->invPhiG = invPhi(algorithm->PhiG, data.get_g_num());
         } else if (model_type == 2) {
             algorithm = new GroupPdasLogistic(data, algorithm_type, max_iter);
@@ -127,9 +92,40 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
             algorithm = new GroupPdasCox(data, algorithm_type, max_iter);
         }
     }
+    else if (algorithm_type == 3) {
+        if (model_type == 1) {
+            data.add_weight();
+            algorithm = new GroupPdasLm(data,algorithm_type, max_iter);
+            //algorithm->PhiG = Phi(x, g_index, data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num());
+            //algorithm->invPhiG = invPhi(algorithm->PhiG, data.get_g_num());
+        } else if (model_type == 2) {
+            algorithm = new GroupPdasLogistic(data, algorithm_type, max_iter);
+        } else if (model_type == 3) {
+            algorithm = new GroupPdasPoisson(data, algorithm_type, max_iter);
+        } else {
+            algorithm = new GroupPdasCox(data, algorithm_type, max_iter);
+        }
+    }
+    else if (algorithm_type == 5) {
+        if (model_type == 1) {
+            data.add_weight();
+            algorithm = new L0L2Lm(data, algorithm_type, max_iter);
+        }
+        else if (model_type == 2) {
+            algorithm = new L0L2Logistic(data, algorithm_type, max_iter);
+        }
+        else if (model_type == 3) {
+            algorithm = new L0L2Poisson(data, algorithm_type, max_iter);
+        } else {
+            algorithm = new L0L2Cox(data, algorithm_type, max_iter);
+        }
+    }
+
+
+
 
     #ifdef OTHER_ALGORITHM1
-        if (algorithm_type == 6) {
+        if (algorithm_type == 3) {
             if (model_type == 1) {
                 data.add_weight();
                 algorithm = new SpliceLm(data, max_iter);
@@ -138,20 +134,18 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
         }
     #endif
     #ifdef OTHER_ALGORITHM2
-        if (algorithm_type == 7) {
+        if (algorithm_type == 4) {
             if (model_type == 1) {
                 data.add_weight();
                 algorithm = new PrincipalBallLm(data, max_iter);
             }
         }
     #endif
-//cout<<"1"<<endl;
     algorithm->set_warm_start(is_warm_start);
 
     Metric *metric;
     if (model_type == 1) {
         metric = new LmMetric(ic_type, is_cv, K);
-        //cout<<"end metric"<<endl;
     } else if (model_type == 2) {
         metric = new LogisticMetric(ic_type, is_cv, K);
     } else if (model_type == 3) {
@@ -159,8 +153,6 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
     } else {
         metric = new CoxMetric(ic_type, is_cv, K);
     }
-
-    // For CV
     if (is_cv) {
         metric->set_cv_train_test_mask(data.get_n());
         metric->set_cv_initial_model_param(K, data.get_p());
@@ -176,8 +168,6 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
         {
             double log_lambda_min = log(max(lambda_min, 1e-5));
             double log_lambda_max = log(max(lambda_max, 1e-5));
-           // cout<<"path"<<endl<<", log_lambda_min: "<<log_lambda_min<<", log_lambda_max: "<<log_lambda_max;
-
             result = pgs_path(data, algorithm, metric, s_min, s_max, log_lambda_min, log_lambda_max, powell_path, nlambda);
         }
         else
@@ -187,13 +177,9 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
 
     }
 
+    // cout<<"1"<<endl;
     if (is_screening) {
-        // std::cout<<"screening_A: ";
-        // for(int i=0;i<screening_A.size();i++)
-        // {
-        //     cout<<screening_A[i]<<" ";
-        // }
-        // cout<<endl;
+        // cout<<"1"<<endl;
         Eigen::VectorXd beta_screening_A;
         Eigen::VectorXd beta = Eigen::VectorXd::Zero(p);
     #ifndef R_BUILD
@@ -249,7 +235,7 @@ void pywrap_bess(double *x, int x_row, int x_col, double *y, int y_len, int data
     lambda_sequence_Vec = Pointer2VectorXd(lambda_sequence, lambda_sequence_len);
 
 //    std::cout<<"pywrap"<<endl;
-    List mylist = bessCpp(x_Mat, y_Vec, data_type, weight_Vec,
+   List mylist = bessCpp(x_Mat, y_Vec, data_type, weight_Vec,
                           is_normal,
                           algorithm_type, model_type, max_iter, exchange_num,
                           path_type, is_warm_start,
@@ -348,7 +334,7 @@ void pywrap_bess(double *x, int x_row, int x_col, double *y, int y_len, int data
 //
 //    // algorithm_type: 1:PDAS 2:GROUP 3.SDAR
 //    algorithm_type = 1;
-//    // data_type锛?:REGRESSION 2:CLASSIFICATION
+//    // data_type：1:REGRESSION 2:CLASSIFICATION
 //    // maybe change a name
 //    data_type = 1;
 //    // path_type: 1:sequential_path 2:gs_path

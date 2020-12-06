@@ -4,7 +4,7 @@
 #'
 #' prints the fitted model and returns it invisibly.
 #'
-#' @param x a "\code{bess}" object
+#' @param x A "\code{bess}" object.
 #' @param digits Minimum number of significant digits to be used.
 #' @param nonzero Whether the output should only contain the non-zero coefficients.
 #' @param \dots additional print arguments
@@ -26,7 +26,7 @@
 #' SNR = 10
 #' cortype = 1
 #' seed = 10
-#' Data = gen.data(n, p, k, rho, family = "gaussian", cortype=cortype, SNR=SNR, seed=seed)
+#' Data = gen.data(n, p, k, rho, family = "gaussian", cortype=cortype, snr=SNR, seed=seed)
 #' x = Data$x[1:140, ]
 #' y = Data$y[1:140]
 #' x_new = Data$x[141:200, ]
