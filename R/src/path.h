@@ -45,13 +45,4 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
                 
 List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, double log_lambda_min, double log_lambda_max, int powell_path, int nlambda);
 
-// void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], double u[], int s_min, int s_max, double log_lambda_min, double log_lambda_max, double best_arg[],
-//                            Eigen::MatrixXd &beta1, Eigen::VectorXd &coef01, Eigen::VectorXd &train_loss1, Eigen::VectorXd &ic1, Eigen::VectorXd &lambda1, int &size_temp);
-
-// void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], double u[], int s_min, int s_max, double log_lambda_min, double log_lambda_max, double best_arg[],
-//                 Eigen::MatrixXd &beta1, Eigen::VectorXd &coef01, Eigen::VectorXd &train_loss1, Eigen::VectorXd &ic1, Eigen::VectorXd &lambda1, int &size_temp, int nlambda);
-                
-// List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, double log_lambda_min, double log_lambda_max, int powell_path, int nlambda);
-
-
 #endif //SRC_PATH_H

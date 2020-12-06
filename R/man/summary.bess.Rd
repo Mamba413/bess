@@ -7,7 +7,7 @@
 \method{summary}{bess}(object, ...)
 }
 \arguments{
-\item{object}{a "bess" object}
+\item{object}{A "bess" object.}
 
 \item{\dots}{additional print arguments}
 }
@@ -19,25 +19,38 @@ Print a summary of the "bess.one" object.
 
 #-------------------linear model----------------------#
 # Generate simulated data
-n = 200
-p = 20
-k = 5
-rho = 0.4
-SNR = 10
-cortype = 1
-seed = 10
-Data = gen.data(n, p, k, rho, family = "gaussian", cortype=cortype, SNR=SNR, seed=seed)
-x = Data$x[1:140, ]
-y = Data$y[1:140]
-x_new = Data$x[141:200, ]
-y_new = Data$y[141:200]
-lm.pdas = bess(x, y)
-lambda.list = exp(seq(log(5), log(0.1), length.out = 10))
-lm.l0l2 = bess(x, y, type = "bsrr", lambda.list = lambda.list)
-summary(lm.pdas)
-summary(lm.l0l2)
+n <- 200
+p <- 20
+k <- 5
+rho <- 0.4
+SNR <- 10
+cortype <- 1
+seed <- 10
+Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, snr = SNR, seed = seed)
+x <- Data$x[1:140, ]
+y <- Data$y[1:140]
+x_new <- Data$x[141:200, ]
+y_new <- Data$y[141:200]
+lm.bss <- bess(x, y, method = "sequential")
+lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
+lm.bsrr <- bess(x, y, type = "bsrr", method = "pgsection")
 
+summary(lm.bss)
+summary(lm.bsrr)
 
+#-------------------group selection----------------------#
+beta <- rep(c(rep(1,2),rep(0,3)), 4)
+Data <- gen.data(n, p, rho=0.4, beta = beta, snr = 100, seed =10)
+x <- Data$x
+y <- Data$y
+
+group.index <- c(rep(1, 2), rep(2, 3), rep(3, 2), rep(4, 3),
+rep(5, 2), rep(6, 3), rep(7, 2), rep(8, 3))
+lm.group <- bess(x, y, s.min=1, s.max = 8, type = "bss", group.index = group.index)
+lm.groupbsrr <- bess(x, y, type = "bsrr", s.min = 1, s.max = 8, group.index = group.index)
+
+summary(lm.group)
+summary(lm.groupbsrr)
 
 }
 \references{
@@ -50,5 +63,5 @@ doi:10.18637/jss.v094.i04.
 \code{\link{bess}}.
 }
 \author{
-Liyuan Hu.
+Canhong Wen, Aijun Zhang, Shijie Quan, Liyuan Hu, Kangkang Jiang, Yanhang Zhang, Jin Zhu and Xueqin Wang.
 }

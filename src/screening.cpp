@@ -28,7 +28,7 @@ Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorX
     // int screening_size = screening_size;//floor(n / log(n)) > screening_size ? floor(n / log(n)) : screening_size;
     Eigen::VectorXi screening_A(screening_size);
 
-    int g_num = (g_index).size(); 
+    int g_num = (g_index).size();
     //cout<<"g_num: "<<this->g_num<<endl;
     Eigen::VectorXi temp = Eigen::VectorXi::Zero(g_num);
     temp.head(g_num-1) = g_index.tail(g_num-1);
@@ -56,7 +56,7 @@ Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorX
         else if(algorithm_type == 4)
         {
             beta=cox_fit(x_tmp, y, n, g_size(i), weight);
-            
+
         }
 
         coef_norm(i) = beta.tail(g_size(i)).eval().squaredNorm() / g_size(i);

@@ -12,8 +12,6 @@
 #include <random>
 #include <algorithm>
 #include "utilities.h"
-//#include <omp.h>
-//#include <time.h>
 
 
 class Metric {
@@ -86,8 +84,7 @@ public:
             std::sort(train_mask.data(), train_mask.data() + train_mask.size());
             train_mask_list_tmp[k] = train_mask;
             test_mask_list_tmp[k] = group_list[k];
-            // cout<<"train_mask: "<<train_mask_list_tmp[k]<<endl;
-            // cout<<"test_mask: "<<test_mask_list_tmp[k]<<endl;
+    
 
         }
         this->train_mask_list = train_mask_list_tmp;
@@ -114,24 +111,17 @@ public:
         if (! this->is_cv) {
             return (data.y - data.x * algorithm->get_beta()).array().square().sum() / (data.get_n());
         } else {
-            // cout<<"cross validation"<<endl;
+
             int k;
             int p = data.get_p();
 
             Eigen::VectorXd loss_list(this->K);
 
-            // cout<<"num_threads()"<<omp_get_num_threads()<<endl;
-
-            // omp_set_num_threads(omp_get_num_threads());
-            // clock_t t1;
-            // clock_t t2;
-            // #pragma omp parallel for
+         
                 for (k = 0; k < this->K; k++) {
-               //  cout<<"cv fold "<<k<<endl;
-                // t1 = clock();
-                //get test_x, test_y
+              
                 int test_size = this->test_mask_list[k].size();
-                // cout<<"test_mask"<<test_mask_list[k]<<endl;
+               
                 Eigen::MatrixXd test_x(test_size, p);
                 Eigen::VectorXd test_y(test_size);
                 Eigen::VectorXd test_weight(test_size);
@@ -145,7 +135,7 @@ public:
                 if (algorithm->get_warm_start()) {
                     algorithm->update_beta_init(this->cv_initial_model_param.row(k));
                 }
-                // cout<<"train_mask:  "<<this->train_mask_list[k]<<endl;
+              
                 algorithm->update_train_mask(this->train_mask_list[k]);
                 algorithm->fit();
                 if (algorithm->get_warm_start()) {
@@ -153,15 +143,9 @@ public:
                 }
 
                 loss_list(k) = (test_y - test_x * algorithm->get_beta()).array().square().sum() / double(2 * test_size);
-                // t2 = clock();
-                // cout<<"fold "<<k<<" time: "<<(double)(t2 - t1) / CLOCKS_PER_SEC<<endl;
-                // printf("time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+
             }
-            // clock_t t2 = clock();
-            // printf("time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
-            // cout<<"cv end"<<endl;
-            // cout<<"loss list"<<loss_list<<endl;
-            // cout<<"loss mean"<<loss_list.mean()<<endl;
+          
             return loss_list.mean();
         }
 
@@ -239,12 +223,8 @@ public:
             int p = data.get_p();
 
             Eigen::VectorXd loss_list(this->K);
-          //  omp_set_num_threads(omp_get_num_threads());
-           // #pragma omp parallel for
-            // clock_t t1;
-            // clock_t t2;
+        
             for (k = 0; k < this->K; k++) {
-                // t1 = clock();
                 //get test_x, test_y
                 int test_size = this->test_mask_list[k].size();
                 Eigen::MatrixXd test_x(test_size, p);
@@ -282,8 +262,7 @@ public:
 
                 loss_list(k) = -2 * (test_weight.array() * ((test_y.array() * pr.array().log()) +
                                                             (one - test_y).array() * (one - pr).array().log())).sum();
-                // t2 = clock();
-                // cout<<"fold "<<k<<" time: "<<(double)(t2 - t1) / CLOCKS_PER_SEC<<endl;
+            
 
             }
             return loss_list.mean();
@@ -357,10 +336,9 @@ public:
             int p = data.get_p();
 
             Eigen::VectorXd loss_list(this->K);
-           // omp_set_num_threads(omp_get_num_threads());
-            //#pragma omp parallel for
+          
             for (k = 0; k < this->K; k++) {
-                //get test_x, test_y
+             
                 int test_size = this->test_mask_list[k].size();
                 Eigen::MatrixXd test_x(test_size, p);
                 Eigen::VectorXd test_y(test_size);
@@ -390,7 +368,7 @@ public:
                 }
                 loss_list(k) = -loglik_poisson(test_x, test_y, coef, test_size, test_weight);
             }
-//            std::cout<<"cv"<<endl;
+
             return loss_list.sum() / loss_list.size();
 
         }
@@ -454,14 +432,11 @@ public:
             int p = data.get_p();
 
             Eigen::VectorXd loss_list(this->K);
-           // omp_set_num_threads(omp_get_num_threads());
-            //#pragma omp parallel for
+           
             for (k = 0; k < this->K; k++) {
-                // cout<<"--------------cv, k"<<k<<", ";
-                //get test_x, test_y
+               
                 int test_size = this->test_mask_list[k].size();
-                // cout<<"test_mask: "<<test_mask_list[k]<<endl;
-                // cout<<"train_mask: "<<train_mask_list[k]<<endl;
+               
                 Eigen::MatrixXd test_x(test_size, p);
                 Eigen::VectorXd test_y(test_size);
                 Eigen::VectorXd test_weight(test_size);
@@ -471,7 +446,7 @@ public:
                     test_y(i) = data.y(this->test_mask_list[k](i));
                     test_weight(i) = data.weight(this->test_mask_list[k](i));
                 };
-                // cout<<"test_x:"<<test_x<<endl;
+ 
 
                 if (algorithm->get_warm_start()) {
                     algorithm->update_beta_init(this->cv_initial_model_param.row(k).eval());
@@ -482,15 +457,9 @@ public:
                     this->update_cv_initial_model_param(algorithm->get_beta(), k);
                 }
                 loss_list(k) = -2 * loglik_cox(test_x, test_y, algorithm->get_beta(), test_weight);
-                // cout<<"loss_list("<<k<<"): "<<loss_list(k)<<endl;
             }
-            // for(i=0;i<loss_list.size();i++)
-                // std::cout<<"cv loss::::::"<<loss_list(i)<<" "<<endl;
-            // cout<<"cv end"<<endl;
-            // cout<<"loss list"<<loss_list<<endl;
-            // cout<<"loss mean"<<loss_list.mean()<<endl;
+
             return loss_list.sum() / double(loss_list.size());
-//            std::cout<<"cv_end"<<endl;
         }
 
     };

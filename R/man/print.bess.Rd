@@ -7,9 +7,11 @@
 \method{print}{bess}(x, digits = max(5, getOption("digits") - 5), nonzero = FALSE, ...)
 }
 \arguments{
-\item{x}{a "\code{bess}" object}
+\item{x}{A "\code{bess}" object.}
 
 \item{digits}{Minimum number of significant digits to be used.}
+
+\item{nonzero}{Whether the output should only contain the non-zero coefficients.}
 
 \item{\dots}{additional print arguments}
 }
@@ -30,18 +32,17 @@ rho = 0.4
 SNR = 10
 cortype = 1
 seed = 10
-Data = gen.data(n, p, k, rho, family = "gaussian", cortype=cortype, SNR=SNR, seed=seed)
+Data = gen.data(n, p, k, rho, family = "gaussian", cortype=cortype, snr=SNR, seed=seed)
 x = Data$x[1:140, ]
 y = Data$y[1:140]
 x_new = Data$x[141:200, ]
 y_new = Data$y[141:200]
-lm.pdas = bess(x, y, method = "sequential")
+lm.bss = bess(x, y, method = "sequential")
 lambda.list = exp(seq(log(5), log(0.1), length.out = 10))
-lm.l0l2 = bess(x, y, type = "bsrr", lambda.list = lambda.list, method = "sequential")
+lm.bsrr = bess(x, y, type = "bsrr", lambda.list = lambda.list, method = "sequential")
 
-print(lm.pdas)
-print(lm.l0l2)
-
+print(lm.bss)
+print(lm.bsrr)
 
 }
 \references{
@@ -55,5 +56,5 @@ doi:10.18637/jss.v094.i04.
 \code{\link{summary.bess}}.
 }
 \author{
-Liyuan Hu.
+Canhong Wen, Aijun Zhang, Shijie Quan, Liyuan Hu, Kangkang Jiang, Yanhang Zhang, Jin Zhu and Xueqin Wang.
 }

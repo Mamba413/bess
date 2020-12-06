@@ -139,8 +139,6 @@ std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eige
   std::vector<Eigen::MatrixXd> Phi(N);
   for (int i=0;i<N;i++) {
     Eigen::MatrixXd X_ind = X.block(0, index(i), n, gsize(i));
-    // cout<<"lambda: "<<lambda<<", gsize: "<<gsize(i)<<"MatrixXd::Identity(gsize(i), gsize(i)): "<<Eigen::MatrixXd::Identity(gsize(i), gsize(i))<<endl;
-    //cout<<"2*lambda * Eigen::MatrixXd::Identity(gsize(i), gsize(i)) : "<<2*lambda * Eigen::MatrixXd::Identity(gsize(i), gsize(i)) <<endl;
     Eigen::MatrixXd XtX = 2*lambda * Eigen::MatrixXd::Identity(gsize(i), gsize(i)) + (X_ind.transpose() * X_ind)/double(n);
     XtX.sqrt().evalTo(Phi[i]);
   }

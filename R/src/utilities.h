@@ -24,4 +24,6 @@ Eigen::MatrixXd X_seg(Eigen::MatrixXd& X, int n, Eigen::VectorXi& ind);
 std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, double lambda);
 std::vector<Eigen::MatrixXd> invPhi(std::vector<Eigen::MatrixXd>& Phi, int N);
 
+void max_k(Eigen::VectorXd& vec, int k, Eigen::VectorXi& result);
+
 #endif //BESS_UTILITIES_H

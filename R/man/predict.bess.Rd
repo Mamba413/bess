@@ -7,16 +7,15 @@
 \method{predict}{bess}(object, newx, type = c("link", "response"), ...)
 }
 \arguments{
-\item{object}{Output from the \code{bess} function or the \code{bess}
-function.}
+\item{object}{Output from the \code{bess} function.}
 
-\item{newx}{New data used for prediction.}
+\item{newx}{New data used for prediction. If omitted, the fitted linear predictors are used.}
 
-\item{type}{Type "link" gives the linear predictors for "binomial",
-, "poisson" or "cox" models; for "gaussian" models it gives the
-fitted values. Type "response" gives the fitted probabilities for
-"binomial", fitted mean for "poisson" and the fitted relative-risk for
-"cox";For "gaussian", \code{type = "response"} is equivalent to \code{type = "link"}}
+\item{type}{\code{type = "link"} gives the linear predictors for \code{"binomial"},
+\code{"poisson"} or \code{"cox"} models; for \code{"gaussian"} models it gives the
+fitted values. \code{type = "response"} gives the fitted probabilities for
+\code{"binomial"}, fitted mean for \code{"poisson"} and the fitted relative-risk for
+\code{"cox"}; for \code{"gaussian"}, \code{type = "response"} is equivalent to \code{type = "link"}}
 
 \item{\dots}{Additional arguments affecting the predictions produced.}
 }
@@ -24,70 +23,76 @@ fitted values. Type "response" gives the fitted probabilities for
 The object returned depends on the types of family.
 }
 \description{
-Similar to other predict methods, which returns predictions from a fitted
+Returns predictions from a fitted
 "\code{bess}" object.
-}
-\details{
-For "gaussian" family, \eqn{\hat{y} = X \beta} is returned.
-
-For "binomial" family,\deqn{\hat{Prob}(Y = 1) = exp(X \beta + \epsilon)/(1 +
-exp(X \beta)) is returned. For "cox" family, \eqn{\eta = X \beta}} is
-returned.
 }
 \examples{
 
-
 #-------------------linear model----------------------#
 # Generate simulated data
-n = 200
-p = 20
-k = 5
-rho = 0.4
-SNR = 10
-cortype = 1
-seed = 10
-Data = gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
-x = Data$x[1:140, ]
-y = Data$y[1:140]
-x_new = Data$x[141:200, ]
-y_new = Data$y[141:200]
-lm.pdas = bess(x, y, method = "sequential")
-lambda.list = exp(seq(log(5), log(0.1), length.out = 10))
-lm.l0l2 = bess(x, y, type = "bsrr")
-pred.pdas = predict(lm.pdas, newx = x_new)
-pred.l0l2 = predict(lm.l0l2, newx = x_new)
-pred.pdas = predict(lm.pdas, newx = x_new, type = "response")
-pred.l0l2 = predict(lm.l0l2, newx = x_new, type = "response")
+n <- 200
+p <- 20
+k <- 5
+rho <- 0.4
+SNR <- 10
+cortype <- 1
+seed <- 10
+Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, snr = SNR, seed = seed)
+x <- Data$x[1:140, ]
+y <- Data$y[1:140]
+x_new <- Data$x[141:200, ]
+y_new <- Data$y[141:200]
+lm.bss <- bess(x, y, method = "sequential")
+lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
+lm.bsrr <- bess(x, y, type = "bsrr", method = "pgsection")
+
+pred.bss <- predict(lm.bss, newx = x_new)
+pred.bsrr <- predict(lm.bsrr, newx = x_new)
+
 #-------------------logistic model----------------------#
 #Generate simulated data
-Data = gen.data(n, p, k, rho, family = "binomial", cortype = cortype, SNR = SNR, seed = seed)
+Data = gen.data(n, p, k, rho, family = "binomial", cortype = cortype, snr = SNR, seed = seed)
 
-x = Data$x[1:140, ]
-y = Data$y[1:140]
-x_new = Data$x[141:200, ]
-y_new = Data$y[141:200]
-logi.pdas = bess(x, y, family = "binomial", method = "sequential", tune = "cv")
-lambda.list = exp(seq(log(5), log(0.1), length.out = 10))
-logi.l0l2 = bess(x, y, type = "bsrr", tune="cv",
+x <- Data$x[1:140, ]
+y <- Data$y[1:140]
+x_new <- Data$x[141:200, ]
+y_new <- Data$y[141:200]
+logi.bss <- bess(x, y, family = "binomial", method = "sequential", tune = "cv")
+lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
+logi.bsrr <- bess(x, y, type = "bsrr", tune="cv",
                  family = "binomial", lambda.list = lambda.list, method = "sequential")
-pred.pdas = predict(logi.pdas, newx = x_new)
-pred.l0l2 = predict(logi.l0l2, newx = x_new)
+
+pred.bss <- predict(logi.bss, newx = x_new)
+pred.bsrr <- predict(logi.bsrr, newx = x_new)
 
 #-------------------coxph model----------------------#
 #Generate simulated data
-Data = gen.data(n, p, k, rho, family = "cox", scal = 10)
+Data <- gen.data(n, p, k, rho, family = "cox", scal = 10)
 
-x = Data$x[1:140, ]
-y = Data$y[1:140, ]
-x_new = Data$x[141:200, ]
-y_new = Data$y[141:200, ]
-cox.pdas = bess(x, y, family = "cox", method = "sequential")
-lambda.list = exp(seq(log(5), log(0.1), length.out = 10))
-cox.l0l2 = bess(x, y, type = "bsrr", family = "cox", lambda.list = lambda.list)
-pred.pdas = predict(cox.pdas, newx = x_new)
-pred.l0l2 = predict(cox.l0l2, newx = x_new)
+x <- Data$x[1:140, ]
+y <- Data$y[1:140, ]
+x_new <- Data$x[141:200, ]
+y_new <- Data$y[141:200, ]
+cox.bss <- bess(x, y, family = "cox", method = "sequential")
+lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
+cox.bsrr <- bess(x, y, type = "bsrr", family = "cox", lambda.list = lambda.list)
 
+pred.bss <- predict(cox.bss, newx = x_new)
+pred.bsrr <- predict(cox.bsrr, newx = x_new)
 
+#-------------------group selection----------------------#
+beta <- rep(c(rep(1,2),rep(0,3)), 4)
+Data <- gen.data(n, p, rho=0.4, beta = beta, snr = 100, seed =10)
+x <- Data$x
+y <- Data$y
+
+group.index <- c(rep(1, 2), rep(2, 3), rep(3, 2), rep(4, 3),
+rep(5, 2), rep(6, 3), rep(7, 2), rep(8, 3))
+lm.group <- bess(x, y, s.min=1, s.max = 8, type = "bss", group.index = group.index)
+lm.groupbsrr <- bess(x, y, type = "bsrr", s.min = 1, s.max = 8, group.index = group.index)
+
+pred.group <- predict(lm.group, newx = x_new)
+pred.groupbsrr <- predict(lm.groupbsrr, newx = x_new)
 
 }
 \references{
@@ -100,5 +105,5 @@ doi:10.18637/jss.v094.i04.
 \code{\link{bess}}.
 }
 \author{
-Liyuan Hu.
+Canhong Wen, Aijun Zhang, Shijie Quan, Liyuan Hu, Kangkang Jiang, Yanhang Zhang, Jin Zhu and Xueqin Wang.
 }

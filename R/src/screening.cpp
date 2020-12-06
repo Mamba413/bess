@@ -1,4 +1,4 @@
-#define R_BUILD
+// #define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -24,7 +24,7 @@ vector<int> screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &w
 {
     int n = x.rows();
     int p = x.cols();
-    int p2 = screening_size;//floor(n / log(n)) > screening_size ? floor(n / log(n)) : screening_size;
+    int p2 = screening_size;
     vector<int> screening_A((unsigned int) p2);
 
     Eigen::VectorXd coef = Eigen::VectorXd::Zero(p);
@@ -56,12 +56,6 @@ vector<int> screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &w
             coef(i) = beta(0);
         }
     }
-//
-//    for(int i=0;i<p;i++)
-//    {
-//        cout<<coef(i)<<" ";
-//    }
-//    cout<<endl;
 
     coef=coef.cwiseAbs();
     for(int k=0;k<p2;k++) {
@@ -73,15 +67,8 @@ vector<int> screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &w
     Eigen::MatrixXd x_A = Eigen::MatrixXd::Zero(n, p2);
     for(int k=0;k<p2;k++) {
         x_A.col(k) = x.col(screening_A[k]).eval();
-        //cout<<"x_A.col("<<k<<"): "<<x_A.col(k)<<", x.col(screening_A[k]): "<<x.col(screening_A[k])<<endl;
     }
     x = x_A;
-    //cout<<"xmax: "<<x.maxCoeff()<<", min: "<<x.minCoeff()<<endl;
-//    for(int i=0;i<p2;i++)
-//    {
-//        cout<<screening_A[i]<<" ";
-//    }
-//    cout<<endl;
 
     return screening_A;
 }

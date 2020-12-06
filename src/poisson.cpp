@@ -77,7 +77,7 @@ double loglik_poiss(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd coef, 
 Eigen::VectorXd poisson_fit(Eigen::MatrixXd x, Eigen::VectorXd y, int n, int p, Eigen::VectorXd weights)
 {
   cout<<"poisson_fit"<<endl;
-  
+
   // cout<<"poisson_fit 2"<<endl;
   Eigen::MatrixXd X = Eigen::MatrixXd::Ones(n, p+1);
   X.rightCols(p) = x;
@@ -133,4 +133,5 @@ Eigen::VectorXd poisson_fit(Eigen::MatrixXd x, Eigen::VectorXd y, int n, int p, 
   // cout<<"poisson_fit end"<<endl;
   return beta0;
 
+  }
 }
