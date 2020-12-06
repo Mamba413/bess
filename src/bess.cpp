@@ -45,7 +45,11 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              int s_min, int s_max, int K_max, double epsilon,
              double lambda_min, double lambda_max, int nlambda,
              bool is_screening, int screening_size, int powell_path,
-             Eigen::VectorXi g_index) {
+             Eigen::VectorXi g_index
+            //  , 
+            //  Eigen::VectorXi always_select,
+            //  double tao
+             ) {
 
 
     cout<<"data_type"<<data_type<<endl;
@@ -71,10 +75,11 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
     cout<<"screening_size"<<screening_size<<endl;
     cout<<"powell_path"<<powell_path<<endl;
 
+    cout<<"sequence.size()"<<sequence.size()<<endl; 
 
     srand(123);
     int p = x.cols();
-    vector<int> screening_A;
+    Eigen::VectorXi screening_A;
     if (is_screening) {
         //cout<<"g_index: "<<g_index<<endl;
        // cout<<"x max: "<<x.maxCoeff()<<", min: "<<x.minCoeff()<<endl;
@@ -84,22 +89,39 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
 
     Algorithm *algorithm;
     //  1 + 5
-    // if (algorithm_type == 1 || algorithm_type == 5) {
+    if (algorithm_type == 1 || algorithm_type == 5) {
+        if (model_type == 1) {
+            data.add_weight();
+            algorithm = new L0L2Lm(data, algorithm_type, max_iter);
+        } else if (model_type == 2) {
+            algorithm = new L0L2Logistic(data, algorithm_type, max_iter);
+        } else if (model_type == 3) {
+            algorithm = new L0L2Poisson(data, algorithm_type, max_iter);
+        } else {
+            algorithm = new L0L2Cox(data,algorithm_type, max_iter);
+        }
+    }
+       else if (algorithm_type == 2 || algorithm_type == 3) {
+        if (model_type == 1) {
+            data.add_weight();
+            algorithm = new GroupPdasLm(data,algorithm_type, max_iter);
+            algorithm->PhiG = Phi(data.x, data.get_g_index(), data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num(), 0.);
+            algorithm->invPhiG = invPhi(algorithm->PhiG, data.get_g_num());
+        } else if (model_type == 2) {
+            algorithm = new GroupPdasLogistic(data, algorithm_type, max_iter);
+        } else if (model_type == 3) {
+            algorithm = new GroupPdasPoisson(data, algorithm_type, max_iter);
+        } else {
+            algorithm = new GroupPdasCox(data, algorithm_type, max_iter);
+        }
+    }
+
+    // if (algorithm_type == 1 || algorithm_type == 5 || algorithm_type == 2 || algorithm_type == 3) {
     //     if (model_type == 1) {
-    //         data.add_weight();
-    //         algorithm = new L0L2Lm(data, algorithm_type, max_iter);
-    //     } else if (model_type == 2) {
-    //         algorithm = new L0L2Logistic(data, algorithm_type, max_iter);
-    //     } else if (model_type == 3) {
-    //         algorithm = new L0L2Poisson(data, algorithm_type, max_iter);
-    //     } else {
-    //         algorithm = new L0L2Cox(data,algorithm_type, max_iter);
-    //     }
-    // }
-    //    else if (algorithm_type == 2 || algorithm_type == 3) {
-    //     if (model_type == 1) {
+    //         //cout<<"algorithm: "<<algorithm_type<<endl;
     //         data.add_weight();
     //         algorithm = new GroupPdasLm(data,algorithm_type, max_iter);
+    //         //cout<<"endnew"<<endl;
     //         algorithm->PhiG = Phi(data.x, g_index, data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num(), 0.);
     //         algorithm->invPhiG = invPhi(algorithm->PhiG, data.get_g_num());
     //     } else if (model_type == 2) {
@@ -110,23 +132,6 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
     //         algorithm = new GroupPdasCox(data, algorithm_type, max_iter);
     //     }
     // }
-
-    if (algorithm_type == 1 || algorithm_type == 5 || algorithm_type == 2 || algorithm_type == 3) {
-        if (model_type == 1) {
-            //cout<<"algorithm: "<<algorithm_type<<endl;
-            data.add_weight();
-            algorithm = new GroupPdasLm(data,algorithm_type, max_iter);
-            //cout<<"endnew"<<endl;
-            algorithm->PhiG = Phi(data.x, g_index, data.get_g_size(), data.get_n(), data.get_p(), data.get_g_num(), 0.);
-            algorithm->invPhiG = invPhi(algorithm->PhiG, data.get_g_num());
-        } else if (model_type == 2) {
-            algorithm = new GroupPdasLogistic(data, algorithm_type, max_iter);
-        } else if (model_type == 3) {
-            algorithm = new GroupPdasPoisson(data, algorithm_type, max_iter);
-        } else {
-            algorithm = new GroupPdasCox(data, algorithm_type, max_iter);
-        }
-    }
 
     #ifdef OTHER_ALGORITHM1
         if (algorithm_type == 6) {
@@ -187,28 +192,24 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
 
     }
 
-    if (is_screening) {
-        // std::cout<<"screening_A: ";
-        // for(int i=0;i<screening_A.size();i++)
-        // {
-        //     cout<<screening_A[i]<<" ";
-        // }
-        // cout<<endl;
+    if (is_screening)
+    {
+        std::cout<<"screening_A: "<<screening_A<<endl;
         Eigen::VectorXd beta_screening_A;
         Eigen::VectorXd beta = Eigen::VectorXd::Zero(p);
-    #ifndef R_BUILD
-        result.get_value_by_name("beta", beta_screening_A);
-        for (unsigned int i = 0; i < screening_A.size(); i++) {
-            beta(screening_A[i]) = beta_screening_A(i);
-        }
-        result.add("beta", beta);
-    #else
-        beta_screening_A = result["beta"];
-        for(int i=0;i<screening_A.size();i++) {
-            beta(screening_A[i]) = beta_screening_A(i);
-        }
-        result["beta"] = beta;
-    #endif
+        #ifndef R_BUILD
+            result.get_value_by_name("beta", beta_screening_A);
+            for (unsigned int i = 0; i < screening_A.size(); i++) {
+                beta(screening_A(i)) = beta_screening_A(i);
+            }
+            result.add("beta", beta);
+        #else
+            beta_screening_A = result["beta"];
+            for(int i=0;i<screening_A.size();i++) {
+                beta(screening_A(i)) = beta_screening_A(i);
+            }
+            result["beta"] = beta;
+        #endif
     }
     return result;
 }

@@ -159,9 +159,9 @@ public:
             }
             // clock_t t2 = clock();
             // printf("time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
-            // cout<<"cv end"<<endl;
-            // cout<<"loss list"<<loss_list<<endl;
-            // cout<<"loss mean"<<loss_list.mean()<<endl;
+            cout<<"cv end"<<endl;
+            cout<<"loss list"<<loss_list<<endl;
+            cout<<"loss mean"<<loss_list.mean()<<endl;
             return loss_list.mean();
         }
 

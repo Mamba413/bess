@@ -13,10 +13,12 @@ using namespace Rcpp;
 #endif
 #include <algorithm>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
 void Normalize(Eigen::MatrixXd& X, Eigen::VectorXd& y, Eigen::VectorXd& weights, Eigen::VectorXd& meanx, double& meany, Eigen::VectorXd& normx){
+    // cout<<"Normalize"<<endl;
     int n = X.rows();
     int p = X.cols();
     Eigen::VectorXd tmp(n);

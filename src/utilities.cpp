@@ -179,7 +179,5 @@ void max_k(Eigen::VectorXd& vec, int k, Eigen::VectorXi& result)
     };// sort rule
     std::nth_element(ind.data(), ind.data()+k, ind.data() + ind.size(), rule);
     std::sort(ind.data(), ind.data()+k);
-    for(int i=0;i<k;i++){
-        result(i)=ind(i);
-    }
+    result = ind.head(k).eval();
 }

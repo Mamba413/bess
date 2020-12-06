@@ -61,19 +61,15 @@ public:
         //     tmp = tmp.array().square();
         //     cout<<sqrt(weight.dot(tmp))<<endl;
         // }
-//cout<<"g_index: "<< g_index<<endl;
+        //cout<<"g_index: "<< g_index<<endl;
         this->g_index = g_index;
         //cout<<"g_index: "<<this->g_index<<endl;
         this->g_num = (g_index).size(); 
         //cout<<"g_num: "<<this->g_num<<endl;
-        if (g_num > 1) {  
-            Eigen::VectorXi temp = Eigen::VectorXi::Zero(g_num);
-            temp.head(g_num-1) = g_index.tail(g_num-1);
-            temp(g_num-1) = this->p;
-            //cout<<"temp: "<<temp<<endl;
-            this->g_size =  temp-g_index;
-            //cout<<"this->g_size : "<<this->g_size<<endl;
-        }
+        Eigen::VectorXi temp = Eigen::VectorXi::Zero(g_num);
+        temp.head(g_num-1) = g_index.tail(g_num-1);
+        temp(g_num-1) = this->p;
+        this->g_size =  temp-g_index;
     };
 
     void add_weight() {

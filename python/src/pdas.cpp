@@ -30,11 +30,11 @@ Eigen::MatrixXd X_seg(Eigen::MatrixXd& X, int n, Eigen::VectorXi& ind) {
 }
 
 
-std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N){
+std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, double lambda){
   std::vector<Eigen::MatrixXd> Phi(N);
   for (int i=0;i<N;i++) {
     Eigen::MatrixXd X_ind = X.block(0, index(i), n, gsize(i));
-    Eigen::MatrixXd XtX = (X_ind.transpose()*X_ind)/double(n);
+    Eigen::MatrixXd XtX = 2*lambda * Eigen::MatrixXd::Identity(gsize(i), gsize(i)) + (X_ind.transpose()*X_ind)/double(n);
     XtX.sqrt().evalTo(Phi[i]);
   }
   return Phi;

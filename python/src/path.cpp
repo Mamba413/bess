@@ -149,38 +149,44 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
     //cout<<"best_s: "<<sequence[min_loss_index_row]<<endl;
     //cout<<"best_lambda: "<<lambda_seq[min_loss_index_col]<<endl;
 
-    // for(i=0;i<sequence_size;i++){
-    //    cout<<endl;
-    //        for(j=0; j<lambda_size;j++)
-    //    {
-    //        cout<<"i: "<<i+1<<" "<<", j: "<<j+1<<", ";
-    //        cout<<ic_sequence(i,j)<<endl;
-    //    }
-    //    }
+    for(i=0;i<sequence_size;i++){
+       cout<<endl;
+           for(j=0; j<lambda_size;j++)
+       {
+           cout<<"i: "<<i+1<<" "<<", j: "<<j+1<<", ";
+           cout<<ic_sequence(i,j)<<" "<<loss_sequence[j](i)<<endl;
+       }
+       }
 
     List mylist;
-#ifdef R_BUILD
-    //    mylist =  List::create(Named("beta")=beta_matrix.col(min_loss_index).eval(), Named("coef0")=coef0_sequence(min_loss_index), Named("ic")=ic_sequence(min_loss_index));
-    //    Eigen::SparseMatrix<double> beta_sparse = beta_matrix.sparseView();
-    //    mylist = List::create(Named("beta") = beta_sparse,
-    //                          Named("coef0") = coef0_sequence,
-    //                          Named("ic") = ic_sequence,
-    //                          Named("sparsity") = min_loss_index + 1);
-    mylist = List::create(Named("beta") = beta_matrix[min_loss_index_col].col(min_loss_index_row).eval(),
-                          Named("coef0") = coef0_sequence[min_loss_index_col](min_loss_index_row),
-                          Named("train_loss") = loss_sequence[min_loss_index_col](min_loss_index_row),
-                          Named("ic") = ic_sequence(min_loss_index_row, min_loss_index_col), Named("lambda") = lambda_seq(min_loss_index_col),
-                          Named("beta_all") = beta_matrix,
-                          Named("coef0_all") = coef0_sequence,
-                          Named("train_loss_all") = loss_sequence,
-                          Named("ic_all") = ic_sequence);
-#else
-    mylist.add("beta", beta_matrix[min_loss_index_col].col(min_loss_index_row).eval());
-    mylist.add("coef0", coef0_sequence[min_loss_index_col](min_loss_index_row));
-    mylist.add("train_loss", loss_sequence[min_loss_index_col](min_loss_index_row));
-    mylist.add("ic", ic_sequence(min_loss_index_row, min_loss_index_col));
-    mylist.add("lambda", lambda_seq(min_loss_index_col));
-#endif
+    #ifdef R_BUILD
+        //    mylist =  List::create(Named("beta")=beta_matrix.col(min_loss_index).eval(), Named("coef0")=coef0_sequence(min_loss_index), Named("ic")=ic_sequence(min_loss_index));
+        //    Eigen::SparseMatrix<double> beta_sparse = beta_matrix.sparseView();
+        //    mylist = List::create(Named("beta") = beta_sparse,
+        //                          Named("coef0") = coef0_sequence,
+        //                          Named("ic") = ic_sequence,
+        //                          Named("sparsity") = min_loss_index + 1);
+        mylist = List::create(Named("beta") = beta_matrix[min_loss_index_col].col(min_loss_index_row).eval(),
+                            Named("coef0") = coef0_sequence[min_loss_index_col](min_loss_index_row),
+                            Named("train_loss") = loss_sequence[min_loss_index_col](min_loss_index_row),
+                            Named("ic") = ic_sequence(min_loss_index_row, min_loss_index_col),
+                            Named("lambda") = lambda_seq(min_loss_index_col),
+                            Named("beta_all") = beta_matrix,
+                            Named("coef0_all") = coef0_sequence,
+                            Named("train_loss_all") = loss_sequence,
+                            Named("ic_all") = ic_sequence);
+    #else
+        mylist.add("beta", beta_matrix[min_loss_index_col].col(min_loss_index_row).eval());
+        mylist.add("coef0", coef0_sequence[min_loss_index_col](min_loss_index_row));
+        mylist.add("train_loss", loss_sequence[min_loss_index_col](min_loss_index_row));
+        mylist.add("ic", ic_sequence(min_loss_index_row, min_loss_index_col));
+        mylist.add("lambda", lambda_seq(min_loss_index_col));
+        // mylist.add("beta_all", beta_matrix);
+        // mylist.add("coef0_all", coef0_sequence);
+        // mylist.add("train_loss_all", loss_sequence);
+        // mylist.add("ic_all", ic_sequence);
+        
+    #endif
     // cout<<"end"<<endl;
     return mylist;
 }
@@ -317,8 +323,8 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
 
     int Tmin = s_min;
     int Tmax = s_max;
-    int T1 = floor(0.618 * Tmin + 0.382 * Tmax);
-    int T2 = ceil(0.382 * Tmin + 0.618 * Tmax);
+    int T1 = round(0.618 * Tmin + 0.382 * Tmax);
+    int T2 = round(0.382 * Tmin + 0.618 * Tmax);
     double icT1;
     double icT2;
 
@@ -366,10 +372,11 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     icT2 = metric->ic(algorithm, data);
 
     int iter = 2;
-    while (Tmax - Tmin > 2)
+    cout<<"Tmin: "<<Tmin<<" T1: "<<T1<<" T2: "<<T2<<" Tmax: "<<Tmax<<endl;
+    while (T1 != T2)
     {
-        //    cout<<"T1: "<<T1<<endl;
-        //    cout<<"T2: "<<T2<<endl;
+        cout<<"Tmin: "<<Tmin<<" T1: "<<T1<<" T2: "<<T2<<" Tmax: "<<Tmax<<endl;
+        // cout<<"T2: "<<T2<<endl;
         if (icT1 < icT2)
         {
             Tmax = T2;
@@ -385,7 +392,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             ic_sequence(2) = ic_sequence(1);
             icT2 = ic_sequence(1);
 
-            T1 = floor(0.618 * Tmin + 0.382 * Tmax);
+            T1 = round(0.618 * Tmin + 0.382 * Tmax);
             algorithm->update_train_mask(full_mask);
             algorithm->update_sparsity_level(T1);
             algorithm->update_beta_init(beta_init);
@@ -424,7 +431,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             ic_sequence(1) = ic_sequence(2);
             icT1 = ic_sequence(2);
 
-            T2 = ceil(0.382 * Tmin + 0.618 * Tmax);
+            T2 = round(0.382 * Tmin + 0.618 * Tmax);
             algorithm->update_train_mask(full_mask);
             algorithm->update_sparsity_level(T2);
             algorithm->update_beta_init(beta_init);
@@ -450,80 +457,32 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             icT2 = metric->ic(algorithm, data);
         };
     }
+
+    cout<<"Tmin: "<<Tmin<<" T1: "<<T1<<" T2: "<<T2<<" Tmax: "<<Tmax<<endl;
     Eigen::VectorXd best_beta = Eigen::VectorXd::Zero(p);
     double best_coef0 = 0;
     double best_train_loss = 0;
-    double best_ic = 0;
-    if (T1 == T2)
+    double best_ic = DBL_MAX;
+    cout<<"gss 1"<<endl;
+    for(int T_tmp=Tmin; T_tmp<=Tmax; T_tmp++)
     {
-        best_beta = beta_matrix.col(1);
-        best_coef0 = coef0_sequence(1);
-        best_train_loss = train_loss_sequence(1);
-        best_ic = ic_sequence(1);
-
-        beta_all.col(iter) = best_beta;
-        coef0_all(iter) = best_coef0;
-        train_loss_all(iter) = best_train_loss;
-        ic_all(iter) = best_ic;
-        iter++;
-    }
-    else if (T2 == T1 + 1)
-    {
-        if (ic_sequence(1) < ic_sequence(2))
-        {
-            best_beta = beta_matrix.col(1);
-            best_coef0 = coef0_sequence(1);
-            best_train_loss = train_loss_sequence(1);
-            best_ic = ic_sequence(1);
-        }
-        else
-        {
-            best_beta = beta_matrix.col(2);
-            best_coef0 = coef0_sequence(2);
-            best_train_loss = train_loss_sequence(2);
-            best_ic = ic_sequence(2);
-        }
-
-        beta_all.col(iter) = best_beta;
-        coef0_all(iter) = best_coef0;
-        train_loss_all(iter) = best_train_loss;
-        ic_all(iter) = best_ic;
-        iter++;
-    }
-    else if (T2 == T1 + 2)
-    {
-        if (ic_sequence(1) < ic_sequence(2))
-        {
-            best_beta = beta_matrix.col(1);
-            best_coef0 = coef0_sequence(1);
-            best_train_loss = train_loss_sequence(1);
-            best_ic = ic_sequence(1);
-        }
-        else
-        {
-            best_beta = beta_matrix.col(2);
-            best_coef0 = coef0_sequence(2);
-            best_train_loss = train_loss_sequence(2);
-            best_ic = ic_sequence(2);
-        }
-
-        beta_all.col(iter) = best_beta;
-        coef0_all(iter) = best_coef0;
-        train_loss_all(iter) = best_train_loss;
-        ic_all(iter) = best_ic;
-        iter++;
-
         algorithm->update_train_mask(full_mask);
-        algorithm->update_sparsity_level(T1 + 1);
+        algorithm->update_sparsity_level(T_tmp);
         algorithm->update_beta_init(beta_init);
         algorithm->update_coef0_init(coef0_init);
         algorithm->fit();
-        if (metric->ic(algorithm, data) < best_ic)
+        if(algorithm->warm_start)
+        {
+            beta_init = algorithm->get_beta();
+            coef0_init = algorithm->get_coef0();
+        }
+        double ic_tmp = metric->ic(algorithm, data);
+        if (ic_tmp < best_ic)
         {
             best_beta = algorithm->get_beta();
             best_coef0 = algorithm->get_coef0();
             best_train_loss = metric->train_loss(algorithm, data);
-            best_ic = metric->ic(algorithm, data);
+            best_ic = ic_tmp;
 
             beta_all.col(iter) = best_beta;
             coef0_all(iter) = best_coef0;
@@ -532,7 +491,87 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             iter++;
         }
     }
+    cout<<"gss 2"<<endl;
 
+    // if (T1 == T2)
+    // {
+    //     best_beta = beta_matrix.col(1);
+    //     best_coef0 = coef0_sequence(1);
+    //     best_train_loss = train_loss_sequence(1);
+    //     best_ic = ic_sequence(1);
+
+    //     beta_all.col(iter) = best_beta;
+    //     coef0_all(iter) = best_coef0;
+    //     train_loss_all(iter) = best_train_loss;
+    //     ic_all(iter) = best_ic;
+    //     iter++;
+    // }
+    // else if (T2 == T1 + 1)
+    // {
+    //     if (ic_sequence(1) < ic_sequence(2))
+    //     {
+    //         best_beta = beta_matrix.col(1);
+    //         best_coef0 = coef0_sequence(1);
+    //         best_train_loss = train_loss_sequence(1);
+    //         best_ic = ic_sequence(1);
+    //     }
+    //     else
+    //     {
+    //         best_beta = beta_matrix.col(2);
+    //         best_coef0 = coef0_sequence(2);
+    //         best_train_loss = train_loss_sequence(2);
+    //         best_ic = ic_sequence(2);
+    //     }
+
+    //     beta_all.col(iter) = best_beta;
+    //     coef0_all(iter) = best_coef0;
+    //     train_loss_all(iter) = best_train_loss;
+    //     ic_all(iter) = best_ic;
+    //     iter++;
+    // }
+    // else if (T2 == T1 + 2)
+    // {
+    //     if (ic_sequence(1) < ic_sequence(2))
+    //     {
+    //         best_beta = beta_matrix.col(1);
+    //         best_coef0 = coef0_sequence(1);
+    //         best_train_loss = train_loss_sequence(1);
+    //         best_ic = ic_sequence(1);
+    //     }
+    //     else
+    //     {
+    //         best_beta = beta_matrix.col(2);
+    //         best_coef0 = coef0_sequence(2);
+    //         best_train_loss = train_loss_sequence(2);
+    //         best_ic = ic_sequence(2);
+    //     }
+
+    //     beta_all.col(iter) = best_beta;
+    //     coef0_all(iter) = best_coef0;
+    //     train_loss_all(iter) = best_train_loss;
+    //     ic_all(iter) = best_ic;
+    //     iter++;
+
+    //     algorithm->update_train_mask(full_mask);
+    //     algorithm->update_sparsity_level(T1 + 1);
+    //     algorithm->update_beta_init(beta_init);
+    //     algorithm->update_coef0_init(coef0_init);
+    //     algorithm->fit();
+    //     if (metric->ic(algorithm, data) < best_ic)
+    //     {
+    //         best_beta = algorithm->get_beta();
+    //         best_coef0 = algorithm->get_coef0();
+    //         best_train_loss = metric->train_loss(algorithm, data);
+    //         best_ic = metric->ic(algorithm, data);
+
+    //         beta_all.col(iter) = best_beta;
+    //         coef0_all(iter) = best_coef0;
+    //         train_loss_all(iter) = best_train_loss;
+    //         ic_all(iter) = best_ic;
+    //         iter++;
+    //     }
+    // }
+    cout<<"gss 2.4"<<endl;
     if (data.is_normal)
     {
         if (algorithm->model_type == 1)
@@ -546,10 +585,16 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             best_coef0 = best_coef0 - best_beta.dot(data.x_mean);
         }
     }
+    // cout<<"gss 2.5"<<endl;
+    // cout<<"iter: "<<iter<<endl;
     beta_all = beta_all.leftCols(iter).eval();
-    coef0_all = coef0_all.head(iter);
-    train_loss_all = train_loss_all.head(iter);
-    ic_all = ic_all.head(iter);
+    // cout<<"gss 2.6"<<endl;
+    coef0_all = coef0_all.head(iter).eval();
+    // cout<<"gss 2.7"<<endl;
+    train_loss_all = train_loss_all.head(iter).eval();
+    // cout<<"gss 2.8"<<endl;
+    ic_all = ic_all.head(iter).eval();
+    // cout<<"gss 3"<<endl;
 
     if (data.is_normal)
     {
@@ -577,6 +622,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             }
         }
     }
+    cout<<"gss 4"<<endl;
     // cout<<"s: "<<T1+1<<endl;
 
 #ifdef R_BUILD
