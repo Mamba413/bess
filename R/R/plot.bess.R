@@ -5,14 +5,17 @@
 #' paths
 #'
 #'
-#' @param x a "\code{bess}" project fitted via "PDAS" algorithm.
-#' @param type Either "both", "solutionPath" or "loss".
-#' @param breaks If TRUE, then vertical lines are drawn at each break point in
-#' the coefficient paths
-#' @param K which break point should the vertical lines drawn at
-#' @param sign.lambda Whether to show lambda on log scale. Default is 0.
+#' @param x a \code{"bess"} object
+#' @param type One of \code{"loss"}, \code{"tune"}, \code{"coefficients"}, \code{"both"}. This option is only valid for \code{"bess"} object obtained from \code{"bss"}.
+#' If \code{type = "loss"} (\code{type = "tune"}), a path of loss function (corresponding information criterion or cross-validation loss) is provided.
+#' If \code{type = "coefficients"}, it provides a coefficient profile plot of the coefficient.
+#' If \code{type = "both"}, it combines the path of corresponding information criterion or cross-validation loss with the coefficient profile plot.
+#' @param breaks If \code{TRUE}, a vertical line is drawn at a specified break point in
+#' the coefficient paths.
+#' @param K Which break point should the vertical line be drawn at. Default is the optimal model size.
+#' @param sign.lambda A logical value indicating whether to show lambda on log scale. Default is 0. Valid for \code{"bess"} object obtained from \code{"bsrr"}.
 #' @param \dots Other graphical parameters to plot
-#' @author Liyuan Hu.
+#' @author Canhong Wen, Aijun Zhang, Shijie Quan, Liyuan Hu, Kangkang Jiang, Yanhang Zhang, Jin Zhu and Xueqin Wang.
 #' @seealso \code{\link{bess}}.
 #' @references Wen, C., Zhang, A., Quan, S. and Wang, X. (2020). BeSS: An R
 #' Package for Best Subset Selection in Linear, Logistic and Cox Proportional
@@ -20,37 +23,34 @@
 #' doi:10.18637/jss.v094.i04.
 #' @examples
 #'
-#'
-#' #-------------------linear model----------------------#
 #' # Generate simulated data
-#' n = 200
-#' p = 20
-#' k = 5
-#' rho = 0.4
-#' SNR = 10
-#' cortype = 1
-#' seed = 10
-#' Data = gen.data(n, p, k, rho, family = "gaussian", cortype=cortype, SNR=SNR, seed=seed)
-#' x = Data$x[1:140, ]
-#' y = Data$y[1:140]
-#' x_new = Data$x[141:200, ]
-#' y_new = Data$y[141:200]
-#' lm.pdas = bess(x, y, method = "sequential")
-#' lm.l0l2.powell = bess(x, y, type = "bsrr")
-#' lm.l0l2.seq = bess(x, y, type = "bsrr", method = "psequential")
+#' n <- 200
+#' p <- 20
+#' k <- 5
+#' rho <- 0.4
+#' SNR <- 10
+#' cortype <- 1
+#' seed <- 10
+#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
+#' x <- Data$x[1:140, ]
+#' y <- Data$y[1:140]
+#' x_new <- Data$x[141:200, ]
+#' y_new <- Data$y[141:200]
+#' lm.bss <- bess(x, y, method = "sequential")
+#' lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
+#' lm.bsrr <- bess(x, y, type = "bsrr", method = "pgsection")
 #'
-#' # Plot the solution path and the loss function of PDAS
-#' plot(lm.pdas, type = "both", breaks = TRUE)
-#'
-#' # Plot the solution path of the best ridge regreesion
-#' plot(lm.l0l2.powell)
-#'
-#' plot(lm.l0l2.seq)
+#' # generate plots
+#' plot(lm.bss, type = "both", breaks = TRUE)
+#' plot(lm.bsrr)
 #'
 #'
+#'@method plot bess
+#'@export
+#'@export plot.bess
 plot.bess<-function(x, type = c("loss", "tune", "coefficients","both"), breaks = TRUE, K = NULL, sign.lambda = 0, ...)
 {
-  if(x$algorithm_type == "GPDAS" | x$algorithm_type == "GL0L2") stop("plot for GPDAS algorithm not available now")
+  if(x$algorithm_type == "GPDAS" | x$algorithm_type == "GL0L2") stop("plots for group selection not available now")
   if(x$algorithm_type == "PDAS"){
     type <- match.arg(type)
     # s.list=x$s.list

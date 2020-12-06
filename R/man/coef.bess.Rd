@@ -15,32 +15,29 @@ presented as sparse matrix or not.}
 \item{\dots}{Other arguments.}
 }
 \description{
-Similar to other prediction methods, this function provides estimated
+This function provides estimated
 coefficients from a fitted "\code{bess}" object.
 }
 \examples{
 
-
 # Generate simulated data
-n = 200
-p = 20
-k = 5
-rho = 0.4
-SNR = 10
-cortype = 1
-seed = 10
-Data = gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
-x = Data$x[1:140, ]
-y = Data$y[1:140]
-x_new = Data$x[141:200, ]
-y_new = Data$y[141:200]
-lm.pdas = bess(x, y, method = "sequential")
-lambda.list = exp(seq(log(5), log(0.1), length.out = 10))
-lm.l0l2 = bess(x, y, type = "bsrr")
-
-coef(lm.pdas)
-coef(lm.l0l2, sparse = TRUE)
-
+n <- 200
+p <- 20
+k <- 5
+rho <- 0.4
+SNR <- 10
+cortype <- 1
+seed <- 10
+Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
+x <- Data$x[1:140, ]
+y <- Data$y[1:140]
+x_new <- Data$x[141:200, ]
+y_new <- Data$y[141:200]
+lm.bss <- bess(x, y, method = "sequential")
+lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
+lm.bsrr <- bess(x, y, type = "bsrr", method = "pgsection")
+coef(lm.bss)
+coef(lm.bsrr)
 
 
 
@@ -55,5 +52,5 @@ doi:10.18637/jss.v094.i04.
 \code{\link{bess}}, \code{\link{print.bess}}.
 }
 \author{
-Liyuan Hu, Aijun Zhang, Shijie Quan, and Xueqin Wang.
+Canhong Wen, Aijun Zhang, Shijie Quan, Liyuan Hu, Kangkang Jiang, Yanhang Zhang, Jin Zhu and Xueqin Wang.
 }

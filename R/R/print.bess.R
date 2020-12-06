@@ -6,8 +6,9 @@
 #'
 #' @param x a "\code{bess}" object
 #' @param digits Minimum number of significant digits to be used.
+#' @param nonzero Whether the output should only contain the non-zero coefficients.
 #' @param \dots additional print arguments
-#' @author Liyuan Hu.
+#' @author Canhong Wen, Aijun Zhang, Shijie Quan, Liyuan Hu, Kangkang Jiang, Yanhang Zhang, Jin Zhu and Xueqin Wang.
 #' @seealso \code{\link{bess}}, \code{\link{plot.bess}},
 #' \code{\link{summary.bess}}.
 #' @references Wen, C., Zhang, A., Quan, S. and Wang, X. (2020). BeSS: An R
@@ -30,13 +31,16 @@
 #' y = Data$y[1:140]
 #' x_new = Data$x[141:200, ]
 #' y_new = Data$y[141:200]
-#' lm.pdas = bess(x, y, method = "sequential")
+#' lm.bss = bess(x, y, method = "sequential")
 #' lambda.list = exp(seq(log(5), log(0.1), length.out = 10))
-#' lm.l0l2 = bess(x, y, type = "bsrr", lambda.list = lambda.list, method = "sequential")
+#' lm.bsrr = bess(x, y, type = "bsrr", lambda.list = lambda.list, method = "sequential")
 #'
-#' print(lm.pdas)
-#' print(lm.l0l2)
+#' print(lm.bss)
+#' print(lm.bsrr)
 #'
+#'@method print bess
+#'@export
+#'@export print.bess
 #'
 print.bess<-function(x, digits = max(5, getOption("digits") - 5), nonzero = FALSE,...)
 {

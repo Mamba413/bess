@@ -7,7 +7,7 @@
 gen.data(
   n,
   p,
-  k,
+  k = NULL,
   rho = 0,
   family = c("gaussian", "binomial", "poisson", "cox"),
   beta = NULL,
@@ -25,91 +25,88 @@ gen.data(
 \item{p}{The number of predictors of interest.}
 
 \item{k}{The number of nonzero coefficients in the underlying regression
-model.}
+model. Can be omitted if \code{beta} is supplied.}
 
 \item{rho}{A parameter used to characterize the pairwise correlation in
-predictors. Default is 0.}
+predictors. Default is \code{0}.}
 
-\item{family}{The distribution of the simulated data. "gaussian" for
-gaussian data."binomial" for binary data. "poisson" for poisson data. "cox"
-for survival data}
+\item{family}{The distribution of the simulated data. \code{"gaussian"} for
+gaussian data.\code{"binomial"} for binary data. \code{"poisson"} for poisson data. \code{"cox"}
+for survival data.}
 
 \item{beta}{The coefficient values in the underlying regression model.}
 
-\item{cortype}{The correlation structure. "1" denotes exponential structure,
+\item{cortype}{The correlation structure. \code{cortype = 1} denotes exponential structure,
 where the covariance matrix has \eqn{(i,j)} entry equals \eqn{rho^{|i-j|}}.
-"2" denotes constant structure, where the \eqn{(i,j)} entry of covariance
+code{cortype = 2} denotes constant structure, where the \eqn{(i,j)} entry of covariance
 matrix is \eqn{rho} for every \eqn{i \neq j} and 1 elsewhere.}
 
-\item{SNR}{Gaussian noise \eqn{\epsilon} with mean 0 and variance
-\eqn{sigma^2} is added to the linear predictor \eqn{\eta} = \eqn{x\beta}.
+\item{SNR}{Gaussian noise \eqn{\epsilon} with mean 0 and variance. Default is \code{10}.
+\eqn{\sigma^2} is added to the linear predictor \eqn{\eta} = \eqn{x\beta}.
 The signal-to-noise ratio is defined as the variance of \eqn{x\beta} divided
-by the variance of gaussian noise: \eqn{\frac{Var(x\beta)}{\sigma^2}}.}
+by the variance of a gaussian noise: \eqn{\frac{Var(x\beta)}{\sigma^2}}.}
 
-\item{censoring}{Whether data is censored or not. Default is TRUE.}
+\item{censoring}{Whether data is censored or not. Default is \code{TRUE}.}
 
-\item{c}{The censoring rate. Default is 1.}
+\item{c}{The censoring rate. Default is \code{1}.}
 
 \item{scal}{A parameter in generating survival time based on the Weibull distribution. Only used for the "\code{cox}" family.}
 
-\item{seed}{seed to use in generating the random numbers.}
+\item{seed}{seed to be used in generating the random numbers.}
 }
 \value{
 %% ~Describe the value returned %% If it is a LIST, use
 \item{x}{Design matrix of predictors.} \item{y}{Response variable.}
 \item{Tbeta}{The coefficients used in the underlying regression model.} %%
-...
 }
 \description{
 Generate data for simulations under the generalized linear model and Cox
 model.
 }
 \details{
-For the design matrix \eqn{X}, we generate an n x p random Gaussian matrix
-\eqn{\bar{X}} with mean 0 and a covariance matrix with exponential structure
-or constant structure. For the exponential structure, the covariance matrix
+We generate an \eqn{n \times p} random Gaussian matrix
+\eqn{X} with mean 0 and a covariance matrix with an exponential structure
+or a constant structure. For the exponential structure, the covariance matrix
 has \eqn{(i,j)} entry equals \eqn{rho^{|i-j|}}. For the constant structure,
-the \eqn{(i,j)} entry of covariance matrix is \eqn{rho} for every \eqn{i
+the \eqn{(i,j)} entry of the covariance matrix is \eqn{rho} for every \eqn{i
 \neq j} and 1 elsewhere.
 
-For "\code{gaussian}" family, the data model is \deqn{Y = X \beta +
-\epsilon, where \epsilon \sim N(0, \sigma^2 ).} \eqn{\sigma^2} is determined
-by the \code{SNR}. The underlying regression coefficient \eqn{\beta} has
-equi-spaced nonzero entries, each set to 1.
+For \code{family = "gaussian"} , the data model is \deqn{Y = X \beta +
+\epsilon.}
 
-For "\code{binomial}" family, the data model is \deqn{Prob(Y = 1) = exp(X
-\beta + \epsilon)/(1 + exp(X \beta + \epsilon))}, where \eqn{\epsilon \sim N(0,
-\sigma^2 ).} \eqn{\sigma^2} is determined by the \code{SNR}.The underlying
-regression coefficient \eqn{\beta} has equi-spaced nonzero entries, each set
-to 1.
+For \code{family= "binomial"}, the data model is \deqn{Prob(Y = 1) = exp(X
+\beta + \epsilon)/(1 + exp(X \beta + \epsilon)).}
 
-For "\code{poisson}" family, the data model is \deqn{Y = Exp(exp(X \beta +
-\epsilon))}, where \eqn{\epsilon \sim N(0, \sigma^2 )}.
+For \code{family = "poisson"} , the data model is \deqn{Y = Exp(exp(X \beta +
+\epsilon)).}
 
- For "\code{cox}" family, the data model is
-\deqn{T = (-log(S(t))/exp(X \beta))^(1/scal),}
-The centerning time is generated from uniform distribution [0, c],
-then we define the censor status as \eqn{\delta = I{T <= C}, R = min{T, C}}.
+ For \code{family = "cox"}, the data model is
+\deqn{T = (-log(S(t))/exp(X \beta))^{1/scal}.}
+The centerning time is generated from uniform distribution \eqn{[0, c]},
+then we define the censor status as \eqn{\delta = I\{T \leq C\}, R = min\{T, C\}}.
+
+In the above models, \eqn{\epsilon \sim N(0,
+\sigma^2 ),} where \eqn{\sigma^2} is determined by the \code{SNR}. By default, the underlying
+regression coefficient \eqn{\beta} has equi-spaced nonzero entries, each set to 1.
 }
 \examples{
 
-
 # Generate simulated data
-n = 200
-p = 20
-k = 5
-rho = 0.4
-SNR = 10
-cortype = 1
-seed = 10
-Data = gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
-x = Data$x
-y = Data$y
-
-# Best subset selection
-lm.pdas = bess(x, y)
-lambda.list = exp(seq(log(5), log(0.1), length.out = 10))
-lm.l0l2 = bess(x, y, type = "bsrr", lambda.list = lambda.list)
+n <- 200
+p <- 20
+k <- 5
+rho <- 0.4
+SNR <- 10
+cortype <- 1
+seed <- 10
+Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
+x <- Data$x[1:140, ]
+y <- Data$y[1:140]
+x_new <- Data$x[141:200, ]
+y_new <- Data$y[141:200]
+lm.bss <- bess(x, y, method = "sequential")
+lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
+lm.bsrr <- bess(x, y, type = "bsrr", method = "pgsection")
 
 
 }
@@ -123,5 +120,5 @@ doi:10.18637/jss.v094.i04.
 \code{\link{bess}}, \code{\link{predict.bess}}.
 }
 \author{
-Liyuan Hu, Aijun Zhang, Shijie Quan, and Xueqin Wang.
+Canhong Wen, Aijun Zhang, Shijie Quan, Liyuan Hu, Kangkang Jiang, Yanhang Zhang, Jin Zhu and Xueqin Wang.
 }
