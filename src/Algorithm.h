@@ -39,7 +39,6 @@ public:
   int l;
   int model_fit_max;
   int model_type;
-  // int ag_type;
   int algorithm_type;
 
   Algorithm() = default;

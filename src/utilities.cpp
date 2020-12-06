@@ -155,20 +155,6 @@ std::vector<Eigen::MatrixXd> invPhi(std::vector<Eigen::MatrixXd>& Phi, int N){
   return invPhi;
 }
 
-// increse
-// Eigen::VectorXi sort_vec(Eigen::VectorXi& vec){
-//   Eigen::VectorXi ind=Eigen::VectorXi::LinSpaced(vec.size(),0,vec.size()-1); //[0 1 2 3 ... N-1]
-//   auto rule=[vec](int i, int j)->bool{
-//     return vec(i)<vec(j);
-//   };// sort rule
-//   std::sort(ind.data(), ind.data() + ind.size(), rule);
-//   Eigen::VectorXi sorted_vec(vec.size());
-//   for(int i=0;i<vec.size();i++){
-//     sorted_vec(i)=vec(ind(i));
-//   }
-//   return sorted_vec;
-// }
-
 void max_k(Eigen::VectorXd& vec, int k, Eigen::VectorXi& result)
 {
     Eigen::VectorXi ind=Eigen::VectorXi::LinSpaced(vec.size(),0,vec.size()-1); //[0 1 2 3 ... N-1]
