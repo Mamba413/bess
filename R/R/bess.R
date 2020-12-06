@@ -4,8 +4,8 @@
 #' model.
 #'
 #' The best subset selection problem with model size \eqn{s} is
-#' \deqn{\min_\beta -2 logL(\beta) \;\;{\rm s.t.}\;\; \|\beta\|_0 \leq s.} In
-#' the GLM case, \eqn{logL(\beta)} is the log-likelihood function; In the Cox
+#' \deqn{\min_\beta -2 \log L(\beta) \;\;{\rm s.t.}\;\; \|\beta\|_0 \leq s.} In
+#' the GLM case, \eqn{\log L(\beta)} is the log-likelihood function; In the Cox
 #' model, \eqn{logL(\beta)} is the log partial likelihood function.
 #'
 #' The best ridge regression problem with model size \eqn{s} is
@@ -20,7 +20,7 @@
 #' utilizes an active set updating strategy via primal and dual variables and
 #' fits the sub-model by exploiting the fact that their support sets are
 #' non-overlap and complementary. For the case of \code{method = "sequential"}
-#' if \code{warm_start = "TRUE"}, we run the PDAS algorithm for a list of
+#' if \code{warm.start = "TRUE"}, we run the PDAS algorithm for a list of
 #' sequential model sizes and use the estimate from the last iteration as a
 #' warm start. For the case of \code{method = "gsection"} of the best subset
 #' selection problem, a golden section search technique is adopted to
@@ -29,19 +29,22 @@
 #' using a sequential line search method or a golden section search technique is
 #' used for parameters determination.
 #' @param x Input matrix, of dimension \eqn{n \times p}; each row is an observation
-#' vector.
-#' @param y The response variable, of length n. For \code{family = "binomial"} should be
-#' a factor with two levels. For \code{family = "cox"}, y should be a two-column matrix
+#' vector and each column is a predictor/feature/variable.
+#' @param y The response variable, of \code{n} observations. For \code{family = "binomial"} should be
+#' a factor with two levels. For \code{family="poisson"}, \code{y} should be a vector with positive integer.
+#'  For \code{family = "cox"}, \code{y} should be a two-column matrix
 #' with columns named \code{time} and \code{status}.
 #' @param type One of the two types of problems.
 #' \code{type = "bss"} for the best subset selection,
 #' and \code{type = "bsrr"} for the best subset ridge regression.
-#' @param family One of the GLM or Cox models: \code{"gaussian"}, \code{"binomial"},
+#' @param family One of the following models: \code{"gaussian"}, \code{"binomial"},
 #' \code{"poisson"}, or \code{"cox"}. Depending on the response.
 #' @param method The method to be used to select the optimal model size and \eqn{L_2} shrinkage. For
 #' \code{method = "sequential"}, we solve the best subset selection and the best subset ridge regression
 #' problem for each \code{s} in \code{1,2,...,s.max} and \eqn{\lambda} in \code{lambda.list}. For \code{method =
-#' "gsection"}, which is only valid for \code{type = "bss"}, we
+#' "gsection"}, which is only valid for \code{type = "bss"},
+#' we solve the best subset selection problem with model size ranged between s.min and s.max,
+#' where the specific model size to be considered is determined by golden section. we
 #' solve the best subset selection problem with a range of non-continuous model
 #' sizes. For \code{method = "pgsection"} and \code{"psequential"}, the Powell method is used to
 #' solve the best subset ridge regression problem.
@@ -49,27 +52,25 @@
 #' parameters. Available options are \code{"gic"}, \code{"ebic"}, \code{"bic"}, \code{"aic"} and \code{"cv"}.
 #' Default is \code{"gic"}.
 #' @param s.list An increasing list of sequential values representing the model
-#' sizes. Only used for \code{method = "sequential"}.Default is \code{1:min(p,
+#' sizes. Only used for \code{method = "sequential"}. Default is \code{1:min(p,
 #' round(n/log(n)))}.
 #' @param lambda.list A lambda sequence for \code{"bsrr"}. Default is
 #' \code{exp(seq(log(100), log(0.01), length.out = 100))}.
 #' @param s.min The minimum value of model sizes. Only used for \code{method =
-#' "gsection"}. Default is 1.
+#' "gsection"}, \code{"psequential"} and \code{"pgsection"}. Default is 1.
 #' @param s.max The maximum value of model sizes. Only used for \code{method =
-#' "gsection"}. Default is \code{min(p, round(n/log(n)))}.
+#' "gsection"}, \code{"psequential"} and \code{"pgsection"}. Default is \code{min(p, round(n/log(n)))}.
 #' @param lambda.min The minimum value of lambda. Only used for \code{method =
 #' "powell"}. Default is \code{0.001}.
 #' @param lambda.max The maximum value of lambda. Only used for \code{method =
-#' "{powell"}. Default is \code{100}.
-#' @param nlambda The number of \eqn{\lambda}s for the Powell path with sequential line search method. Only Valid for \code{method = "psequential"}.
-#' @param screening.num The number of screening variables.
-#' We provide a sure independence screening method (Fan and Lv 2008) to deal with ultra high-dimensional data for computational and statistical efficiency.
-#' Users can pre-exclude some irrelevant variables according to maximum marginal likelihood estimators before fitting a
+#' "powell"}. Default is \code{100}.
+#' @param nlambda The number of \eqn{\lambda}s for the Powell path with sequential line search method. Only valid for \code{method = "psequential"}.
+#' @param screening.num Users can pre-exclude some irrelevant variables according to maximum marginal likelihood estimators before fitting a
 #' model by passing an integer to \code{screening.num} and the sure independence screening will choose a set of variables of this size.
 #' Then the active set updates are restricted on this subset.
-#' @param normalize Options for data mean-subtraction or normalization. \code{normalize = 0} for
-#' no data process. Setting \code{normalize = 1} will
-#' only subtract the mean of columns of X.
+#' @param normalize Options for normalization. \code{normalize = 0} for
+#' no normalization. Setting \code{normalize = 1} will
+#' only subtract the mean of columns of \code{x}.
 #' \code{normalize = 2} for scaling the columns of \code{x} to have \eqn{\sqrt n} norm.
 #' \code{normalize = 3} for subtracting the means of the columns of \code{x} and \code{y}, and also
 #' normalizing the columns of \code{x} to have \eqn{\sqrt n} norm.
@@ -82,12 +83,16 @@
 #' @param warm.start Whether to use the last solution as a warm start. Default
 #' is \code{TRUE}.
 #' @param nfolds The number of folds in cross-validation. Default is \code{5}.
-#' @param group.index A vector indicating the group index for each variable.
+#' @param group.index A vector of integers indicating the which group each variable is in.
+#' For variables in the same group, they should be located in adjacent columns of \code{x}
+#' and their coorespinding index in \code{group.index} should be the same.
+#' Denote the first group as \code{1}, the second \code{2}, etc.
 #' If you do not fit a model with a group structure,
-#' please do not provide any value to \code{group.index}.
+#' please set \code{group.index = NULL}. Default is \code{NULL}.
 #' @return A list with class attribute 'bess' and named components:
 #' \item{beta}{The best fitting coefficients.} \item{coef0}{The best fitting
-#' intercept.} \item{train_loss}{The training loss of the best fitting model.}
+#' intercept.}
+#' \item{loss}{The training loss of the best fitting model.}
 #' \item{ic}{The information criterion of the best fitting model when model
 #' selection is based on a certain information criterion.} \item{cvm}{The mean
 #' cross-validated error for the best fitting model when model selection is
@@ -101,19 +106,19 @@
 #' list component's \eqn{j^{th}} column.} \item{coef0_all}{The best fitting
 #' intercepts of size \eqn{s=0,1,\dots,p} and \eqn{\lambda} in
 #' \code{lambda.list} with the smallest loss function.}
-#' \item{train_loss_all}{A
+#' \item{loss_all}{A
 #' list of the training loss the best fitting intercepts of model size
 #' \eqn{s=0,1,\dots,p} and \eqn{\lambda} in \code{lambda.list}. For \code{"bess"} object obtained by \code{"bsrr"},
 #' the training loss of the \eqn{i^{th} \lambda} and the \eqn{j^{th}} \code{s}
 #' is at the \eqn{i^{th}} list component's \eqn{j^{th}} entry.}
 #' \item{ic_all}{A
-#' matrix of the mean cross-validated error of model size \eqn{s=0,1,\dots,p}
+#' matrix of the values of the chosen information criterion of model size \eqn{s=0,1,\dots,p}
 #' and \eqn{\lambda} in \code{lambda.list} with the smallest loss function. For \code{"bess"} object obtained by \code{"bsrr"},
 #' the training loss of the \eqn{i^{th} \lambda} and the \eqn{j^{th}}
 #' \code{s} is at the \eqn{i^{th}} row \eqn{j^{th}} column. Only available when
 #' model selection is based on a certain information criterion.}
 #'
-#' \item{cvm_all}{A matrix of the information criteria of model size
+#' \item{cvm_all}{A matrix of the mean cross-validation error of model size
 #' \eqn{s=0,1,\dots,p} and \eqn{\lambda} in \code{lambda.list} with the
 #' smallest loss function. For \code{"bess"} object obtained by \code{"bsrr"}, the training loss of the \eqn{i^{th}
 #' \lambda} and the \eqn{j^{th}} \code{s} is at the \eqn{i^{th}} row
@@ -144,7 +149,7 @@
 #' SNR <- 10
 #' cortype <- 1
 #' seed <- 10
-#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, SNR = SNR, seed = seed)
+#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, snr = SNR, seed = seed)
 #' x <- Data$x[1:140, ]
 #' y <- Data$y[1:140]
 #' x_new <- Data$x[141:200, ]
@@ -166,7 +171,7 @@
 #' plot(lm.bsrr)
 #' #-------------------logistic model----------------------#
 #' #Generate simulated data
-#' Data = gen.data(n, p, k, rho, family = "binomial", cortype = cortype, SNR = SNR, seed = seed)
+#' Data = gen.data(n, p, k, rho, family = "binomial", cortype = cortype, snr = SNR, seed = seed)
 #'
 #' x <- Data$x[1:140, ]
 #' y <- Data$y[1:140]
@@ -214,13 +219,14 @@
 #'
 #'#-------------------group selection----------------------#
 #'beta <- rep(c(rep(1,2),rep(0,3)), 4)
-#'Data <- gen.data(n, p, rho=0.4, beta = beta, SNR = 100, seed =10)
+#'Data <- gen.data(n, p, rho=0.4, beta = beta, snr = 100, seed =10)
 #'x <- Data$x
 #'y <- Data$y
 #'
-#'group.index <- c(1, 3, 6, 8, 11, 13, 16, 18)
+#'group.index <- c(rep(1, 2), rep(2, 3), rep(3, 2), rep(4, 3),
+#'rep(5, 2), rep(6, 3), rep(7, 2), rep(8, 3))
 #'lm.group <- bess(x, y, s.min=1, s.max = 8, type = "bss", group.index = group.index)
-#'lm.groupl0l2 <- bess(x, y, type = "bsrr", s.min = 1, s.max = 8, group.index = group.index)
+#'lm.groupbsrr <- bess(x, y, type = "bsrr", s.min = 1, s.max = 8, group.index = group.index)
 #'coef(lm.group)
 #'coef(lm.groupbsrr)
 #'print(lm.group)
@@ -241,6 +247,7 @@ bess <- function(x, y, family = c("gaussian", "binomial", "poisson", "cox"), typ
                  max.iter = 20, warm.start = TRUE,
                  nfolds = 5,
                  group.index =NULL){
+  set.seed(123)
 
   if(missing(s.list)) s.list <- 1:min(ncol(x),round(nrow(x)/log(nrow(x))))
   if(missing(s.min)) s.min <- 1
@@ -296,7 +303,16 @@ bess <- function(x, y, family = c("gaussian", "binomial", "poisson", "cox"), typ
     if(path_type == 2 & s.max > ncol(x)) stop("s.max is too large")
   }
   if(!is.null(group.index)){
-    g_index <- group.index - 1
+    g_index <- NULL
+    group_set <- unique(group.index)
+    j <- 1
+    for(i in group_set){
+      while(group.index[j] != i){
+        j <- j+1
+      }
+      g_index = c(g_index, j - 1)
+    }
+    # g_index <- group.index - 1
     algorithm_type = switch(type,
                             "bss" = "GPDAS",
                             "bsrr" = "GL0L2")
@@ -423,6 +439,8 @@ bess <- function(x, y, family = c("gaussian", "binomial", "poisson", "cox"), typ
     res.pdas$y <- y
     res.pdas$family <- family
     res.pdas$factor <- factor
+    names(res.pdas)[which(names(res.pdas)=="train_loss")] <- "loss"
+    names(res.pdas)[which(names(res.pdas)=="train_loss_all")] <- "loss_all"
     res.pdas$s.list <- s.list
     res.pdas$nsample <- nrow(x)
     res.pdas$algorithm_type <- "PDAS"
@@ -457,6 +475,8 @@ bess <- function(x, y, family = c("gaussian", "binomial", "poisson", "cox"), typ
     res.gpdas$x <- x
     res.gpdas$y <- y
     res.gpdas$family <- family
+    names(res.gpdas)[which(names(res.gpdas)=="train_loss")] <- "loss"
+    names(res.gpdas)[which(names(res.gpdas)=="train_loss_all")] <- "loss_all"
     res.gpdas$factor <- factor
     res.gpdas$s.list <- s.list
     res.gpdas$nsample <- nrow(x)
@@ -494,6 +514,8 @@ bess <- function(x, y, family = c("gaussian", "binomial", "poisson", "cox"), typ
     res.gl0l2$family <- family
     res.gl0l2$factor <- factor
     res.gl0l2$s.list <- s.list
+    names(res.gl0l2)[which(names(res.gl0l2)=="train_loss")] <- "loss"
+    names(res.gl0l2)[which(names(res.gl0l2)=="train_loss_all")] <- "loss_all"
     res.gl0l2$nsample <- nrow(x)
     res.gl0l2$algorithm_type <- "GL0L2"
     res.gl0l2$method <- method
@@ -538,6 +560,8 @@ bess <- function(x, y, family = c("gaussian", "binomial", "poisson", "cox"), typ
     res.l0l2$family <- family
     res.l0l2$factor <- factor
     res.l0l2$s.list <- s.list
+    names(res.l0l2)[which(names(res.l0l2)=="train_loss")] <- "loss"
+    names(res.l0l2)[which(names(res.l0l2)=="train_loss_all")] <- "loss_all"
     res.l0l2$lambda.list <- lambda.list
     res.l0l2$nsample <- nrow(x)
     res.l0l2$algorithm_type <- "L0L2"
