@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <Eigen/Eigen>
+#include <vector>
 using namespace std;
 
 Eigen::MatrixXd Pointer2MatrixXd(double* x, int x_row, int x_col);
@@ -17,5 +18,12 @@ void MatrixXd2Pointer(Eigen::MatrixXd x_matrix, double* x);
 void MatrixXi2Pointer(Eigen::MatrixXi x_matrix, int* x);
 void VectorXd2Pointer(Eigen::VectorXd x_vector, double*x);
 void VectorXi2Pointer(Eigen::VectorXi x_vector, int* x);
+
+Eigen::VectorXi find_ind(Eigen::VectorXi& L, Eigen::VectorXi& index, Eigen::VectorXi& gsize, int p, int N);
+Eigen::MatrixXd X_seg(Eigen::MatrixXd& X, int n, Eigen::VectorXi& ind);
+std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, double lambda);
+std::vector<Eigen::MatrixXd> invPhi(std::vector<Eigen::MatrixXd>& Phi, int N);
+
+void max_k(Eigen::VectorXd& vec, int k, Eigen::VectorXi& result);
 
 #endif //BESS_UTILITIES_H

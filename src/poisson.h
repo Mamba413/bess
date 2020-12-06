@@ -1,13 +1,12 @@
 #ifndef POISSON_H
 #define POISSON_H
 
-
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
 #else
 #include <Eigen/Eigen>
-//#include "List.h"
+#include "List.h"
 #endif
 
 #include <algorithm>

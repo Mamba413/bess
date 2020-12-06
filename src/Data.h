@@ -1,7 +1,7 @@
 //
 // Created by Mamba on 2020/2/18.
 //
-
+// #define R_BUILD
 #ifndef SRC_DATA_H
 #define SRC_DATA_H
 
@@ -38,7 +38,7 @@ public:
 
     Data() = default;
 
-    Data(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorXd weight, bool is_normal, Eigen::VectorXi g_index) {
+    Data(Eigen::MatrixXd& x, Eigen::VectorXd& y, int data_type, Eigen::VectorXd weight, bool is_normal, Eigen::VectorXi g_index) {
         this->x = x;
         this->y = y;
         this->data_type = data_type;
@@ -54,7 +54,8 @@ public:
             this->normalize();
         }
 
-         this->g_index = g_index;
+       
+        this->g_index = g_index;
         this->g_num = (g_index).size(); 
         if (g_num > 1) {  
             Eigen::VectorXi temp = Eigen::VectorXi::Zero(g_num);
@@ -72,20 +73,15 @@ public:
     };
 
     void normalize() {
-//        std::cout<<"normalize"<<endl;
         if(this->data_type == 1){
             Normalize(this->x, this->y, this->weight, this->x_mean, this->y_mean, this->x_norm);
         }
         else if(this->data_type == 2){
-//            std::cout<<"normalize"<<endl;
             Normalize3(this->x, this->weight, this->x_mean, this->x_norm);
         }
         else{
-            // std::cout<<"norm_4"<<endl;
             Normalize4(this->x, this->weight, this->x_norm);
         }
-//        std::cout<<"normalize end"<<endl;
-        // reload this method for different data type
     };
 
   Eigen::VectorXi get_g_index() {
@@ -116,24 +112,4 @@ public:
         }
     };
 };
-
-//class GaussData : public Data {
-//public:
-//    GaussData(Eigen::MatrixXd &x, Eigen::VectorXd &y):Data(x, y) {}
-//};
-//
-//class BinomialData : public Data {
-//public:
-//    BinomialData(Eigen::MatrixXd &x, Eigen::VectorXd &y):Data(x, y) {}
-//};
-//
-//class CoxData : public Data {
-//    Eigen::VectorXd censore_state;
-//
-//public:
-//    CoxData(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &censore_state):Data(x, y) {
-//        this->censore_state = censore_state;
-//    }
-//};
-
 #endif //SRC_DATA_H

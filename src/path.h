@@ -1,7 +1,6 @@
 //
 // Created by jtwok on 2020/3/8.
 //
-#define R_BUILD 
 #ifndef SRC_PATH_H
 #define SRC_PATH_H
 
@@ -45,14 +44,5 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
                 Eigen::VectorXd &beta1, double &coef01, double &train_loss1, double &ic1, int nlambda, Eigen::MatrixXd &ic_sequence);
                 
 List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, double log_lambda_min, double log_lambda_max, int powell_path, int nlambda);
-
-// void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], double u[], int s_min, int s_max, double log_lambda_min, double log_lambda_max, double best_arg[],
-//                            Eigen::MatrixXd &beta1, Eigen::VectorXd &coef01, Eigen::VectorXd &train_loss1, Eigen::VectorXd &ic1, Eigen::VectorXd &lambda1, int &size_temp);
-
-// void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], double u[], int s_min, int s_max, double log_lambda_min, double log_lambda_max, double best_arg[],
-//                 Eigen::MatrixXd &beta1, Eigen::VectorXd &coef01, Eigen::VectorXd &train_loss1, Eigen::VectorXd &ic1, Eigen::VectorXd &lambda1, int &size_temp, int nlambda);
-                
-// List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, double log_lambda_min, double log_lambda_max, int powell_path, int nlambda);
-
 
 #endif //SRC_PATH_H
