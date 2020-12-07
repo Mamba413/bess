@@ -165,3 +165,15 @@ void max_k(Eigen::VectorXd& vec, int k, Eigen::VectorXi& result)
     std::sort(ind.data(), ind.data()+k);
     result = ind.head(k).eval();
 }
+
+void slice_assignment(Eigen::VectorXd& nums, Eigen::VectorXi& ind, double value)
+{
+    if(ind.size() != 0)
+    {
+        for(int i=0;i<ind.size();i++)
+        {
+            nums(ind(i)) = value;
+        }
+    }
+}
+

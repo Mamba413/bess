@@ -45,19 +45,22 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              int s_min, int s_max, int K_max, double epsilon,
              double lambda_min, double lambda_max, int nlambda,
              bool is_screening, int screening_size, int powell_path,
-             Eigen::VectorXi g_index) {
+             Eigen::VectorXi g_index,
+             Eigen::VectorXi always_select,
+             double tao) {
     #ifndef R_BUILD
         srand(123);
     #endif
     int p = x.cols();
     Eigen::VectorXi screening_A;
     if (is_screening) {
-        screening_A = screening(x, y, weight, model_type, screening_size, g_index);
+        screening_A = screening(x, y, weight, model_type, screening_size, g_index, always_select);
     }
     Data data(x, y, data_type, weight, is_normal, g_index);
 
     Algorithm *algorithm;
-    //  1 + 5
+
+    /// ### keep
     // if (algorithm_type == 1 || algorithm_type == 5) {
     //     if (model_type == 1) {
     //         data.add_weight();
@@ -102,6 +105,10 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
         }
     }
 
+    algorithm->set_warm_start(is_warm_start);
+    algorithm->always_select = always_select;
+    algorithm->tao = tao;
+
     #ifdef OTHER_ALGORITHM1
         if (algorithm_type == 6) {
             if (model_type == 1) {
@@ -119,7 +126,7 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
             }
         }
     #endif
-    algorithm->set_warm_start(is_warm_start);
+    
 
     Metric *metric;
     if (model_type == 1) {
@@ -160,6 +167,7 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
 
     if (is_screening) {
         Eigen::VectorXd beta_screening_A;
+
         Eigen::VectorXd beta = Eigen::VectorXd::Zero(p);
         #ifndef R_BUILD
             result.get_value_by_name("beta", beta_screening_A);
@@ -192,37 +200,56 @@ void pywrap_bess(double *x, int x_row, int x_col, double *y, int y_len, int data
                  int s_min, int s_max, int K_max, double epsilon,
                  double lambda_min, double lambda_max, int n_lambda,
                  bool is_screening, int screening_size, int powell_path,
+                 int *always_select, int always_select_len, double tao,
                  double *beta_out, int beta_out_len, double *coef0_out, int coef0_out_len, double *train_loss_out,
                  int train_loss_out_len, double *ic_out, int ic_out_len, double *nullloss_out, double *aic_out,
                  int aic_out_len, double *bic_out, int bic_out_len, double *gic_out, int gic_out_len, int *A_out,
                  int A_out_len, int *l_out)
-                 {
-    Eigen::MatrixXd x_Mat;
-    Eigen::VectorXd y_Vec;
-    Eigen::VectorXd weight_Vec;
-    Eigen::VectorXi gindex_Vec;
-    Eigen::VectorXd state_Vec;
-    Eigen::VectorXi sequence_Vec;
-    Eigen::VectorXd lambda_sequence_Vec;
+    {
+        Eigen::MatrixXd x_Mat;
+        Eigen::VectorXd y_Vec;
+        Eigen::VectorXd weight_Vec;
+        Eigen::VectorXi gindex_Vec;
+        Eigen::VectorXd state_Vec;
+        Eigen::VectorXi sequence_Vec;
+        Eigen::VectorXd lambda_sequence_Vec;
+        Eigen::VectorXi always_select_Vec;
 
-    x_Mat = Pointer2MatrixXd(x, x_row, x_col);
-    y_Vec = Pointer2VectorXd(y, y_len);
-    weight_Vec = Pointer2VectorXd(weight, weight_len);
-    state_Vec = Pointer2VectorXd(state, state_len);
-    gindex_Vec = Pointer2VectorXi(gindex, gindex_len);
-    sequence_Vec = Pointer2VectorXi(sequence, sequence_len);
-    lambda_sequence_Vec = Pointer2VectorXd(lambda_sequence, lambda_sequence_len);
+        x_Mat = Pointer2MatrixXd(x, x_row, x_col);
+        y_Vec = Pointer2VectorXd(y, y_len);
+        weight_Vec = Pointer2VectorXd(weight, weight_len);
+        state_Vec = Pointer2VectorXd(state, state_len);
+        gindex_Vec = Pointer2VectorXi(gindex, gindex_len);
+        sequence_Vec = Pointer2VectorXi(sequence, sequence_len);
+        lambda_sequence_Vec = Pointer2VectorXd(lambda_sequence, lambda_sequence_len);
+        always_select_Vec = Pointer2VectorXi(always_select, always_select_len);
 
-    List mylist = bessCpp(x_Mat, y_Vec, data_type, weight_Vec,
-                          is_normal,
-                          algorithm_type, model_type, max_iter, exchange_num,
-                          path_type, is_warm_start,
-                          ic_type, is_cv, K,
-                          state_Vec,
-                          sequence_Vec,
-                          lambda_sequence_Vec,
-                          s_min, s_max, K_max, epsilon,
-                          lambda_min, lambda_max, n_lambda,
-                          is_screening, screening_size, powell_path,
-                          gindex_Vec);
+        List mylist = bessCpp(x_Mat, y_Vec, data_type, weight_Vec,
+                            is_normal,
+                            algorithm_type, model_type, max_iter, exchange_num,
+                            path_type, is_warm_start,
+                            ic_type, is_cv, K,
+                            state_Vec,
+                            sequence_Vec,
+                            lambda_sequence_Vec,
+                            s_min, s_max, K_max, epsilon,
+                            lambda_min, lambda_max, n_lambda,
+                            is_screening, screening_size, powell_path,
+                            gindex_Vec, 
+                            always_select_Vec, tao);
+
+                                Eigen::VectorXd beta;
+        double coef0;
+        double train_loss;
+        double ic;
+        mylist.get_value_by_name("beta", beta);
+        mylist.get_value_by_name("coef0", coef0);
+        mylist.get_value_by_name("train_loss", train_loss);
+        mylist.get_value_by_name("ic", ic);
+
+        VectorXd2Pointer(beta, beta_out);
+        *coef0_out = coef0;
+        *train_loss_out = train_loss;
+        *ic_out = ic;
+    }
 #endif

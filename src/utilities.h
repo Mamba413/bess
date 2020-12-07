@@ -25,5 +25,6 @@ std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eige
 std::vector<Eigen::MatrixXd> invPhi(std::vector<Eigen::MatrixXd>& Phi, int N);
 
 void max_k(Eigen::VectorXd& vec, int k, Eigen::VectorXi& result);
+void slice_assignment(Eigen::VectorXd& nums, Eigen::VectorXi& ind, double value);
 
 #endif //BESS_UTILITIES_H

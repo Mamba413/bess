@@ -17,11 +17,13 @@ using namespace Rcpp;
 #include "poisson.h"
 #include "coxph.h"
 #include "utilities.h"
+#include <iostream>
+#include <cfloat>
 
 using namespace std;
 using namespace Eigen;
 
-Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &weight, int algorithm_type, int screening_size, Eigen::VectorXi &g_index)
+Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorXd &weight, int algorithm_type, int screening_size, Eigen::VectorXi &g_index, Eigen::VectorXi &always_select)
 {
     int n = x.rows();
     int p = x.cols();
@@ -56,11 +58,12 @@ Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorX
         else if(algorithm_type == 4)
         {
             beta=cox_fit(x_tmp, y, n, g_size(i), weight);
-
         }
-
         coef_norm(i) = beta.tail(g_size(i)).eval().squaredNorm() / g_size(i);
     }
+
+    // keep always_select in active_set
+    slice_assignment(coef_norm, always_select, DBL_MAX);
 
     max_k(coef_norm, screening_size, screening_A);
 
@@ -85,6 +88,18 @@ Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorX
     }
     x = x_A;
     g_index = new_g_index;
+
+    if(always_select.size() != 0)
+    {
+        Eigen::VectorXi new_always_select(always_select.size());
+        int j=0;
+        for(int i=0;i<always_select.size();i++)
+        {
+            while(always_select(i) != screening_A(j)) j++;
+            new_always_select(i) = j;
+        }
+        always_select = new_always_select;
+    }
 
     return screening_A;
 }

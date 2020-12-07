@@ -128,4 +128,3 @@ Eigen::VectorXd poisson_fit(Eigen::MatrixXd x, Eigen::VectorXd y, int n, int p, 
   return beta0;
 
   }
-}

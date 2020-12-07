@@ -12,6 +12,7 @@
 #include <iostream>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <time.h>
+#include <cfloat>
 
 using namespace std;
 
@@ -40,6 +41,8 @@ public:
   int model_fit_max;
   int model_type;
   int algorithm_type;
+  Eigen::VectorXi always_select;
+  double tao;
 
   Algorithm() = default;
 
@@ -58,99 +61,45 @@ public:
     this->algorithm_type = algorithm_type;
   };
 
-  void update_PhiG(vector<Eigen::MatrixXd> &PhiG)
-  {
-    this->PhiG = PhiG;
-  }
+  void update_PhiG(vector<Eigen::MatrixXd> &PhiG){this->PhiG = PhiG;}
 
-  void update_invPhiG(vector<Eigen::MatrixXd> &invPhiG)
-  {
-    this->invPhiG = invPhiG;
-  }
+  void update_invPhiG(vector<Eigen::MatrixXd> &invPhiG){this->invPhiG = invPhiG;}
 
-  void set_warm_start(bool warm_start)
-  {
-    this->warm_start = warm_start;
-  };
+  void set_warm_start(bool warm_start){this->warm_start = warm_start;}
 
-  void update_beta_init(Eigen::VectorXd beta_init)
-  {
+  void update_beta_init(Eigen::VectorXd beta_init){this->beta_init = beta_init;}
 
-    this->beta_init = beta_init;
-  };
+  void update_coef0_init(double coef0){this->coef0_init = coef0;}
 
-  void update_coef0_init(double coef0)
-  {
-    this->coef0_init = coef0;
-  };
-
-  void update_group_df(int group_df)
-  {
-    this->group_df = group_df;
-  };
+  void update_group_df(int group_df){this->group_df = group_df;}
 
   void update_sparsity_level(int sparsity_level)
   {
     this->sparsity_level = sparsity_level;
-    //  to ensure
     this->group_df = sparsity_level;
   }
 
-  void update_lambda_level(double lambda_level)
-  {
+  void update_lambda_level(double lambda_level){this->lambda_level = lambda_level;}
 
-    this->lambda_level = lambda_level;
-  }
+  void update_train_mask(Eigen::VectorXi train_mask){this->train_mask = train_mask;}
 
-  void update_train_mask(Eigen::VectorXi train_mask)
-  {
-    this->train_mask = train_mask;
-  }
+  void update_exchange_num(int exchange_num){this->exchange_num = exchange_num;}
 
-  void update_exchange_num(int exchange_num)
-  {
-    this->exchange_num = exchange_num;
-  };
+  bool get_warm_start(){return this->warm_start;}
 
-  bool get_warm_start()
-  {
-    return this->warm_start;
-  }
+  double get_loss(){return this->loss;}
 
-  double get_loss()
-  {
-    return this->loss;
-  }
+  int get_group_df(){return this->group_df;}
 
-  int get_group_df()
-  {
-    return this->group_df;
-  };
+  int get_sparsity_level(){return this->sparsity_level;}
 
-  int get_sparsity_level()
-  {
-    return this->sparsity_level;
-  }
+  Eigen::VectorXd get_beta(){return this->beta;}
 
-  Eigen::VectorXd get_beta()
-  {
-    return this->beta;
-  }
+  double get_coef0(){return this->coef0;}
 
-  double get_coef0()
-  {
-    return this->coef0;
-  }
+  Eigen::VectorXi get_A_out(){return this->A_out;};
 
-  Eigen::VectorXi get_A_out()
-  {
-    return this->A_out;
-  };
-
-  int get_l()
-  {
-    return this->l;
-  }
+  int get_l(){return this->l;}
 
   void fit()
   {
@@ -175,7 +124,6 @@ public:
     {
       for (int i = 0; i < train_n; i++)
       {
-
         train_x.row(i) = data.x.row(this->train_mask(i)).eval();
         train_y(i) = data.y(this->train_mask(i));
         train_weight(i) = data.weight(this->train_mask(i));
@@ -190,72 +138,79 @@ public:
     Eigen::VectorXd beta_A = Eigen::VectorXd::Zero(T0);
     this->beta = this->beta_init;
     this->coef0 = this->coef0_init;
-    if (this->algorithm_type == 1 || this->algorithm_type == 5)
+
+    /// ### keep
+
+    // if (this->algorithm_type == 1 || this->algorithm_type == 5)
+    // {
+    //   for (this->l = 1; this->l <= this->max_iter; l++)
+    //   {
+    //     this->get_A(train_x, train_y, this->beta, this->coef0, T0, train_weight, g_index, g_size, N, A);
+    //     A_list.col(this->l) = A;
+    //     for (int mm = 0; mm < T0; mm++)
+    //     {
+    //       X_A.col(mm) = train_x.col(A[mm]);
+    //     }
+    //     this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0);
+    //     this->beta = Eigen::VectorXd::Zero(p);
+    //     for (int mm = 0; mm < T0; mm++)
+    //     {
+    //       this->beta(A[mm]) = beta_A(mm);
+    //     }
+    //     for (int ll = 0; ll < this->l; ll++)
+    //     {
+    //       if (A == A_list.col(ll))
+    //       {
+    //         return;
+    //       }
+    //     }
+    //   }
+    // }
+    // else
+    // {
+    //   Eigen::VectorXi ind;
+    //   for (this->l = 1; this->l <= this->max_iter; l++)
+    //   {
+    //     this->get_A(train_x, train_y, this->beta, this->coef0, T0, train_weight, g_index, g_size, N, A);
+    //     A_list.col(this->l) = A;
+    //     ind = find_ind(A, g_index, g_size, p, N);
+    //     X_A = X_seg(train_x, train_n, ind);
+    //     beta_A = Eigen::VectorXd::Zero(ind.size());
+    //     this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0);
+    //     this->beta = Eigen::VectorXd::Zero(p);
+    //     for (int mm = 0; mm < ind.size(); mm++)
+    //     {
+    //       this->beta(ind(mm)) = beta_A(mm);
+    //     }
+    //     for (int ll = 0; ll < this->l; ll++)
+    //     {
+    //       if (A == A_list.col(ll))
+    //       {
+    //         return;
+    //       }
+    //     }
+    //   }
+    // }
+
+    Eigen::VectorXi ind;
+    for (this->l = 1; this->l <= this->max_iter; l++)
     {
-
-      for (this->l = 1; this->l <= this->max_iter; l++)
+      this->get_A(train_x, train_y, this->beta, this->coef0, T0, train_weight, g_index, g_size, N, A);
+      A_list.col(this->l) = A;
+      ind = find_ind(A, g_index, g_size, p, N);
+      X_A = X_seg(train_x, train_n, ind);
+      beta_A = Eigen::VectorXd::Zero(ind.size());
+      this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0);
+      this->beta = Eigen::VectorXd::Zero(p);
+      for (int mm = 0; mm < ind.size(); mm++)
       {
-
-        this->get_A(train_x, train_y, this->beta, this->coef0, T0, train_weight, g_index, g_size, N, A);
-
-        A_list.col(this->l) = A;
-
-        for (int mm = 0; mm < T0; mm++)
-        {
-          X_A.col(mm) = train_x.col(A[mm]);
-        }
-        // t1 = clock();
-        this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0);
-        // t2 = clock();
-
-        this->beta = Eigen::VectorXd::Zero(p);
-
-        for (int mm = 0; mm < T0; mm++)
-        {
-          this->beta(A[mm]) = beta_A(mm);
-        }
-        for (int ll = 0; ll < this->l; ll++)
-        {
-          if (A == A_list.col(ll))
-          {
-
-            return;
-          }
-        }
+        this->beta(ind(mm)) = beta_A(mm);
       }
-    }
-    else
-    {
-
-      Eigen::VectorXi ind;
-      for (this->l = 1; this->l <= this->max_iter; l++)
+      for (int ll = 0; ll < this->l; ll++)
       {
-
-        this->get_A(train_x, train_y, this->beta, this->coef0, T0, train_weight, g_index, g_size, N, A);
-
-        A_list.col(this->l) = A;
-
-        ind = find_ind(A, g_index, g_size, p, N);
-
-        X_A = X_seg(train_x, train_n, ind);
-
-        beta_A = Eigen::VectorXd::Zero(ind.size());
-
-        this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0);
-
-        this->beta = Eigen::VectorXd::Zero(p);
-        for (int mm = 0; mm < ind.size(); mm++)
+        if (A == A_list.col(ll))
         {
-          this->beta(ind(mm)) = beta_A(mm);
-        }
-
-        for (int ll = 0; ll < this->l; ll++)
-        {
-          if (A == A_list.col(ll))
-          {
-
-            return;
-          }
+          return;
         }
       }
     }
@@ -285,14 +240,7 @@ public:
     Eigen::VectorXd d = (X.transpose() * (y - X * beta - coef)) / double(n);
     Eigen::VectorXd bd = beta + d;
     bd = bd.cwiseAbs();
-    for (int k = 0; k <= T0 - 1; k++)
-    {
-      bd.maxCoeff(&A[k]);
-      bd(A[k]) = -1.0;
-    }
-    sort(A.begin(), A.end());
-    for (int i = 0; i < T0; i++)
-      A_out(i) = A[i];
+    max_k(bd, T0, A_out);
   };
 
   void primary_model_fit(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
@@ -451,14 +399,7 @@ public:
     Eigen::VectorXd l2 = (X.adjoint()) * ((pr.cwiseProduct(one - pr)).cwiseProduct(weights));
     Eigen::VectorXd d = -l1.cwiseQuotient(l2);
     bd = (beta + d).cwiseAbs().cwiseProduct(l2.cwiseSqrt());
-    for (int k = 0; k < T0; k++)
-    {
-      bd.maxCoeff(&A[k]);
-      bd(A[k]) = -1.0;
-    }
-    sort(A.begin(), A.end());
-    for (int i = 0; i < T0; i++)
-      A_out(i) = A[i];
+    max_k(bd, T0, A_out);
   };
 };
 
@@ -552,14 +493,7 @@ public:
       h(i) = xbeta_exp.dot(Xsquare.col(i));
     }
     bd = h.cwiseProduct((beta - g.cwiseQuotient(h)).cwiseAbs2());
-    for (int k = 0; k <= T0 - 1; k++)
-    {
-      bd.maxCoeff(&A[k]);
-      bd(A[k]) = 0.0;
-    }
-    sort(A.begin(), A.end());
-    for (int i = 0; i < T0; i++)
-      A_out(i) = A[i];
+    max_k(bd, T0, A_out);
   }
 };
 
@@ -706,14 +640,7 @@ public:
     bd = bd.cwiseProduct(l2.cwiseSqrt());
     bd = bd.array().square();
 
-    for (int k = 0; k <= T0 - 1; k++)
-    {
-      bd.maxCoeff(&A[k]);
-      bd(A[k]) = -1.0;
-    }
-    sort(A.begin(), A.end());
-    for (int i = 0; i < T0; i++)
-      A_out(i) = A[i];
+    max_k(bd, T0, A_out);
   }
 };
 
@@ -735,14 +662,7 @@ public:
     Eigen::VectorXd bd = sqrt(1 + 2 * this->lambda_level) * beta + d;
     bd = bd.cwiseAbs2();
 
-    for (int k = 0; k <= T0 - 1; k++)
-    {
-      bd.maxCoeff(&A[k]);
-      bd(A[k]) = -1.0;
-    }
-    sort(A.begin(), A.end());
-    for (int i = 0; i < T0; i++)
-      A_out(i) = A[i];
+    max_k(bd, T0, A_out);
   };
 
   void primary_model_fit(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
@@ -844,14 +764,7 @@ public:
     Eigen::VectorXd l2 = (X.adjoint()) * ((pr.cwiseProduct(one - pr)).cwiseProduct(weights)) + 2 * this->lambda_level * Eigen::MatrixXd::Ones(p, 1);
     Eigen::VectorXd d = -l1.cwiseQuotient(l2);
     bd = (beta + d).cwiseAbs().cwiseProduct(l2.cwiseSqrt());
-    for (int k = 0; k <= T0 - 1; k++)
-    {
-      bd.maxCoeff(&A[k]);
-      bd(A[k]) = -1.0;
-    }
-    sort(A.begin(), A.end());
-    for (int i = 0; i < T0; i++)
-      A_out(i) = A[i];
+    max_k(bd, T0, A_out);
   }
 };
 
@@ -951,16 +864,7 @@ public:
 
     bd = (beta + d).cwiseAbs().cwiseProduct(l2.cwiseSqrt());
 
-    for (int k = 0; k <= T0 - 1; k++)
-    {
-      bd.maxCoeff(&A[k]);
-
-      bd(A[k]) = -1.0;
-    }
-    sort(A.begin(), A.end());
-
-    for (int i = 0; i < T0; i++)
-      A_out(i) = A[i];
+    max_k(bd, T0, A_out);
   }
 };
 
@@ -1140,15 +1044,7 @@ public:
     bd = bd.cwiseAbs();
     bd = bd.cwiseProduct(l2.cwiseSqrt());
 
-    for (int k = 0; k <= T0 - 1; k++)
-    {
-      bd.maxCoeff(&A[k]);
-      bd(A[k]) = 0.0;
-    }
-    sort(A.begin(), A.end());
-
-    for (int i = 0; i < T0; i++)
-      A_out(i) = A[i];
+    max_k(bd, T0, A_out);
   }
 };
 
@@ -1173,7 +1069,6 @@ public:
 
     for (int i = 0; i < N; i++)
     {
-
       Eigen::MatrixXd phiG = PhiG[i];
       Eigen::MatrixXd invphiG = invPhiG[i];
       betabar.segment(index(i), gsize(i)) = phiG * beta.segment(index(i), gsize(i));
@@ -1185,7 +1080,11 @@ public:
       bd(i) = (temp.segment(index(i), gsize(i))).squaredNorm() / gsize(i);
     }
 
+    // keep always_select in active_set
+    slice_assignment(bd, always_select, DBL_MAX);
+
     max_k(bd, T0, A_out);
+    // cout<<"A_OUT: "<<A_out<<endl;
   };
 
   void primary_model_fit(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
@@ -1205,10 +1104,8 @@ public:
 
   void primary_model_fit(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
-
     int n = x.rows();
     int p = x.cols();
-
     Eigen::MatrixXd X = Eigen::MatrixXd::Ones(n, p + 1);
     X.rightCols(p) = x;
     Eigen::MatrixXd X_new = Eigen::MatrixXd::Zero(n, p + 1);
@@ -1266,10 +1163,8 @@ public:
   void get_A(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd beta, double coef0, int T0, Eigen::VectorXd weights,
              Eigen::VectorXi index, Eigen::VectorXi gsize, int N, Eigen::VectorXi &A_out)
   {
-
     int n = X.rows();
     int p = X.cols();
-
     Eigen::VectorXd betabar = Eigen::VectorXd::Zero(p);
     Eigen::VectorXd dbar = Eigen::VectorXd::Zero(p);
     Eigen::VectorXd one = Eigen::VectorXd::Ones(n);
@@ -1299,7 +1194,6 @@ public:
 
     for (int i = 0; i < N; i++)
     {
-
       Eigen::MatrixXd XG = X.middleCols(index(i), gsize(i));
       Eigen::MatrixXd XG_new = XG;
       for (int j = 0; j < n; j++)
@@ -1318,6 +1212,9 @@ public:
     {
       bd(i) = (temp.segment(index(i), gsize(i))).squaredNorm() / gsize(i);
     }
+
+    // keep always_select in active_set
+    slice_assignment(bd, always_select, DBL_MAX);
 
     max_k(bd, T0, A_out);
   };
@@ -1413,6 +1310,9 @@ public:
     {
       bd(i) = (temp.segment(index(i), gsize(i)).squaredNorm()) / gsize(i);
     }
+
+    // keep always_select in active_set
+    slice_assignment(bd, always_select, DBL_MAX);
 
     max_k(bd, T0, A_out);
   };
@@ -1570,6 +1470,9 @@ public:
         bd(i) = (temp.segment(index(i), gsize(i))).squaredNorm() / (gsize(i));
       }
 
+      // keep always_select in active_set
+      slice_assignment(bd, always_select, DBL_MAX);
+
       max_k(bd, T0, A_out);
     }
     else if (this->algorithm_type == 1 || this->algorithm_type == 5)
@@ -1639,15 +1542,18 @@ public:
       bd = bd.cwiseAbs();
       bd = bd.cwiseProduct(l2.cwiseSqrt());
 
+      // keep always_select in active_set
+      slice_assignment(bd, always_select, DBL_MAX);
+
       max_k(bd, T0, A_out);
     }
     else
     {
-#ifdef R_BUILD
-      Rcpp::Rcout << "algorithm can not be " << this->algorithm_type << endl;
-#else
-      cout << "algorithm can not be " << this->algorithm_type << endl;
-#endif
+      #ifdef R_BUILD
+        Rcpp::Rcout << "algorithm can not be " << this->algorithm_type << endl;
+      #else
+        cout << "algorithm can not be " << this->algorithm_type << endl;
+      #endif
     }
   };
 };

@@ -567,6 +567,7 @@ void cal_intersections(double p[], double u[], int s_min, int s_max, double lamb
         cout << "need_flag[2]" << need_flag[2] << endl;
         cout << "need_flag[3]" << need_flag[3] << endl;
         }
+    #endif
     return;
 }
 
