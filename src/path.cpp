@@ -116,23 +116,23 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
     int min_loss_index_row = 0, min_loss_index_col = 0;
     ic_sequence.minCoeff(&min_loss_index_row, &min_loss_index_col);
     List mylist;
-    #ifdef R_BUILD
-        mylist = List::create(Named("beta") = beta_matrix[min_loss_index_col].col(min_loss_index_row).eval(),
-                              Named("coef0") = coef0_sequence[min_loss_index_col](min_loss_index_row),
-                              Named("train_loss") = loss_sequence[min_loss_index_col](min_loss_index_row),
-                              Named("ic") = ic_sequence(min_loss_index_row, min_loss_index_col), Named("lambda") = lambda_seq(min_loss_index_col),
-                              Named("beta_all") = beta_matrix,
-                              Named("coef0_all") = coef0_sequence,
-                              Named("train_loss_all") = loss_sequence,
-                              Named("ic_all") = ic_sequence);
-    #else
-        mylist.add("beta", beta_matrix[min_loss_index_col].col(min_loss_index_row).eval());
-        mylist.add("coef0", coef0_sequence[min_loss_index_col](min_loss_index_row));
-        mylist.add("train_loss", loss_sequence[min_loss_index_col](min_loss_index_row));
-        mylist.add("ic", ic_sequence(min_loss_index_row, min_loss_index_col));
-        mylist.add("lambda", lambda_seq(min_loss_index_col));
-    #endif
-        return mylist;
+#ifdef R_BUILD
+    mylist = List::create(Named("beta") = beta_matrix[min_loss_index_col].col(min_loss_index_row).eval(),
+                          Named("coef0") = coef0_sequence[min_loss_index_col](min_loss_index_row),
+                          Named("train_loss") = loss_sequence[min_loss_index_col](min_loss_index_row),
+                          Named("ic") = ic_sequence(min_loss_index_row, min_loss_index_col), Named("lambda") = lambda_seq(min_loss_index_col),
+                          Named("beta_all") = beta_matrix,
+                          Named("coef0_all") = coef0_sequence,
+                          Named("train_loss_all") = loss_sequence,
+                          Named("ic_all") = ic_sequence);
+#else
+    mylist.add("beta", beta_matrix[min_loss_index_col].col(min_loss_index_row).eval());
+    mylist.add("coef0", coef0_sequence[min_loss_index_col](min_loss_index_row));
+    mylist.add("train_loss", loss_sequence[min_loss_index_col](min_loss_index_row));
+    mylist.add("ic", ic_sequence(min_loss_index_row, min_loss_index_col));
+    mylist.add("lambda", lambda_seq(min_loss_index_col));
+#endif
+    return mylist;
 }
 
 List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, int K_max, double epsilon)
@@ -295,14 +295,14 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     double best_coef0 = 0;
     double best_train_loss = 0;
     double best_ic = DBL_MAX;
-    for(int T_tmp=Tmin; T_tmp<=Tmax; T_tmp++)
+    for (int T_tmp = Tmin; T_tmp <= Tmax; T_tmp++)
     {
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(T_tmp);
         algorithm->update_beta_init(beta_init);
         algorithm->update_coef0_init(coef0_init);
         algorithm->fit();
-        if(algorithm->warm_start)
+        if (algorithm->warm_start)
         {
             beta_init = algorithm->get_beta();
             coef0_init = algorithm->get_coef0();
@@ -368,20 +368,20 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
         }
     }
 
-    #ifdef R_BUILD
-        return List::create(Named("beta") = best_beta, Named("coef0") = best_coef0, Named("train_loss") = best_train_loss, Named("ic") = best_ic,
-                            Named("beta_all") = beta_all,
-                            Named("coef0_all") = coef0_all,
-                            Named("train_loss_all") = train_loss_all,
-                            Named("ic_all") = ic_all);
-    #else
-        List mylist;
-        mylist.add("beta", best_beta);
-        mylist.add("coef0", best_coef0);
-        mylist.add("train_loss", best_train_loss);
-        mylist.add("ic", best_ic);
-        return mylist;
-    #endif
+#ifdef R_BUILD
+    return List::create(Named("beta") = best_beta, Named("coef0") = best_coef0, Named("train_loss") = best_train_loss, Named("ic") = best_ic,
+                        Named("beta_all") = beta_all,
+                        Named("coef0_all") = coef0_all,
+                        Named("train_loss_all") = train_loss_all,
+                        Named("ic_all") = ic_all);
+#else
+    List mylist;
+    mylist.add("beta", best_beta);
+    mylist.add("coef0", best_coef0);
+    mylist.add("train_loss", best_train_loss);
+    mylist.add("ic", best_ic);
+    return mylist;
+#endif
 }
 
 int sign(double a)
@@ -530,7 +530,7 @@ void cal_intersections(double p[], double u[], int s_min, int s_max, double lamb
 
     if (j != 2)
     {
-    #ifdef R_BUILD
+#ifdef R_BUILD
         Rcpp::Rcout << "---------------------------" << endl;
         Rcpp::Rcout << "j: " << j << endl;
         Rcpp::Rcout << "inetrsection numbers wrong" << j << endl;
@@ -548,7 +548,7 @@ void cal_intersections(double p[], double u[], int s_min, int s_max, double lamb
         Rcpp::Rcout << "need_flag[1]" << need_flag[1] << endl;
         Rcpp::Rcout << "need_flag[2]" << need_flag[2] << endl;
         Rcpp::Rcout << "need_flag[3]" << need_flag[3] << endl;
-    #else
+#else
         cout << "---------------------------" << endl;
         cout << "j: " << j << endl;
         cout << "inetrsection numbers wrong" << j << endl;
@@ -566,7 +566,8 @@ void cal_intersections(double p[], double u[], int s_min, int s_max, double lamb
         cout << "need_flag[1]" << need_flag[1] << endl;
         cout << "need_flag[2]" << need_flag[2] << endl;
         cout << "need_flag[3]" << need_flag[3] << endl;
-        }
+#endif
+    }
     return;
 }
 
