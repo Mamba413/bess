@@ -24,7 +24,7 @@ using namespace std;
 
 List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::VectorXi sequence, Eigen::VectorXd lambda_seq)
 {
-
+    cout<<"seq"<<endl;
     int p = data.get_p();
     int n = data.get_n();
     int i;
@@ -32,10 +32,9 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
     int sequence_size = sequence.size();
     int lambda_size = lambda_seq.size();
     Eigen::VectorXi full_mask(n);
-    for (i = 0; i < n; i++)
-    {
-        full_mask(i) = int(i);
-    }
+    for (i = 0; i < n; i++) full_mask(i) = int(i);
+
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
 
     Eigen::MatrixXd ic_sequence(sequence_size, lambda_size);
     vector<Eigen::VectorXd> loss_sequence(lambda_size);
@@ -56,6 +55,7 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
             algorithm->update_lambda_level(lambda_seq(j));
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -112,6 +112,15 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
             }
         }
     }
+
+    for(i=0;i<sequence_size;i++){
+       cout<<endl;
+           for(j=0; j<lambda_size;j++)
+       {
+           cout<<"i: "<<i+1<<" "<<", j: "<<j+1<<", ";
+           cout<<ic_sequence(i,j)<<loss_sequence[j](i)<<endl;
+       }
+       }   
 
     int min_loss_index_row = 0, min_loss_index_col = 0;
     ic_sequence.minCoeff(&min_loss_index_row, &min_loss_index_col);

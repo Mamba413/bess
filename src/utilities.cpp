@@ -135,15 +135,30 @@ Eigen::MatrixXd X_seg(Eigen::MatrixXd& X, int n, Eigen::VectorXi& ind) {
   return X_new;
 }
 
-std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, double lambda){
+std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, double lambda, std::vector<Eigen::MatrixXd> group_XTX){
+//   cout<<"Phi"<<endl;
   std::vector<Eigen::MatrixXd> Phi(N);
   for (int i=0;i<N;i++) {
-    Eigen::MatrixXd X_ind = X.block(0, index(i), n, gsize(i));
-    Eigen::MatrixXd XtX = 2*lambda * Eigen::MatrixXd::Identity(gsize(i), gsize(i)) + (X_ind.transpose() * X_ind)/double(n);
-    XtX.sqrt().evalTo(Phi[i]);
+    Eigen::MatrixXd lambda_XtX = 2*lambda * Eigen::MatrixXd::Identity(gsize(i), gsize(i)) + group_XTX[i]/double(n);
+    lambda_XtX.sqrt().evalTo(Phi[i]);
   }
   return Phi;
 }
+
+std::vector<Eigen::MatrixXd> group_XTX(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, int model_type){
+//   cout<<"group_XTX"<<endl;
+  std::vector<Eigen::MatrixXd> XTX(N); 
+  if(model_type == 1)
+  {
+    for (int i=0;i<N;i++) {
+    Eigen::MatrixXd X_ind = X.block(0, index(i), n, gsize(i));
+    XTX[i] = X_ind.transpose() * X_ind;
+    }
+  }
+  return XTX;
+}
+
+
 
 std::vector<Eigen::MatrixXd> invPhi(std::vector<Eigen::MatrixXd>& Phi, int N){
   std::vector<Eigen::MatrixXd> invPhi(N);

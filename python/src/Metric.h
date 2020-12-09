@@ -23,6 +23,8 @@ public:
     std::vector<Eigen::VectorXi> train_mask_list;
     std::vector<Eigen::VectorXi> test_mask_list;
 
+    std::vector<std::vector<Eigen::MatrixXd> > group_XTX_list;
+
     Metric() = default;
 
     Metric(int ic_type, bool is_cv, int K = 0) {
@@ -84,12 +86,32 @@ public:
             std::sort(train_mask.data(), train_mask.data() + train_mask.size());
             train_mask_list_tmp[k] = train_mask;
             test_mask_list_tmp[k] = group_list[k];
-    
-
         }
         this->train_mask_list = train_mask_list_tmp;
         this->test_mask_list = test_mask_list_tmp;
     };
+
+    void cal_cv_group_XTX(Data& data)
+    {
+        int p = data.p;
+        Eigen::VectorXi index = data.g_index;
+        Eigen::VectorXi gsize = data.g_size;
+        int N = data.g_num;
+
+        std::vector<std::vector<Eigen::MatrixXd> > group_XTX_list_tmp(this->K);
+
+        for(int k=0;k<this->K;k++)
+        {
+            int train_size = this->train_mask_list[k].size();
+            Eigen::MatrixXd train_x(train_size, p);
+
+            for (int i = 0; i < train_size; i++) {
+                train_x.row(i) = data.x.row(this->train_mask_list[k](i));
+            };
+            group_XTX_list_tmp[k] = group_XTX(train_x, index, gsize, train_size, p, N, 1);
+        }
+        this->group_XTX_list = group_XTX_list_tmp;
+    }
 
     virtual double test_loss(Algorithm *algorithm, Data &data) = 0;
 
@@ -116,33 +138,30 @@ public:
             int p = data.get_p();
 
             Eigen::VectorXd loss_list(this->K);
+            for (k = 0; k < this->K; k++) {
+            int test_size = this->test_mask_list[k].size();
+            Eigen::MatrixXd test_x(test_size, p);
+            Eigen::VectorXd test_y(test_size);
+            Eigen::VectorXd test_weight(test_size);
 
-         
-                for (k = 0; k < this->K; k++) {
-              
-                int test_size = this->test_mask_list[k].size();
-               
-                Eigen::MatrixXd test_x(test_size, p);
-                Eigen::VectorXd test_y(test_size);
-                Eigen::VectorXd test_weight(test_size);
+            for (int i = 0; i < test_size; i++) {
+                test_x.row(i) = data.x.row(this->test_mask_list[k](i));
+                test_y(i) = data.y(this->test_mask_list[k](i));
+                test_weight(i) = data.weight(this->test_mask_list[k](i));
+            };
 
-                for (int i = 0; i < test_size; i++) {
-                    test_x.row(i) = data.x.row(this->test_mask_list[k](i));
-                    test_y(i) = data.y(this->test_mask_list[k](i));
-                    test_weight(i) = data.weight(this->test_mask_list[k](i));
-                };
+            if (algorithm->get_warm_start()) {
+                algorithm->update_beta_init(this->cv_initial_model_param.row(k));
+            }
+            
+            algorithm->update_train_mask(this->train_mask_list[k]);
+            algorithm->update_group_XTX(this->group_XTX_list[k]);
+            algorithm->fit();
+            if (algorithm->get_warm_start()) {
+                this->update_cv_initial_model_param(algorithm->get_beta(), k);
+            }
 
-                if (algorithm->get_warm_start()) {
-                    algorithm->update_beta_init(this->cv_initial_model_param.row(k));
-                }
-              
-                algorithm->update_train_mask(this->train_mask_list[k]);
-                algorithm->fit();
-                if (algorithm->get_warm_start()) {
-                    this->update_cv_initial_model_param(algorithm->get_beta(), k);
-                }
-
-                loss_list(k) = (test_y - test_x * algorithm->get_beta()).array().square().sum() / double(2 * test_size);
+            loss_list(k) = (test_y - test_x * algorithm->get_beta()).array().square().sum() / double(2 * test_size);
 
             }
           

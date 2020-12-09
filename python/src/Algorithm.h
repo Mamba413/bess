@@ -41,6 +41,7 @@ public:
   int model_fit_max;
   int model_type;
   int algorithm_type;
+  std::vector<Eigen::MatrixXd> group_XTX;
   Eigen::VectorXi always_select;
   double tao;
 
@@ -85,6 +86,12 @@ public:
 
   void update_exchange_num(int exchange_num){this->exchange_num = exchange_num;}
 
+  void update_group_XTX(std::vector<Eigen::MatrixXd> group_XTX)
+  {
+    // cout<<"update_group_XTX"<<endl;
+    this->group_XTX = group_XTX;
+  }
+
   bool get_warm_start(){return this->warm_start;}
 
   double get_loss(){return this->loss;}
@@ -103,6 +110,7 @@ public:
 
   void fit()
   {
+    // cout<<"fit"<<endl;
     int train_n = this->train_mask.size();
     int p = data.get_p();
     Eigen::MatrixXd train_x(train_n, p);
@@ -195,12 +203,21 @@ public:
     Eigen::VectorXi ind;
     for (this->l = 1; this->l <= this->max_iter; l++)
     {
+      clock_t t1 = clock();
       this->get_A(train_x, train_y, this->beta, this->coef0, T0, train_weight, g_index, g_size, N, A);
+      clock_t t2 = clock();
+      printf("get A time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
       A_list.col(this->l) = A;
+      t1 = clock();
       ind = find_ind(A, g_index, g_size, p, N);
       X_A = X_seg(train_x, train_n, ind);
       beta_A = Eigen::VectorXd::Zero(ind.size());
+      t2 = clock();
+      printf("group add time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+      t1 = clock();
       this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0);
+      t2 = clock();
+      printf("fit time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
       this->beta = Eigen::VectorXd::Zero(p);
       for (int mm = 0; mm < ind.size(); mm++)
       {
@@ -1058,15 +1075,23 @@ public:
   {
     int n = X.rows();
     int p = X.cols();
-    vector<Eigen::MatrixXd> PhiG = Phi(X, index, gsize, n, p, N, this->lambda_level);
+    clock_t t1 = clock();
+    vector<Eigen::MatrixXd> PhiG = Phi(X, index, gsize, n, p, N, this->lambda_level, this->group_XTX);
+    clock_t t2 = clock();
+    printf("PhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+    t1 = clock();
     vector<Eigen::MatrixXd> invPhiG = invPhi(PhiG, N);
+    t2 = clock();
+    printf("invPhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+
     Eigen::VectorXd betabar = Eigen::VectorXd::Zero(p);
     Eigen::VectorXd dbar = Eigen::VectorXd::Zero(p);
     Eigen::VectorXd bd = Eigen::VectorXd::Zero(N);
     Eigen::VectorXd coef = Eigen::VectorXd::Ones(n) * coef0;
     Eigen::VectorXd d = X.adjoint() * (y - X * beta - coef) / double(n) - 2 * this->lambda_level * beta;
     vector<int> A(T0, -1);
-
+    
+    t1 = clock();
     for (int i = 0; i < N; i++)
     {
       Eigen::MatrixXd phiG = PhiG[i];
@@ -1079,6 +1104,8 @@ public:
     {
       bd(i) = (temp.segment(index(i), gsize(i))).squaredNorm() / gsize(i);
     }
+    t2 = clock();
+    printf("invPhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
 
     // keep always_select in active_set
     slice_assignment(bd, always_select, DBL_MAX);

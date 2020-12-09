@@ -21,8 +21,9 @@ void VectorXi2Pointer(Eigen::VectorXi x_vector, int* x);
 
 Eigen::VectorXi find_ind(Eigen::VectorXi& L, Eigen::VectorXi& index, Eigen::VectorXi& gsize, int p, int N);
 Eigen::MatrixXd X_seg(Eigen::MatrixXd& X, int n, Eigen::VectorXi& ind);
-std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, double lambda);
+std::vector<Eigen::MatrixXd> Phi(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, double lambda, std::vector<Eigen::MatrixXd> group_XTX);
 std::vector<Eigen::MatrixXd> invPhi(std::vector<Eigen::MatrixXd>& Phi, int N);
+std::vector<Eigen::MatrixXd> group_XTX(Eigen::MatrixXd& X, Eigen::VectorXi index, Eigen::VectorXi gsize, int n, int p, int N, int model_type);
 
 void max_k(Eigen::VectorXd& vec, int k, Eigen::VectorXi& result);
 void slice_assignment(Eigen::VectorXd& nums, Eigen::VectorXi& ind, double value);
