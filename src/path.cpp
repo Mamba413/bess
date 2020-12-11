@@ -24,7 +24,6 @@ using namespace std;
 
 List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::VectorXi sequence, Eigen::VectorXd lambda_seq)
 {
-    //cout<<"seq"<<endl;
     int p = data.get_p();
     int n = data.get_n();
     int i;
@@ -152,6 +151,8 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     int p = data.get_p();
     int n = data.get_n();
     int i;
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
+
     Eigen::VectorXi full_mask(n);
     for (i = 0; i < n; i++)
     {
@@ -181,6 +182,8 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     algorithm->update_sparsity_level(T1);
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
+
     algorithm->fit();
     if (algorithm->warm_start)
     {
@@ -202,6 +205,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     algorithm->update_sparsity_level(T2);
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
     algorithm->fit();
     if (algorithm->warm_start)
     {
@@ -243,6 +247,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             algorithm->update_sparsity_level(T1);
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -282,6 +287,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             algorithm->update_sparsity_level(T2);
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -313,6 +319,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
         algorithm->update_sparsity_level(T_tmp);
         algorithm->update_beta_init(beta_init);
         algorithm->update_coef0_init(coef0_init);
+        algorithm->update_group_XTX(full_group_XTX);
         algorithm->fit();
         if (algorithm->warm_start)
         {
@@ -593,6 +600,8 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
     {
         full_mask(i) = int(i);
     }
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
+
     Eigen::VectorXd beta_init = Eigen::VectorXd::Zero(data.get_p());
     Eigen::VectorXd beta_temp1 = Eigen::VectorXd::Zero(data.get_p());
     Eigen::VectorXd beta_temp2 = Eigen::VectorXd::Zero(data.get_p());
@@ -642,6 +651,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
     algorithm->update_lambda_level(exp(c[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
     algorithm->fit();
     if (algorithm->warm_start)
     {
@@ -669,6 +679,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
     algorithm->update_lambda_level(exp(d[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
     algorithm->fit();
     if (algorithm->warm_start)
     {
@@ -724,6 +735,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
             algorithm->update_lambda_level(exp(c[1]));
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -790,6 +802,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
             algorithm->update_lambda_level(exp(c[1]));
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -843,6 +856,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
             algorithm->update_lambda_level(exp(d[1]));
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -899,6 +913,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
                 algorithm->update_lambda_level(exp(c[1]));
                 algorithm->update_beta_init(beta_init);
                 algorithm->update_coef0_init(coef0_init);
+                algorithm->update_group_XTX(full_group_XTX);
                 algorithm->fit();
                 if (algorithm->warm_start)
                 {
@@ -954,6 +969,8 @@ int GDC(int a, int b)
 void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], double u[], int s_min, int s_max, double log_lambda_min, double log_lambda_max, double best_arg[],
                 Eigen::VectorXd &beta1, double &coef01, double &train_loss1, double &ic1, int nlambda, Eigen::MatrixXd &ic_sequence)
 {
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
+
     int n = data.get_n();
     Eigen::VectorXi full_mask(n);
     for (int i = 0; i < n; i++)
@@ -1007,6 +1024,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     algorithm->update_lambda_level(exp(p[1] + i * u[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
 
     algorithm->fit();
     if (algorithm->warm_start)
@@ -1046,6 +1064,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
         algorithm->update_lambda_level(exp(p[1] + i * u[1]));
         algorithm->update_beta_init(beta_init);
         algorithm->update_coef0_init(coef0_init);
+        algorithm->update_group_XTX(full_group_XTX);
 
         algorithm->fit();
         if (algorithm->warm_start)
@@ -1080,6 +1099,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
         algorithm->update_lambda_level(exp(p[1] - j * u[1]));
         algorithm->update_beta_init(beta_init);
         algorithm->update_coef0_init(coef0_init);
+        algorithm->update_group_XTX(full_group_XTX);
 
         algorithm->fit();
         if (algorithm->warm_start)
@@ -1136,6 +1156,8 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
 {
     int n = data.get_n();
     Eigen::VectorXi full_mask(n);
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
+
     for (int i = 0; i < n; i++)
     {
         full_mask(i) = i;
@@ -1216,6 +1238,7 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             algorithm->update_train_mask(full_mask);
             algorithm->update_sparsity_level(int(P[0][0]));
             algorithm->update_lambda_level(exp(P[0][1]));
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
 
             Eigen::VectorXd best_beta = algorithm->get_beta();
