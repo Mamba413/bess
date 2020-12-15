@@ -1,7 +1,7 @@
 //
 // Created by Mamba on 2020/2/18.
 //
-//#define R_BUILD
+// #define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -113,16 +113,16 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
         }
     }
 
-    // for (i = 0; i < sequence_size; i++)
-    // {
-    //     cout << endl;
-    //     for (j = 0; j < lambda_size; j++)
-    //     {
-    //         cout << "i: " << i + 1 << " "
-    //              << ", j: " << j + 1 << ", ";
-    //         cout << ic_sequence(i, j) << loss_sequence[j](i) << endl;
-    //     }
-    // }
+    for (i = 0; i < sequence_size; i++)
+    {
+        cout << endl;
+        for (j = 0; j < lambda_size; j++)
+        {
+            cout << "i: " << i + 1 << " "
+                 << ", j: " << j + 1 << ", ";
+            cout << ic_sequence(i, j) << loss_sequence[j](i) << endl;
+        }
+    }
 
     int min_loss_index_row = 0, min_loss_index_col = 0;
     ic_sequence.minCoeff(&min_loss_index_row, &min_loss_index_col);
@@ -225,8 +225,10 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     icT2 = metric->ic(algorithm, data);
 
     int iter = 2;
+    std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
     while (T1 != T2)
     {
+        std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
         if (icT1 < icT2)
         {
             Tmax = T2;
@@ -309,6 +311,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             icT2 = metric->ic(algorithm, data);
         };
     }
+    std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
     Eigen::VectorXd best_beta = Eigen::VectorXd::Zero(p);
     double best_coef0 = 0;
     double best_train_loss = 0;
@@ -984,6 +987,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
 
     double d_lambda = (log_lambda_max - log_lambda_min) / (nlambda - 1);
     int k_lambda = abs(round(u[1] / d_lambda));
+    cout << "d_lambda: " << d_lambda << ", k_lambda: " << k_lambda << ", u[1]: " << u[1] << ", u[0]: " << u[0] << endl;
     if (abs(u[0]) != 1 && k_lambda != 1)
     {
         if (k_lambda == 0 && u[0] != 0)
@@ -1005,6 +1009,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
             }
         }
     }
+    cout << "u[0]: " << u[0] << ", u[1]: " << u[1] << endl;
 
     int i = 0;
     int j = 0;
@@ -1052,13 +1057,16 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     {
         ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_1(i) ? ic_sequence_1(i) : ic_sequence(ic_row, ic_col);
     }
+    cout << "i: " << i << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << endl;
 
     i++;
     j++;
     beta_warm = beta_init;
     coef0_warm = coef0_init;
+    cout << "s_max: " << s_max << ", s_min: " << s_min << ", log_lambda_max + d_lambda * 1e-4:" << log_lambda_max + d_lambda * 1e-4 << ", log_lambda_min - d_lambda * 1e-4: " << log_lambda_min - d_lambda * 1e-4 << endl;
     while ((p[0] + i * u[0] <= s_max) && (p[1] + i * u[1] <= log_lambda_max + d_lambda * 1e-4) && (p[0] + i * u[0] >= s_min) && (p[1] + i * u[1] >= log_lambda_min - d_lambda * 1e-4))
     {
+        cout << "i:" << i << ", p[0]: " << p[0] << ", u[0]: " << u[0] << ", p[0] + i * u[0]: " << p[0] + i * u[0] << ", p[1]" << p[1] << ", u[1]: " << u[1] << ", p[1] + i * u[1] : " << p[1] + i * u[1] << endl;
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(p[0] + i * u[0]);
         algorithm->update_lambda_level(exp(p[1] + i * u[1]));
@@ -1086,14 +1094,17 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
         {
             ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_1(i) ? ic_sequence_1(i) : ic_sequence(ic_row, ic_col);
         }
+        cout << "i: " << i << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << ", ic_sequence_1(i): " << ic_sequence_1(i) << endl;
         i++;
     }
+    cout << "out: i:" << i << ", p[0] - i * u[0]: " << p[0] - i * u[0] << ", p[1] - i * u[1] : " << p[1] - i * u[1] << endl;
 
     beta_init = beta_warm;
     coef0_init = coef0_warm;
 
     while ((p[0] - j * u[0] <= s_max) && (p[1] - j * u[1] <= log_lambda_max + d_lambda * 1e-4) && (p[0] - j * u[0] >= s_min) && (p[1] - j * u[1] >= log_lambda_min - d_lambda * 1e-4))
     {
+        cout << "j:" << j << ", p[0]: " << p[0] << ", u[0]: " << u[0] << ", p[0] - j * u[0]: " << p[0] - j * u[0] << ", p[1]" << p[1] << ", u[1]: " << u[1] << ", p[1] - j * u[1]" << p[1] - j * u[1] << endl;
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(p[0] - j * u[0]);
         algorithm->update_lambda_level(exp(p[1] - j * u[1]));
@@ -1121,15 +1132,18 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
         {
             ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_2(j) ? ic_sequence_2(j) : ic_sequence(ic_row, ic_col);
         }
+        cout << "j: " << j << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << "ic_sequence_2(j): " << ic_sequence_2(j) << endl;
 
         j++;
     }
+    cout << "out: j:" << j << ", p[0] - j * u[0]: " << p[0] - j * u[0] << ", p[1] - j * u[1] : " << p[1] - j * u[1] << endl;
     int minPosition_1, minPosition_2;
     ic_sequence_1 = ic_sequence_1.head(i).eval();
     ic_sequence_2 = ic_sequence_2.head(j).eval();
     ic_sequence_1.minCoeff(&minPosition_1);
     ic_sequence_2.minCoeff(&minPosition_2);
-
+    cout << "minPosition_1: " << minPosition_1 << ", minPosition_2: " << minPosition_2 << ",  ic_sequence_1.minCoeff(&minPosition_1): " << ic_sequence_1(minPosition_1) << ", ic_sequence_2.minCoeff(&minPosition_2): " << ic_sequence_2(minPosition_2) << endl;
+    cout << "ic_sequence_2(minPosition_2): " << ic_sequence_2(minPosition_2) << ", ic_sequence_2(minPosition_2+1): " << ic_sequence_2(minPosition_2 + 1) << ", ic_sequence_2(minPosition_2+1)< ic_sequence_2(minPosition_2): " << (ic_sequence_2(minPosition_2 + 1) < ic_sequence_2(minPosition_2)) << endl;
     int minPosition;
     if (ic_sequence_1(minPosition_1) < ic_sequence_2(minPosition_2))
     {
@@ -1149,7 +1163,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     }
     best_arg[0] = p[0] + (minPosition)*u[0];
     best_arg[1] = p[1] + (minPosition)*u[1];
-
+    cout << "minPosition :" << minPosition << ",  best_arg[0]:" << best_arg[0] << " best_arg[1]: " << best_arg[1] << ", p[1] + (minPosition)*u[1]= " << p[1] << "+" << minPosition << "* " << u[1] << "= " << p[1] + (minPosition)*u[1] << ", (minPosition)*u[1]: " << (minPosition)*u[1] << endl;
     return;
 }
 List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, double log_lambda_min, double log_lambda_max, int powell_path, int nlambda)
@@ -1200,11 +1214,12 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
     ic_all(ttt) = ic_temp;
     lambda_chosen(ttt) = exp(P[0][1]);
 
-    while (ttt < 99)
+    while (ttt < 11)
     {
         ttt++;
         for (i = 0; i < 2; i++)
         {
+            cout << "================= ttt: " << ttt << "=======================" << endl;
             if (powell_path == 1)
                 golden_section_search(data, algorithm, metric, P[i], U[i], s_min, s_max, log_lambda_min, log_lambda_max, P[i + 1], beta_temp, coef0_temp, train_loss_temp, ic_temp, ic_sequence);
             else
@@ -1220,8 +1235,10 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
         U[0][1] = U[1][1];
         U[1][0] = P[2][0] - P[0][0];
         U[1][1] = P[2][1] - P[0][1];
-        if ((!(abs(U[1][0]) <= 0.0001 && abs(U[1][1]) <= 0.0001)) && ttt < 99)
+        cout << " U[1][0]: " << U[1][0] << ", U[1][1]: " << U[1][1] << endl;
+        if ((!(abs(U[1][0]) <= 0.0001 && abs(U[1][1]) <= 0.0001)) && ttt < 11)
         {
+            cout << "================= ttt: " << ttt << "=======================" << endl;
             if (powell_path == 1)
                 golden_section_search(data, algorithm, metric, P[0], U[1], s_min, s_max, log_lambda_min, log_lambda_max, P[0], beta_temp, coef0_temp, train_loss_temp, ic_temp, ic_sequence);
             else
@@ -1308,12 +1325,12 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             mylist.add("train_loss", train_loss_all(min_ic_index));
             mylist.add("ic", ic_all(min_ic_index));
             mylist.add("lambda", lambda_chosen(min_ic_index));
-            mylist.add("beta_all", beta_all);
-            mylist.add("coef0_all", coef0_all);
-            mylist.add("train_loss_all", train_loss_all);
-            mylist.add("ic_all", ic_all);
-            mylist.add("lambda_all", lambda_chosen);
-            mylist.add("ic_mat", ic_sequence);
+            // mylist.add("beta_all", beta_all);
+            // mylist.add("coef0_all", coef0_all);
+            // mylist.add("train_loss_all", train_loss_all);
+            // mylist.add("ic_all", ic_all);
+            // mylist.add("lambda_all", lambda_chosen);
+            // mylist.add("ic_mat", ic_sequence);
             return mylist;
 #endif
         }

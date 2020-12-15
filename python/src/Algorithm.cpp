@@ -4,6 +4,7 @@
 
 #include "Algorithm.h"
 
-bool quick_sort_pair_max(std::pair<int, double> x, std::pair<int, double> y) {
+bool quick_sort_pair_max(std::pair<int, double> x, std::pair<int, double> y)
+{
     return x.second > y.second;
 }

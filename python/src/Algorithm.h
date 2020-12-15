@@ -62,17 +62,17 @@ public:
     this->algorithm_type = algorithm_type;
   };
 
-  void update_PhiG(vector<Eigen::MatrixXd> &PhiG){this->PhiG = PhiG;}
+  void update_PhiG(vector<Eigen::MatrixXd> &PhiG) { this->PhiG = PhiG; }
 
-  void update_invPhiG(vector<Eigen::MatrixXd> &invPhiG){this->invPhiG = invPhiG;}
+  void update_invPhiG(vector<Eigen::MatrixXd> &invPhiG) { this->invPhiG = invPhiG; }
 
-  void set_warm_start(bool warm_start){this->warm_start = warm_start;}
+  void set_warm_start(bool warm_start) { this->warm_start = warm_start; }
 
-  void update_beta_init(Eigen::VectorXd beta_init){this->beta_init = beta_init;}
+  void update_beta_init(Eigen::VectorXd beta_init) { this->beta_init = beta_init; }
 
-  void update_coef0_init(double coef0){this->coef0_init = coef0;}
+  void update_coef0_init(double coef0) { this->coef0_init = coef0; }
 
-  void update_group_df(int group_df){this->group_df = group_df;}
+  void update_group_df(int group_df) { this->group_df = group_df; }
 
   void update_sparsity_level(int sparsity_level)
   {
@@ -80,11 +80,11 @@ public:
     this->group_df = sparsity_level;
   }
 
-  void update_lambda_level(double lambda_level){this->lambda_level = lambda_level;}
+  void update_lambda_level(double lambda_level) { this->lambda_level = lambda_level; }
 
-  void update_train_mask(Eigen::VectorXi train_mask){this->train_mask = train_mask;}
+  void update_train_mask(Eigen::VectorXi train_mask) { this->train_mask = train_mask; }
 
-  void update_exchange_num(int exchange_num){this->exchange_num = exchange_num;}
+  void update_exchange_num(int exchange_num) { this->exchange_num = exchange_num; }
 
   void update_group_XTX(std::vector<Eigen::MatrixXd> group_XTX)
   {
@@ -92,25 +92,25 @@ public:
     this->group_XTX = group_XTX;
   }
 
-  bool get_warm_start(){return this->warm_start;}
+  bool get_warm_start() { return this->warm_start; }
 
-  double get_loss(){return this->loss;}
+  double get_loss() { return this->loss; }
 
-  int get_group_df(){return this->group_df;}
+  int get_group_df() { return this->group_df; }
 
-  int get_sparsity_level(){return this->sparsity_level;}
+  int get_sparsity_level() { return this->sparsity_level; }
 
-  Eigen::VectorXd get_beta(){return this->beta;}
+  Eigen::VectorXd get_beta() { return this->beta; }
 
-  double get_coef0(){return this->coef0;}
+  double get_coef0() { return this->coef0; }
 
-  Eigen::VectorXi get_A_out(){return this->A_out;};
+  Eigen::VectorXi get_A_out() { return this->A_out; };
 
-  int get_l(){return this->l;}
+  int get_l() { return this->l; }
 
   void fit()
   {
-    // cout<<"fit"<<endl;
+    //cout<<"fit"<<endl;
     int train_n = this->train_mask.size();
     int p = data.get_p();
     Eigen::MatrixXd train_x(train_n, p);
@@ -121,15 +121,17 @@ public:
     int N = data.get_g_num();
     Eigen::VectorXi g_index = data.get_g_index();
     Eigen::VectorXi g_size = data.get_g_size();
-
+    //cout<<"N: "<<N<<endl;
     if (train_n == data.get_n())
     {
+      //cout<<"trian_n==n"<<endl;
       train_x = data.x;
       train_y = data.y;
       train_weight = data.weight;
     }
     else
     {
+      //cout<<"else"<<endl;
       for (int i = 0; i < train_n; i++)
       {
         train_x.row(i) = data.x.row(this->train_mask(i)).eval();
@@ -201,22 +203,25 @@ public:
     // }
 
     Eigen::VectorXi ind;
+    //cout<<"T0: "<<T0<<endl;
     for (this->l = 1; this->l <= this->max_iter; l++)
     {
-      clock_t t1 = clock();
+      //cout<<"l: "<<l<<endl;
+      // clock_t t1 = clock();
       this->get_A(train_x, train_y, this->beta, this->coef0, T0, train_weight, g_index, g_size, N, A);
-      clock_t t2 = clock();
-      printf("get A time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+      // clock_t t2 = clock();
+      // printf("get A time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
       A_list.col(this->l) = A;
-      t1 = clock();
+      // cout<<"A: "<<A<<endl;
+      // t1 = clock();
       ind = find_ind(A, g_index, g_size, p, N);
       X_A = X_seg(train_x, train_n, ind);
       beta_A = Eigen::VectorXd::Zero(ind.size());
-      t2 = clock();
-      printf("group add time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
-      t1 = clock();
+      // t2 = clock();
+      // printf("group add time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+      clock_t t1 = clock();
       this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0);
-      t2 = clock();
+      clock_t t2 = clock();
       printf("fit time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
       this->beta = Eigen::VectorXd::Zero(p);
       for (int mm = 0; mm < ind.size(); mm++)
@@ -1075,43 +1080,52 @@ public:
   {
     int n = X.rows();
     int p = X.cols();
-    clock_t t1 = clock();
+    cout << "n: " << n << ", p:" << p << endl;
+    //clock_t t1 = clock();
     vector<Eigen::MatrixXd> PhiG = Phi(X, index, gsize, n, p, N, this->lambda_level, this->group_XTX);
-    clock_t t2 = clock();
-    printf("PhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
-    t1 = clock();
+    cout << "PhiG: " << endl;
+    //clock_t t2 = clock();
+    //printf("PhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+    //t1 = clock();
     vector<Eigen::MatrixXd> invPhiG = invPhi(PhiG, N);
-    t2 = clock();
-    printf("invPhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+    cout << "invPhiG: " << endl;
+    //t2 = clock();
+    //printf("invPhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
 
     Eigen::VectorXd betabar = Eigen::VectorXd::Zero(p);
     Eigen::VectorXd dbar = Eigen::VectorXd::Zero(p);
     Eigen::VectorXd bd = Eigen::VectorXd::Zero(N);
     Eigen::VectorXd coef = Eigen::VectorXd::Ones(n) * coef0;
     Eigen::VectorXd d = X.adjoint() * (y - X * beta - coef) / double(n) - 2 * this->lambda_level * beta;
+    cout << "d: " << d << endl;
     vector<int> A(T0, -1);
-    
-    t1 = clock();
+
+    //t1 = clock();
     for (int i = 0; i < N; i++)
     {
+      cout << "i: ";
       Eigen::MatrixXd phiG = PhiG[i];
       Eigen::MatrixXd invphiG = invPhiG[i];
       betabar.segment(index(i), gsize(i)) = phiG * beta.segment(index(i), gsize(i));
+      cout << ", betabar.segment(index(i), gsize(i))： " << betabar.segment(index(i), gsize(i)) << endl;
       dbar.segment(index(i), gsize(i)) = invphiG * d.segment(index(i), gsize(i));
+      cout << "dbar.segment(index(i), gsize(i)) : " << dbar.segment(index(i), gsize(i)) << endl;
     }
     Eigen::VectorXd temp = betabar + dbar;
+    cout << "temp:" << temp << endl;
     for (int i = 0; i < N; i++)
     {
       bd(i) = (temp.segment(index(i), gsize(i))).squaredNorm() / gsize(i);
     }
-    t2 = clock();
-    printf("invPhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+    cout << "bd: " << bd << endl;
+    //t2 = clock();
+    //printf("invPhiG time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
 
     // keep always_select in active_set
     slice_assignment(bd, always_select, DBL_MAX);
 
     max_k(bd, T0, A_out);
-    // cout<<"A_OUT: "<<A_out<<endl;
+    //cout<<"A_OUT: "<<A_out<<endl;
   };
 
   void primary_model_fit(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
@@ -1238,6 +1252,7 @@ public:
     for (int i = 0; i < N; i++)
     {
       bd(i) = (temp.segment(index(i), gsize(i))).squaredNorm() / gsize(i);
+      //cout<<", bd(<<"<<i<<"): "<< bd(i);
     }
 
     // keep always_select in active_set
@@ -1284,10 +1299,15 @@ public:
       {
         if (eta(i) < -30.0)
           eta(i) = -30.0;
-        if (eta(i) > 30.0)
+        else if (eta(i) > 30.0)
           eta(i) = 30.0;
       }
       expeta = eta.array().exp();
+      for (int i = 0; i < n; i++)
+      {
+        if (expeta(i) < 0.001)
+          expeta(i) = 0.001;
+      }
       loglik1 = (y.cwiseProduct(eta) - expeta).dot(weights);
       if (abs(loglik0 - loglik1) / abs(0.1 + loglik0) < 1e-6)
         break;
@@ -1301,7 +1321,6 @@ public:
   void get_A(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd beta, double coef0, int T0, Eigen::VectorXd weights,
              Eigen::VectorXi index, Eigen::VectorXi gsize, int N, Eigen::VectorXi &A_out)
   {
-
     int n = X.rows();
     int p = X.cols();
     Eigen::VectorXd betabar = Eigen::VectorXd::Zero(p);
@@ -1369,6 +1388,18 @@ public:
     double loglik0 = 1e5;
     double loglik1;
 
+    // New version:
+    // vector<vector<Eigen::VectorXd> > XiXj(p);
+    // vector<Eigen::VectorXd> XiXj_tmp(p);
+    // for(int k1=0;k1<p;k1++)
+    // {
+    //   for(int k2=k1;k2<p;k2++)
+    //   {
+    //     XiXj_tmp[k2] = X.col(k1).cwiseProduct(X.col(k2));
+    //   }
+    //   XiXj[k1] = XiXj_tmp;
+    // }
+
     double step;
     int m;
     int l;
@@ -1388,10 +1419,37 @@ public:
 
       cum_theta = one * theta;
       x_theta = X.array().colwise() * theta.array();
-      x_theta = one * x_theta;
+      x_theta = one * x_theta; // O(np^2) flow, can be improved
       x_theta = x_theta.array().colwise() / cum_theta.array();
       g = (X - x_theta).transpose() * (weights.cwiseProduct(status)) + 2 * this->lambda_level * beta0;
 
+      // // New version:
+      // int sub_n = sub_ind.size();
+      // Eigen::VectorXd sub_x_theta = row_slice(x_theta, sub_ind);
+      // // Eigen::VectorXd sub_theta = slice(theta, sub_ind);
+      // Eigen::VectorXd sub_cum_theta = slice(cum_theta, sub_ind);
+      // Eigen::VectorXd sub_weights = slice(weights, sub_ind);
+
+      // clock_t t1 = clock();
+      // for (int k1 = 0; k1 < p; k1++)
+      // {
+      //   for (int k2 = k1; k2 < p; k2++)
+      //   {
+      //     xij_theta = theta.cwiseProduct(XiXj[k1][k2]);
+      //     for (int j = n - 2; j >= 0; j--)
+      //     {
+      //       xij_theta(j) = xij_theta(j + 1) + xij_theta(j);
+      //     }
+      //     // Eigen::VectorXd sub_xij_theta = slice(xij_theta, sub_ind);
+      //     // h(k1, k2) = -(sub_xij_theta.cwiseQuotient(sub_cum_theta) - sub_x_theta.col(k1).cwiseProduct(sub_x_theta.col(k2))).dot(sub_weights);
+      //     h(k1, k2) = -(xij_theta.cwiseQuotient(cum_theta) - x_theta.col(k1).cwiseProduct(x_theta.col(k2))).dot(weights.cwiseProduct(status));
+      //     h(k2, k1) = h(k1, k2);
+      //   }
+      // }
+      // clock_t t2 = clock();
+      // printf("new npp time=%f\n", (double)(t2 - t1) / CLOCKS_PER_SEC);
+
+      // Old version:
       for (int k1 = 0; k1 < p; k1++)
       {
         for (int k2 = k1; k2 < p; k2++)
@@ -1405,6 +1463,7 @@ public:
           h(k2, k1) = h(k1, k2);
         }
       }
+
       h = h + 2 * this->lambda_level * lambdamat;
       d = h.ldlt().solve(g);
       beta1 = beta0 - pow(step, m) * d;
@@ -1576,11 +1635,11 @@ public:
     }
     else
     {
-      #ifdef R_BUILD
-        Rcpp::Rcout << "algorithm can not be " << this->algorithm_type << endl;
-      #else
-        cout << "algorithm can not be " << this->algorithm_type << endl;
-      #endif
+#ifdef R_BUILD
+      Rcpp::Rcout << "algorithm can not be " << this->algorithm_type << endl;
+#else
+      cout << "algorithm can not be " << this->algorithm_type << endl;
+#endif
     }
   };
 };

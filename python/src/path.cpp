@@ -1,7 +1,7 @@
 //
 // Created by Mamba on 2020/2/18.
 //
-//#define R_BUILD
+// #define R_BUILD
 #ifdef R_BUILD
 #include <Rcpp.h>
 #include <RcppEigen.h>
@@ -24,7 +24,6 @@ using namespace std;
 
 List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::VectorXi sequence, Eigen::VectorXd lambda_seq)
 {
-    cout<<"seq"<<endl;
     int p = data.get_p();
     int n = data.get_n();
     int i;
@@ -32,7 +31,8 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
     int sequence_size = sequence.size();
     int lambda_size = lambda_seq.size();
     Eigen::VectorXi full_mask(n);
-    for (i = 0; i < n; i++) full_mask(i) = int(i);
+    for (i = 0; i < n; i++)
+        full_mask(i) = int(i);
 
     vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
 
@@ -113,35 +113,37 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
         }
     }
 
-    for(i=0;i<sequence_size;i++){
-       cout<<endl;
-           for(j=0; j<lambda_size;j++)
-       {
-           cout<<"i: "<<i+1<<" "<<", j: "<<j+1<<", ";
-           cout<<ic_sequence(i,j)<<loss_sequence[j](i)<<endl;
-       }
-       }   
+    for (i = 0; i < sequence_size; i++)
+    {
+        cout << endl;
+        for (j = 0; j < lambda_size; j++)
+        {
+            cout << "i: " << i + 1 << " "
+                 << ", j: " << j + 1 << ", ";
+            cout << ic_sequence(i, j) << loss_sequence[j](i) << endl;
+        }
+    }
 
     int min_loss_index_row = 0, min_loss_index_col = 0;
     ic_sequence.minCoeff(&min_loss_index_row, &min_loss_index_col);
     List mylist;
-    #ifdef R_BUILD
-        mylist = List::create(Named("beta") = beta_matrix[min_loss_index_col].col(min_loss_index_row).eval(),
-                              Named("coef0") = coef0_sequence[min_loss_index_col](min_loss_index_row),
-                              Named("train_loss") = loss_sequence[min_loss_index_col](min_loss_index_row),
-                              Named("ic") = ic_sequence(min_loss_index_row, min_loss_index_col), Named("lambda") = lambda_seq(min_loss_index_col),
-                              Named("beta_all") = beta_matrix,
-                              Named("coef0_all") = coef0_sequence,
-                              Named("train_loss_all") = loss_sequence,
-                              Named("ic_all") = ic_sequence);
-    #else
-        mylist.add("beta", beta_matrix[min_loss_index_col].col(min_loss_index_row).eval());
-        mylist.add("coef0", coef0_sequence[min_loss_index_col](min_loss_index_row));
-        mylist.add("train_loss", loss_sequence[min_loss_index_col](min_loss_index_row));
-        mylist.add("ic", ic_sequence(min_loss_index_row, min_loss_index_col));
-        mylist.add("lambda", lambda_seq(min_loss_index_col));
-    #endif
-        return mylist;
+#ifdef R_BUILD
+    mylist = List::create(Named("beta") = beta_matrix[min_loss_index_col].col(min_loss_index_row).eval(),
+                          Named("coef0") = coef0_sequence[min_loss_index_col](min_loss_index_row),
+                          Named("train_loss") = loss_sequence[min_loss_index_col](min_loss_index_row),
+                          Named("ic") = ic_sequence(min_loss_index_row, min_loss_index_col), Named("lambda") = lambda_seq(min_loss_index_col),
+                          Named("beta_all") = beta_matrix,
+                          Named("coef0_all") = coef0_sequence,
+                          Named("train_loss_all") = loss_sequence,
+                          Named("ic_all") = ic_sequence);
+#else
+    mylist.add("beta", beta_matrix[min_loss_index_col].col(min_loss_index_row).eval());
+    mylist.add("coef0", coef0_sequence[min_loss_index_col](min_loss_index_row));
+    mylist.add("train_loss", loss_sequence[min_loss_index_col](min_loss_index_row));
+    mylist.add("ic", ic_sequence(min_loss_index_row, min_loss_index_col));
+    mylist.add("lambda", lambda_seq(min_loss_index_col));
+#endif
+    return mylist;
 }
 
 List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, int K_max, double epsilon)
@@ -149,6 +151,8 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     int p = data.get_p();
     int n = data.get_n();
     int i;
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
+
     Eigen::VectorXi full_mask(n);
     for (i = 0; i < n; i++)
     {
@@ -178,6 +182,8 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     algorithm->update_sparsity_level(T1);
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
+
     algorithm->fit();
     if (algorithm->warm_start)
     {
@@ -199,6 +205,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     algorithm->update_sparsity_level(T2);
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
     algorithm->fit();
     if (algorithm->warm_start)
     {
@@ -218,8 +225,10 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     icT2 = metric->ic(algorithm, data);
 
     int iter = 2;
+    std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
     while (T1 != T2)
     {
+        std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
         if (icT1 < icT2)
         {
             Tmax = T2;
@@ -240,6 +249,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             algorithm->update_sparsity_level(T1);
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -279,6 +289,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             algorithm->update_sparsity_level(T2);
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -300,18 +311,20 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             icT2 = metric->ic(algorithm, data);
         };
     }
+    std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
     Eigen::VectorXd best_beta = Eigen::VectorXd::Zero(p);
     double best_coef0 = 0;
     double best_train_loss = 0;
     double best_ic = DBL_MAX;
-    for(int T_tmp=Tmin; T_tmp<=Tmax; T_tmp++)
+    for (int T_tmp = Tmin; T_tmp <= Tmax; T_tmp++)
     {
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(T_tmp);
         algorithm->update_beta_init(beta_init);
         algorithm->update_coef0_init(coef0_init);
+        algorithm->update_group_XTX(full_group_XTX);
         algorithm->fit();
-        if(algorithm->warm_start)
+        if (algorithm->warm_start)
         {
             beta_init = algorithm->get_beta();
             coef0_init = algorithm->get_coef0();
@@ -377,20 +390,20 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
         }
     }
 
-    #ifdef R_BUILD
-        return List::create(Named("beta") = best_beta, Named("coef0") = best_coef0, Named("train_loss") = best_train_loss, Named("ic") = best_ic,
-                            Named("beta_all") = beta_all,
-                            Named("coef0_all") = coef0_all,
-                            Named("train_loss_all") = train_loss_all,
-                            Named("ic_all") = ic_all);
-    #else
-        List mylist;
-        mylist.add("beta", best_beta);
-        mylist.add("coef0", best_coef0);
-        mylist.add("train_loss", best_train_loss);
-        mylist.add("ic", best_ic);
-        return mylist;
-    #endif
+#ifdef R_BUILD
+    return List::create(Named("beta") = best_beta, Named("coef0") = best_coef0, Named("train_loss") = best_train_loss, Named("ic") = best_ic,
+                        Named("beta_all") = beta_all,
+                        Named("coef0_all") = coef0_all,
+                        Named("train_loss_all") = train_loss_all,
+                        Named("ic_all") = ic_all);
+#else
+    List mylist;
+    mylist.add("beta", best_beta);
+    mylist.add("coef0", best_coef0);
+    mylist.add("train_loss", best_train_loss);
+    mylist.add("ic", best_ic);
+    return mylist;
+#endif
 }
 
 int sign(double a)
@@ -539,7 +552,7 @@ void cal_intersections(double p[], double u[], int s_min, int s_max, double lamb
 
     if (j != 2)
     {
-    #ifdef R_BUILD
+#ifdef R_BUILD
         Rcpp::Rcout << "---------------------------" << endl;
         Rcpp::Rcout << "j: " << j << endl;
         Rcpp::Rcout << "inetrsection numbers wrong" << j << endl;
@@ -557,7 +570,7 @@ void cal_intersections(double p[], double u[], int s_min, int s_max, double lamb
         Rcpp::Rcout << "need_flag[1]" << need_flag[1] << endl;
         Rcpp::Rcout << "need_flag[2]" << need_flag[2] << endl;
         Rcpp::Rcout << "need_flag[3]" << need_flag[3] << endl;
-    #else
+#else
         cout << "---------------------------" << endl;
         cout << "j: " << j << endl;
         cout << "inetrsection numbers wrong" << j << endl;
@@ -575,8 +588,9 @@ void cal_intersections(double p[], double u[], int s_min, int s_max, double lamb
         cout << "need_flag[1]" << need_flag[1] << endl;
         cout << "need_flag[2]" << need_flag[2] << endl;
         cout << "need_flag[3]" << need_flag[3] << endl;
-        }
-    #endif
+#endif
+    }
+
     return;
 }
 
@@ -589,6 +603,8 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
     {
         full_mask(i) = int(i);
     }
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
+
     Eigen::VectorXd beta_init = Eigen::VectorXd::Zero(data.get_p());
     Eigen::VectorXd beta_temp1 = Eigen::VectorXd::Zero(data.get_p());
     Eigen::VectorXd beta_temp2 = Eigen::VectorXd::Zero(data.get_p());
@@ -638,6 +654,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
     algorithm->update_lambda_level(exp(c[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
     algorithm->fit();
     if (algorithm->warm_start)
     {
@@ -665,6 +682,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
     algorithm->update_lambda_level(exp(d[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
     algorithm->fit();
     if (algorithm->warm_start)
     {
@@ -720,6 +738,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
             algorithm->update_lambda_level(exp(c[1]));
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -786,6 +805,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
             algorithm->update_lambda_level(exp(c[1]));
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -839,6 +859,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
             algorithm->update_lambda_level(exp(d[1]));
             algorithm->update_beta_init(beta_init);
             algorithm->update_coef0_init(coef0_init);
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
             if (algorithm->warm_start)
             {
@@ -895,6 +916,7 @@ void golden_section_search(Data &data, Algorithm *algorithm, Metric *metric, dou
                 algorithm->update_lambda_level(exp(c[1]));
                 algorithm->update_beta_init(beta_init);
                 algorithm->update_coef0_init(coef0_init);
+                algorithm->update_group_XTX(full_group_XTX);
                 algorithm->fit();
                 if (algorithm->warm_start)
                 {
@@ -950,6 +972,8 @@ int GDC(int a, int b)
 void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], double u[], int s_min, int s_max, double log_lambda_min, double log_lambda_max, double best_arg[],
                 Eigen::VectorXd &beta1, double &coef01, double &train_loss1, double &ic1, int nlambda, Eigen::MatrixXd &ic_sequence)
 {
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
+
     int n = data.get_n();
     Eigen::VectorXi full_mask(n);
     for (int i = 0; i < n; i++)
@@ -963,6 +987,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
 
     double d_lambda = (log_lambda_max - log_lambda_min) / (nlambda - 1);
     int k_lambda = abs(round(u[1] / d_lambda));
+    cout << "d_lambda: " << d_lambda << ", k_lambda: " << k_lambda << ", u[1]: " << u[1] << ", u[0]: " << u[0] << endl;
     if (abs(u[0]) != 1 && k_lambda != 1)
     {
         if (k_lambda == 0 && u[0] != 0)
@@ -984,6 +1009,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
             }
         }
     }
+    cout << "u[0]: " << u[0] << ", u[1]: " << u[1] << endl;
 
     int i = 0;
     int j = 0;
@@ -1003,6 +1029,7 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     algorithm->update_lambda_level(exp(p[1] + i * u[1]));
     algorithm->update_beta_init(beta_init);
     algorithm->update_coef0_init(coef0_init);
+    algorithm->update_group_XTX(full_group_XTX);
 
     algorithm->fit();
     if (algorithm->warm_start)
@@ -1030,18 +1057,22 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     {
         ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_1(i) ? ic_sequence_1(i) : ic_sequence(ic_row, ic_col);
     }
+    cout << "i: " << i << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << endl;
 
     i++;
     j++;
     beta_warm = beta_init;
     coef0_warm = coef0_init;
+    cout << "s_max: " << s_max << ", s_min: " << s_min << ", log_lambda_max + d_lambda * 1e-4:" << log_lambda_max + d_lambda * 1e-4 << ", log_lambda_min - d_lambda * 1e-4: " << log_lambda_min - d_lambda * 1e-4 << endl;
     while ((p[0] + i * u[0] <= s_max) && (p[1] + i * u[1] <= log_lambda_max + d_lambda * 1e-4) && (p[0] + i * u[0] >= s_min) && (p[1] + i * u[1] >= log_lambda_min - d_lambda * 1e-4))
     {
+        cout << "i:" << i << ", p[0]: " << p[0] << ", u[0]: " << u[0] << ", p[0] + i * u[0]: " << p[0] + i * u[0] << ", p[1]" << p[1] << ", u[1]: " << u[1] << ", p[1] + i * u[1] : " << p[1] + i * u[1] << endl;
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(p[0] + i * u[0]);
         algorithm->update_lambda_level(exp(p[1] + i * u[1]));
         algorithm->update_beta_init(beta_init);
         algorithm->update_coef0_init(coef0_init);
+        algorithm->update_group_XTX(full_group_XTX);
 
         algorithm->fit();
         if (algorithm->warm_start)
@@ -1063,19 +1094,23 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
         {
             ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_1(i) ? ic_sequence_1(i) : ic_sequence(ic_row, ic_col);
         }
+        cout << "i: " << i << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << ", ic_sequence_1(i): " << ic_sequence_1(i) << endl;
         i++;
     }
+    cout << "out: i:" << i << ", p[0] - i * u[0]: " << p[0] - i * u[0] << ", p[1] - i * u[1] : " << p[1] - i * u[1] << endl;
 
     beta_init = beta_warm;
     coef0_init = coef0_warm;
 
     while ((p[0] - j * u[0] <= s_max) && (p[1] - j * u[1] <= log_lambda_max + d_lambda * 1e-4) && (p[0] - j * u[0] >= s_min) && (p[1] - j * u[1] >= log_lambda_min - d_lambda * 1e-4))
     {
+        cout << "j:" << j << ", p[0]: " << p[0] << ", u[0]: " << u[0] << ", p[0] - j * u[0]: " << p[0] - j * u[0] << ", p[1]" << p[1] << ", u[1]: " << u[1] << ", p[1] - j * u[1]" << p[1] - j * u[1] << endl;
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(p[0] - j * u[0]);
         algorithm->update_lambda_level(exp(p[1] - j * u[1]));
         algorithm->update_beta_init(beta_init);
         algorithm->update_coef0_init(coef0_init);
+        algorithm->update_group_XTX(full_group_XTX);
 
         algorithm->fit();
         if (algorithm->warm_start)
@@ -1097,15 +1132,18 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
         {
             ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_2(j) ? ic_sequence_2(j) : ic_sequence(ic_row, ic_col);
         }
+        cout << "j: " << j << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << "ic_sequence_2(j): " << ic_sequence_2(j) << endl;
 
         j++;
     }
+    cout << "out: j:" << j << ", p[0] - j * u[0]: " << p[0] - j * u[0] << ", p[1] - j * u[1] : " << p[1] - j * u[1] << endl;
     int minPosition_1, minPosition_2;
     ic_sequence_1 = ic_sequence_1.head(i).eval();
     ic_sequence_2 = ic_sequence_2.head(j).eval();
     ic_sequence_1.minCoeff(&minPosition_1);
     ic_sequence_2.minCoeff(&minPosition_2);
-
+    cout << "minPosition_1: " << minPosition_1 << ", minPosition_2: " << minPosition_2 << ",  ic_sequence_1.minCoeff(&minPosition_1): " << ic_sequence_1(minPosition_1) << ", ic_sequence_2.minCoeff(&minPosition_2): " << ic_sequence_2(minPosition_2) << endl;
+    cout << "ic_sequence_2(minPosition_2): " << ic_sequence_2(minPosition_2) << ", ic_sequence_2(minPosition_2+1): " << ic_sequence_2(minPosition_2 + 1) << ", ic_sequence_2(minPosition_2+1)< ic_sequence_2(minPosition_2): " << (ic_sequence_2(minPosition_2 + 1) < ic_sequence_2(minPosition_2)) << endl;
     int minPosition;
     if (ic_sequence_1(minPosition_1) < ic_sequence_2(minPosition_2))
     {
@@ -1125,13 +1163,15 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     }
     best_arg[0] = p[0] + (minPosition)*u[0];
     best_arg[1] = p[1] + (minPosition)*u[1];
-
+    cout << "minPosition :" << minPosition << ",  best_arg[0]:" << best_arg[0] << " best_arg[1]: " << best_arg[1] << ", p[1] + (minPosition)*u[1]= " << p[1] << "+" << minPosition << "* " << u[1] << "= " << p[1] + (minPosition)*u[1] << ", (minPosition)*u[1]: " << (minPosition)*u[1] << endl;
     return;
 }
 List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, double log_lambda_min, double log_lambda_max, int powell_path, int nlambda)
 {
     int n = data.get_n();
     Eigen::VectorXi full_mask(n);
+    vector<Eigen::MatrixXd> full_group_XTX = group_XTX(data.x, data.g_index, data.g_size, data.n, data.p, data.g_num, algorithm->model_type);
+
     for (int i = 0; i < n; i++)
     {
         full_mask(i) = i;
@@ -1174,11 +1214,12 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
     ic_all(ttt) = ic_temp;
     lambda_chosen(ttt) = exp(P[0][1]);
 
-    while (ttt < 99)
+    while (ttt < 11)
     {
         ttt++;
         for (i = 0; i < 2; i++)
         {
+            cout << "================= ttt: " << ttt << "=======================" << endl;
             if (powell_path == 1)
                 golden_section_search(data, algorithm, metric, P[i], U[i], s_min, s_max, log_lambda_min, log_lambda_max, P[i + 1], beta_temp, coef0_temp, train_loss_temp, ic_temp, ic_sequence);
             else
@@ -1194,8 +1235,10 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
         U[0][1] = U[1][1];
         U[1][0] = P[2][0] - P[0][0];
         U[1][1] = P[2][1] - P[0][1];
-        if ((!(abs(U[1][0]) <= 0.0001 && abs(U[1][1]) <= 0.0001)) && ttt < 99)
+        cout << " U[1][0]: " << U[1][0] << ", U[1][1]: " << U[1][1] << endl;
+        if ((!(abs(U[1][0]) <= 0.0001 && abs(U[1][1]) <= 0.0001)) && ttt < 11)
         {
+            cout << "================= ttt: " << ttt << "=======================" << endl;
             if (powell_path == 1)
                 golden_section_search(data, algorithm, metric, P[0], U[1], s_min, s_max, log_lambda_min, log_lambda_max, P[0], beta_temp, coef0_temp, train_loss_temp, ic_temp, ic_sequence);
             else
@@ -1212,6 +1255,7 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             algorithm->update_train_mask(full_mask);
             algorithm->update_sparsity_level(int(P[0][0]));
             algorithm->update_lambda_level(exp(P[0][1]));
+            algorithm->update_group_XTX(full_group_XTX);
             algorithm->fit();
 
             Eigen::VectorXd best_beta = algorithm->get_beta();
@@ -1281,12 +1325,12 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             mylist.add("train_loss", train_loss_all(min_ic_index));
             mylist.add("ic", ic_all(min_ic_index));
             mylist.add("lambda", lambda_chosen(min_ic_index));
-            mylist.add("beta_all", beta_all);
-            mylist.add("coef0_all", coef0_all);
-            mylist.add("train_loss_all", train_loss_all);
-            mylist.add("ic_all", ic_all);
-            mylist.add("lambda_all", lambda_chosen);
-            mylist.add("ic_mat", ic_sequence);
+            // mylist.add("beta_all", beta_all);
+            // mylist.add("coef0_all", coef0_all);
+            // mylist.add("train_loss_all", train_loss_all);
+            // mylist.add("ic_all", ic_all);
+            // mylist.add("lambda_all", lambda_chosen);
+            // mylist.add("ic_mat", ic_sequence);
             return mylist;
 #endif
         }
