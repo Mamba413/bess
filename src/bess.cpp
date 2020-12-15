@@ -49,10 +49,10 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              Eigen::VectorXi always_select,
              double tao)
 {
-    // #ifndef R_BUILD
-    srand(123);
-    //#endif
-    cout << "always_" << always_select.size() << endl;
+    #ifndef R_BUILD
+        srand(123);
+    #endif
+    // cout << "always_" << always_select.size() << endl;
     int p = x.cols();
     Eigen::VectorXi screening_A;
     if (is_screening)
