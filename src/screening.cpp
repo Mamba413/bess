@@ -27,11 +27,9 @@ Eigen::VectorXi screening(Eigen::MatrixXd &x, Eigen::VectorXd &y, Eigen::VectorX
 {
     int n = x.rows();
     int p = x.cols();
-    // int screening_size = screening_size;//floor(n / log(n)) > screening_size ? floor(n / log(n)) : screening_size;
     Eigen::VectorXi screening_A(screening_size);
 
     int g_num = (g_index).size();
-    //cout<<"g_num: "<<this->g_num<<endl;
     Eigen::VectorXi temp = Eigen::VectorXi::Zero(g_num);
     temp.head(g_num - 1) = g_index.tail(g_num - 1);
     temp(g_num - 1) = p;

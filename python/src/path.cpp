@@ -113,17 +113,6 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
         }
     }
 
-    for (i = 0; i < sequence_size; i++)
-    {
-        cout << endl;
-        for (j = 0; j < lambda_size; j++)
-        {
-            cout << "i: " << i + 1 << " "
-                 << ", j: " << j + 1 << ", ";
-            cout << ic_sequence(i, j) << loss_sequence[j](i) << endl;
-        }
-    }
-
     int min_loss_index_row = 0, min_loss_index_col = 0;
     ic_sequence.minCoeff(&min_loss_index_row, &min_loss_index_col);
     List mylist;
@@ -225,10 +214,8 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
     icT2 = metric->ic(algorithm, data);
 
     int iter = 2;
-    std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
     while (T1 != T2)
     {
-        std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
         if (icT1 < icT2)
         {
             Tmax = T2;
@@ -311,7 +298,6 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
             icT2 = metric->ic(algorithm, data);
         };
     }
-    std::cout << "Tmin: " << Tmin << " T1: " << T1 << " T2: " << T2 << " Tmax: " << Tmax << endl;
     Eigen::VectorXd best_beta = Eigen::VectorXd::Zero(p);
     double best_coef0 = 0;
     double best_train_loss = 0;
@@ -1219,7 +1205,6 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
         ttt++;
         for (i = 0; i < 2; i++)
         {
-            cout << "================= ttt: " << ttt << "=======================" << endl;
             if (powell_path == 1)
                 golden_section_search(data, algorithm, metric, P[i], U[i], s_min, s_max, log_lambda_min, log_lambda_max, P[i + 1], beta_temp, coef0_temp, train_loss_temp, ic_temp, ic_sequence);
             else
@@ -1235,10 +1220,8 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
         U[0][1] = U[1][1];
         U[1][0] = P[2][0] - P[0][0];
         U[1][1] = P[2][1] - P[0][1];
-        cout << " U[1][0]: " << U[1][0] << ", U[1][1]: " << U[1][1] << endl;
         if ((!(abs(U[1][0]) <= 0.0001 && abs(U[1][1]) <= 0.0001)) && ttt < 11)
         {
-            cout << "================= ttt: " << ttt << "=======================" << endl;
             if (powell_path == 1)
                 golden_section_search(data, algorithm, metric, P[0], U[1], s_min, s_max, log_lambda_min, log_lambda_max, P[0], beta_temp, coef0_temp, train_loss_temp, ic_temp, ic_sequence);
             else
@@ -1325,12 +1308,6 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
             mylist.add("train_loss", train_loss_all(min_ic_index));
             mylist.add("ic", ic_all(min_ic_index));
             mylist.add("lambda", lambda_chosen(min_ic_index));
-            // mylist.add("beta_all", beta_all);
-            // mylist.add("coef0_all", coef0_all);
-            // mylist.add("train_loss_all", train_loss_all);
-            // mylist.add("ic_all", ic_all);
-            // mylist.add("lambda_all", lambda_chosen);
-            // mylist.add("ic_mat", ic_sequence);
             return mylist;
 #endif
         }
