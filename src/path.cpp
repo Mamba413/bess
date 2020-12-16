@@ -973,7 +973,6 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
 
     double d_lambda = (log_lambda_max - log_lambda_min) / (nlambda - 1);
     int k_lambda = abs(round(u[1] / d_lambda));
-    cout << "d_lambda: " << d_lambda << ", k_lambda: " << k_lambda << ", u[1]: " << u[1] << ", u[0]: " << u[0] << endl;
     if (abs(u[0]) != 1 && k_lambda != 1)
     {
         if (k_lambda == 0 && u[0] != 0)
@@ -995,7 +994,6 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
             }
         }
     }
-    cout << "u[0]: " << u[0] << ", u[1]: " << u[1] << endl;
 
     int i = 0;
     int j = 0;
@@ -1043,16 +1041,13 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     {
         ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_1(i) ? ic_sequence_1(i) : ic_sequence(ic_row, ic_col);
     }
-    cout << "i: " << i << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << endl;
 
     i++;
     j++;
     beta_warm = beta_init;
     coef0_warm = coef0_init;
-    cout << "s_max: " << s_max << ", s_min: " << s_min << ", log_lambda_max + d_lambda * 1e-4:" << log_lambda_max + d_lambda * 1e-4 << ", log_lambda_min - d_lambda * 1e-4: " << log_lambda_min - d_lambda * 1e-4 << endl;
     while ((p[0] + i * u[0] <= s_max) && (p[1] + i * u[1] <= log_lambda_max + d_lambda * 1e-4) && (p[0] + i * u[0] >= s_min) && (p[1] + i * u[1] >= log_lambda_min - d_lambda * 1e-4))
     {
-        cout << "i:" << i << ", p[0]: " << p[0] << ", u[0]: " << u[0] << ", p[0] + i * u[0]: " << p[0] + i * u[0] << ", p[1]" << p[1] << ", u[1]: " << u[1] << ", p[1] + i * u[1] : " << p[1] + i * u[1] << endl;
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(p[0] + i * u[0]);
         algorithm->update_lambda_level(exp(p[1] + i * u[1]));
@@ -1080,17 +1075,14 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
         {
             ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_1(i) ? ic_sequence_1(i) : ic_sequence(ic_row, ic_col);
         }
-        cout << "i: " << i << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << ", ic_sequence_1(i): " << ic_sequence_1(i) << endl;
         i++;
     }
-    cout << "out: i:" << i << ", p[0] - i * u[0]: " << p[0] - i * u[0] << ", p[1] - i * u[1] : " << p[1] - i * u[1] << endl;
 
     beta_init = beta_warm;
     coef0_init = coef0_warm;
 
     while ((p[0] - j * u[0] <= s_max) && (p[1] - j * u[1] <= log_lambda_max + d_lambda * 1e-4) && (p[0] - j * u[0] >= s_min) && (p[1] - j * u[1] >= log_lambda_min - d_lambda * 1e-4))
     {
-        cout << "j:" << j << ", p[0]: " << p[0] << ", u[0]: " << u[0] << ", p[0] - j * u[0]: " << p[0] - j * u[0] << ", p[1]" << p[1] << ", u[1]: " << u[1] << ", p[1] - j * u[1]" << p[1] - j * u[1] << endl;
         algorithm->update_train_mask(full_mask);
         algorithm->update_sparsity_level(p[0] - j * u[0]);
         algorithm->update_lambda_level(exp(p[1] - j * u[1]));
@@ -1118,18 +1110,14 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
         {
             ic_sequence(ic_row, ic_col) = ic_sequence(ic_row, ic_col) > ic_sequence_2(j) ? ic_sequence_2(j) : ic_sequence(ic_row, ic_col);
         }
-        cout << "j: " << j << ", ic_sequence(" << ic_row << "," << ic_col << "): " << ic_sequence(ic_row, ic_col) << "ic_sequence_2(j): " << ic_sequence_2(j) << endl;
 
         j++;
     }
-    cout << "out: j:" << j << ", p[0] - j * u[0]: " << p[0] - j * u[0] << ", p[1] - j * u[1] : " << p[1] - j * u[1] << endl;
     int minPosition_1, minPosition_2;
     ic_sequence_1 = ic_sequence_1.head(i).eval();
     ic_sequence_2 = ic_sequence_2.head(j).eval();
     ic_sequence_1.minCoeff(&minPosition_1);
     ic_sequence_2.minCoeff(&minPosition_2);
-    cout << "minPosition_1: " << minPosition_1 << ", minPosition_2: " << minPosition_2 << ",  ic_sequence_1.minCoeff(&minPosition_1): " << ic_sequence_1(minPosition_1) << ", ic_sequence_2.minCoeff(&minPosition_2): " << ic_sequence_2(minPosition_2) << endl;
-    cout << "ic_sequence_2(minPosition_2): " << ic_sequence_2(minPosition_2) << ", ic_sequence_2(minPosition_2+1): " << ic_sequence_2(minPosition_2 + 1) << ", ic_sequence_2(minPosition_2+1)< ic_sequence_2(minPosition_2): " << (ic_sequence_2(minPosition_2 + 1) < ic_sequence_2(minPosition_2)) << endl;
     int minPosition;
     if (ic_sequence_1(minPosition_1) < ic_sequence_2(minPosition_2))
     {
@@ -1149,7 +1137,6 @@ void seq_search(Data &data, Algorithm *algorithm, Metric *metric, double p[], do
     }
     best_arg[0] = p[0] + (minPosition)*u[0];
     best_arg[1] = p[1] + (minPosition)*u[1];
-    cout << "minPosition :" << minPosition << ",  best_arg[0]:" << best_arg[0] << " best_arg[1]: " << best_arg[1] << ", p[1] + (minPosition)*u[1]= " << p[1] << "+" << minPosition << "* " << u[1] << "= " << p[1] + (minPosition)*u[1] << ", (minPosition)*u[1]: " << (minPosition)*u[1] << endl;
     return;
 }
 List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_max, double log_lambda_min, double log_lambda_max, int powell_path, int nlambda)
