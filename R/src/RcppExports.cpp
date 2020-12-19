@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // bessCpp
-List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorXd weight, bool is_normal, int algorithm_type, int model_type, int max_iter, int exchange_num, int path_type, bool is_warm_start, int ic_type, bool is_cv, int K, Eigen::VectorXd state, Eigen::VectorXi sequence, Eigen::VectorXd lambda_seq, int s_min, int s_max, int K_max, double epsilon, double lambda_min, double lambda_max, int nlambda, bool is_screening, int screening_size, int powell_path, Eigen::VectorXi g_index);
-RcppExport SEXP _BeSS_bessCpp(SEXP xSEXP, SEXP ySEXP, SEXP data_typeSEXP, SEXP weightSEXP, SEXP is_normalSEXP, SEXP algorithm_typeSEXP, SEXP model_typeSEXP, SEXP max_iterSEXP, SEXP exchange_numSEXP, SEXP path_typeSEXP, SEXP is_warm_startSEXP, SEXP ic_typeSEXP, SEXP is_cvSEXP, SEXP KSEXP, SEXP stateSEXP, SEXP sequenceSEXP, SEXP lambda_seqSEXP, SEXP s_minSEXP, SEXP s_maxSEXP, SEXP K_maxSEXP, SEXP epsilonSEXP, SEXP lambda_minSEXP, SEXP lambda_maxSEXP, SEXP nlambdaSEXP, SEXP is_screeningSEXP, SEXP screening_sizeSEXP, SEXP powell_pathSEXP, SEXP g_indexSEXP) {
+List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorXd weight, bool is_normal, int algorithm_type, int model_type, int max_iter, int exchange_num, int path_type, bool is_warm_start, int ic_type, bool is_cv, int K, Eigen::VectorXd state, Eigen::VectorXi sequence, Eigen::VectorXd lambda_seq, int s_min, int s_max, int K_max, double epsilon, double lambda_min, double lambda_max, int nlambda, bool is_screening, int screening_size, int powell_path, Eigen::VectorXi g_index, Eigen::VectorXi always_select, double tao);
+RcppExport SEXP _BeSS_bessCpp(SEXP xSEXP, SEXP ySEXP, SEXP data_typeSEXP, SEXP weightSEXP, SEXP is_normalSEXP, SEXP algorithm_typeSEXP, SEXP model_typeSEXP, SEXP max_iterSEXP, SEXP exchange_numSEXP, SEXP path_typeSEXP, SEXP is_warm_startSEXP, SEXP ic_typeSEXP, SEXP is_cvSEXP, SEXP KSEXP, SEXP stateSEXP, SEXP sequenceSEXP, SEXP lambda_seqSEXP, SEXP s_minSEXP, SEXP s_maxSEXP, SEXP K_maxSEXP, SEXP epsilonSEXP, SEXP lambda_minSEXP, SEXP lambda_maxSEXP, SEXP nlambdaSEXP, SEXP is_screeningSEXP, SEXP screening_sizeSEXP, SEXP powell_pathSEXP, SEXP g_indexSEXP, SEXP always_selectSEXP, SEXP taoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,13 +40,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type screening_size(screening_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type powell_path(powell_pathSEXP);
     Rcpp::traits::input_parameter< Eigen::VectorXi >::type g_index(g_indexSEXP);
-    rcpp_result_gen = Rcpp::wrap(bessCpp(x, y, data_type, weight, is_normal, algorithm_type, model_type, max_iter, exchange_num, path_type, is_warm_start, ic_type, is_cv, K, state, sequence, lambda_seq, s_min, s_max, K_max, epsilon, lambda_min, lambda_max, nlambda, is_screening, screening_size, powell_path, g_index));
+    Rcpp::traits::input_parameter< Eigen::VectorXi >::type always_select(always_selectSEXP);
+    Rcpp::traits::input_parameter< double >::type tao(taoSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessCpp(x, y, data_type, weight, is_normal, algorithm_type, model_type, max_iter, exchange_num, path_type, is_warm_start, ic_type, is_cv, K, state, sequence, lambda_seq, s_min, s_max, K_max, epsilon, lambda_min, lambda_max, nlambda, is_screening, screening_size, powell_path, g_index, always_select, tao));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BeSS_bessCpp", (DL_FUNC) &_BeSS_bessCpp, 28},
+    {"_BeSS_bessCpp", (DL_FUNC) &_BeSS_bessCpp, 30},
     {NULL, NULL, 0}
 };
 

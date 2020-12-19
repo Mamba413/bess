@@ -20,75 +20,113 @@
 #' p <- 20
 #' k <- 5
 #' rho <- 0.4
-#' SNR <- 10
-#' cortype <- 1
 #' seed <- 10
-#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, snr = SNR, seed = seed)
-#' x <- Data$x[1:140, ]
-#' y <- Data$y[1:140]
-#' x_new <- Data$x[141:200, ]
-#' y_new <- Data$y[141:200]
-#' lm.bss <- bess(x, y, method = "sequential")
+#' Tbeta <- rep(0, p)
+#' Tbeta[1:k*floor(p/k):floor(p/k)] <- rep(1, k)
+#' Data <- gen.data(n, p, k, rho, family = "gaussian", beta = Tbeta, seed = seed)
+#' lm.bss <- bess(Data$x, Data$y, method = "sequential")
 #' lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
-#' lm.bsrr <- bess(x, y, type = "bsrr", method = "pgsection")
+#' lm.bsrr <- bess(Data$x, Data$y, type = "bsrr", method = "pgsection")
 #'
 #' summary(lm.bss)
 #' summary(lm.bsrr)
 #'
 #'#-------------------group selection----------------------#
-#'beta <- rep(c(rep(1,2),rep(0,3)), 4)
-#'Data <- gen.data(n, p, rho=0.4, beta = beta, snr = 100, seed =10)
-#'x <- Data$x
-#'y <- Data$y
+#' beta <- rep(c(rep(1,2),rep(0,3)), 4)
+#' Data <- gen.data(200, 20, 5, rho=0.4, beta = beta, snr = 100, seed =10)
 #'
-#'group.index <- c(rep(1, 2), rep(2, 3), rep(3, 2), rep(4, 3),
-#'rep(5, 2), rep(6, 3), rep(7, 2), rep(8, 3))
-#'lm.group <- bess(x, y, s.min=1, s.max = 8, type = "bss", group.index = group.index)
-#'lm.groupbsrr <- bess(x, y, type = "bsrr", s.min = 1, s.max = 8, group.index = group.index)
+#' group.index <- c(rep(1, 2), rep(2, 3), rep(3, 2), rep(4, 3),
+#'                 rep(5, 2), rep(6, 3), rep(7, 2), rep(8, 3))
+#' lm.group <- bess(Data$x, Data$y, s.min=1, s.max = 8, type = "bss", group.index = group.index)
+#' lm.groupbsrr <- bess(Data$x, Data$y, type = "bsrr", s.min = 1, s.max = 8, group.index = group.index)
 #'
-#'summary(lm.group)
-#'summary(lm.groupbsrr)
+#' summary(lm.group)
+#' summary(lm.groupbsrr)
+#'
+#' #-------------------summary for bess.one----------------------#
+#' Data <- gen.data(n, p, k, rho, family = "gaussian", beta = Tbeta, seed = seed)
+#' lm.bss <- bess.one(Data$x, Data$y, s = 5)
+#' lm.bsrr <- bess.one(Data$x, Data$y, type = "bsrr", s = 5, lambda = 0.01)
+#'
+#' summary(lm.bss)
+#' summary(lm.bsrr)
 #'
 #' @method summary bess
 #' @export
 #' @export summary.bess
 summary.bess <-function(object, ...){
-  df <- sum(object$beta != 0)
-  predictors <- names(which(object$beta!=0))
-  a <- rbind(predictors, object$beta[predictors])
-    cat("----------------------------------------------------------------------------------\n")
-  if(object$algorithm_type != "L0L2")
+  if(is.null(object$bess.one)){
+    df <- sum(object$beta != 0)
+    predictors <- names(which(object$beta!=0))
+    a <- rbind(predictors, object$beta[predictors])
+    cat("-------------------------------------------------------------------------------------------\n")
+    if(object$algorithm_type != "L0L2" & object$algorithm_type != "GL0L2")
     {
-    cat("    Primal-dual active algorithm with tuning parameter determined by",object$method, "method", "\n\n")
+      method <- ifelse(object$method == "gsection", "golden section", "sequential")
+      cat("    Primal-dual active algorithm with tuning parameter determined by",method, "method", "\n\n")
     }else {
       if(object$method == "sequential"){
-    cat("    Penalized Primal-dual active algorithm", "\n")
-    cat("    with tuning parameter determined by",object$method, "method", "\n\n")
+        method <- ifelse(object$method == "gsection", "golden section", "sequential")
+        cat("    Penalized Primal-dual active algorithm", "\n")
+        cat("    with tuning parameter determined by",method, "method", "\n\n")
       } else{
-    cat("    Penalized Primal-dual active algorithm with tuning parameter determined by","\n")
-    cat("    powell method using",object$line.search,"for line search","\n\n")
+        line.search <- ifelse(object$line.search == "gsection", "golden section", "sequential")
+        cat("    Penalized Primal-dual active algorithm with tuning parameter determined by","\n")
+        cat("    powell method using",line.search,"method for line search","\n\n")
       }
     }
-  if(object$algorithm_type == "PDAS")
-    cat("    Best model with k =", df, "includes predictors:", "\n\n") else cat("    Best model with k =", df,"lambda =",object$lambda, "includes predictors:", "\n\n")
-  print(object$beta[predictors])
-  cat("\n")
-  if(logLik(object)>=0)
-    cat("    log-likelihood:   ", logLik(object),"\n") else cat("    log-likelihood:  ", logLik(object),"\n")
+    if(object$algorithm_type == "PDAS")
+      cat("    Best model with k =", df, "includes predictors:", "\n\n") else cat("    Best model with k =", df,"lambda =",object$lambda, "includes predictors:", "\n\n")
+    print(object$beta[predictors])
+    cat("\n")
+    if(logLik(object)>=0)
+      cat("    log-likelihood:   ", logLik(object),"\n") else cat("    log-likelihood:  ", logLik(object),"\n")
 
-  if(deviance(object)>=0)
-    cat("    deviance:         ", deviance(object),"\n") else cat("    deviance:        ", deviance(object),"\n")
-  if(object$ic_type %in% c("AIC", "BIC", "GIC")){
-    if(object$ic>=0)
-      cat("    ", object$ic_type, ":               ", object$ic,"\n", sep = "") else cat("    ",object$ic_type,":             ", object$ic,"\n", sep = "")
+    if(deviance(object)>=0)
+      cat("    deviance:         ", deviance(object),"\n") else cat("    deviance:        ", deviance(object),"\n")
+    if(object$ic.type %in% c("AIC", "BIC", "GIC")){
+      if(object$ic>=0)
+        cat("    ", object$ic.type, ":               ", object$ic,"\n", sep = "") else cat("    ",object$ic.type,":             ", object$ic,"\n", sep = "")
 
-  } else if(object$ic_type == "EBIC"){
-    if(object$ic>=0)
-      cat("    EBIC:             ", object$ic,"\n") else cat("    EBIC:            ", object$ic,"\n")
+    } else if(object$ic.type == "EBIC"){
+      if(object$ic>=0)
+        cat("    EBIC:             ", object$ic,"\n") else cat("    EBIC:            ", object$ic,"\n")
+    } else{
+      if(object$cvm >= 0)
+        cat("    cv loss:          ", object$cvm,"\n") else cat("    cv loss:         ", object$cvm,"\n")
+    }
+    cat("-------------------------------------------------------------------------------------------\n")
   } else{
-    if(object$cvm >= 0)
-      cat("    cv loss:          ", object$cvm,"\n") else cat("    cv loss:         ", object$cvm,"\n")
+    df <- sum(object$beta != 0)
+    predictors <- names(which(object$beta!=0))
+    a <- rbind(predictors, object$beta[predictors])
+    cat("----------------------------------------------------------------------------------\n")
+
+    if(object$algorithm_type == "PDAS")
+      cat("    Best model with k =", df, "includes predictors:", "\n\n") else cat("    Best model with k =", df,"lambda =",object$lambda, "includes predictors:", "\n\n")
+    print(object$beta[predictors])
+    cat("\n")
+    if(logLik(object)>=0)
+      cat("    log-likelihood:   ", logLik(object),"\n") else cat("    log-likelihood:  ", logLik(object),"\n")
+
+    if(deviance(object)>=0)
+      cat("    deviance:         ", deviance(object),"\n") else cat("    deviance:        ", deviance(object),"\n")
+    if(is.null(object$bess.one)){
+      if(object$ic.type %in% c("AIC", "BIC", "GIC")){
+        if(object$ic>=0)
+          cat("    ", object$ic.type, ":               ", object$ic,"\n", sep = "") else cat("    ",object$ic.type,":             ", object$ic,"\n", sep = "")
+
+      } else if(object$ic.type == "EBIC"){
+        if(object$ic>=0)
+          cat("    EBIC:             ", object$ic,"\n") else cat("    EBIC:            ", object$ic,"\n")
+      } else{
+        if(object$cvm >= 0)
+          cat("    cv loss:          ", object$cvm,"\n") else cat("    cv loss:         ", object$cvm,"\n")
+      }
+    }
+
+    cat("----------------------------------------------------------------------------------\n")
   }
-  cat("----------------------------------------------------------------------------------\n")
+
 }
 

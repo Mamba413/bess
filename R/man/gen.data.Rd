@@ -16,6 +16,7 @@ gen.data(
   censoring = TRUE,
   c = 1,
   scal,
+  sigma = 1,
   seed = 1
 )
 }
@@ -36,22 +37,28 @@ for survival data.}
 
 \item{beta}{The coefficient values in the underlying regression model.}
 
-\item{cortype}{The correlation structure. \code{cortype = 1} denotes exponential structure,
+\item{cortype}{The correlation structure. \code{cortype = 1} denotes the exponential structure,
 where the covariance matrix has \eqn{(i,j)} entry equals \eqn{rho^{|i-j|}}.
-code{cortype = 2} denotes constant structure, where the \eqn{(i,j)} entry of covariance
-matrix is \eqn{rho} for every \eqn{i \neq j} and 1 elsewhere.}
+code{cortype = 2} denotes the constant structure, where the \eqn{(i,j)} entry of covariance
+matrix is \eqn{rho} for every \eqn{i \neq j} and 1 elsewhere. \code{cortype = 3} denotes the moving average
+structure. Details can be found below.}
 
 \item{snr}{A numerical value controlling the signal-to-noise ratio (SNR). The SNR is defined as
 as the variance of \eqn{x\beta} divided
 by the variance of a gaussian noise: \eqn{\frac{Var(x\beta)}{\sigma^2}}.
 The gaussian noise \eqn{\epsilon} is set with mean 0 and variance.
-The noise is added to the linear predictor \eqn{\eta} = \eqn{x\beta}. Default is \code{snr = 10}.}
+The noise is added to the linear predictor \eqn{\eta} = \eqn{x\beta}. Default is \code{snr = 10}.
+This option is invalid for \code{cortype = 3}.}
 
 \item{censoring}{Whether data is censored or not. Valid only for \code{family = "cox"}. Default is \code{TRUE}.}
 
 \item{c}{The censoring rate. Default is \code{1}.}
 
 \item{scal}{A parameter in generating survival time based on the Weibull distribution. Only used for the "\code{cox}" family.}
+
+\item{sigma}{A parameter used to control the signal-to-noise ratio. For linear regression,
+it is the error variance \eqn{\sigma^2}. For logistic regression and Cox's model,
+the larger the value of sigma, the higher the signal-to-noise ratio. Valid only for \code{cortype = 3}.}
 
 \item{seed}{seed to be used in generating the random numbers.}
 }
@@ -70,13 +77,19 @@ We generate an \eqn{n \times p} random Gaussian matrix
 or a constant structure. For the exponential structure, the covariance matrix
 has \eqn{(i,j)} entry equals \eqn{rho^{|i-j|}}. For the constant structure,
 the \eqn{(i,j)} entry of the covariance matrix is \eqn{rho} for every \eqn{i
-\neq j} and 1 elsewhere.
+\neq j} and 1 elsewhere. For the moving average structure,  For the design matrix \eqn{X},
+we first generate an \eqn{n \times p} random Gaussian matrix \eqn{\bar{X}}
+whose entries are i.i.d. \eqn{\sim N(0,1)} and then normalize its columns
+to the \eqn{\sqrt n} length. Then the design matrix \eqn{X} is generated with
+\eqn{X_j = \bar{X}_j + \rho(\bar{X}_{j+1}+\bar{X}_{j-1})} for \eqn{j=2,\dots,p-1}.
 
 For \code{family = "gaussian"} , the data model is \deqn{Y = X \beta +
 \epsilon.}
+The underlying regression coefficient \eqn{\beta} has uniform distribution [m, 100m], \eqn{m=5 \sqrt{2log(p)/n}.}
 
 For \code{family= "binomial"}, the data model is \deqn{Prob(Y = 1) = \exp(X
 \beta + \epsilon)/(1 + \exp(X \beta + \epsilon)).}
+The underlying regression coefficient \eqn{\beta} has uniform distribution [2m, 10m], \eqn{m = 5\sigma \sqrt{2log(p)/n}.}
 
 For \code{family = "poisson"} , the data is modeled to have an exponential distribution: \deqn{Y = Exp(\exp(X \beta +
 \epsilon)).}
@@ -85,10 +98,9 @@ For \code{family = "poisson"} , the data is modeled to have an exponential distr
 \deqn{T = (-\log(S(t))/\exp(X \beta))^{1/scal}.}
 The centering time is generated from uniform distribution \eqn{[0, c]},
 then we define the censor status as \eqn{\delta = I\{T \leq C\}, R = min\{T, C\}}.
-
+The underlying regression coefficient \eqn{\beta} has uniform distribution [2m, 10m], \eqn{m = 5\sigma \sqrt{2log(p)/n}.}
 In the above models, \eqn{\epsilon \sim N(0,
-\sigma^2 ),} where \eqn{\sigma^2} is determined by the \code{snr}. By default, the underlying
-regression coefficient \eqn{\beta} has equi-spaced nonzero entries, each set to 1.
+\sigma^2 ),} where \eqn{\sigma^2} is determined by the \code{snr}.
 }
 \examples{
 
@@ -108,8 +120,6 @@ y_new <- Data$y[141:200]
 lm.bss <- bess(x, y, method = "sequential")
 lambda.list <- exp(seq(log(5), log(0.1), length.out = 10))
 lm.bsrr <- bess(x, y, type = "bsrr", method = "pgsection")
-
-
 }
 \references{
 Wen, C., Zhang, A., Quan, S. and Wang, X. (2020). BeSS: An R

@@ -26,10 +26,10 @@
 #' p <- 20
 #' k <- 5
 #' rho <- 0.4
-#' SNR <- 10
-#' cortype <- 1
 #' seed <- 10
-#' Data <- gen.data(n, p, k, rho, family = "gaussian", cortype = cortype, snr = SNR, seed = seed)
+#' Tbeta <- rep(0, p)
+#' Tbeta[1:k*floor(p/k):floor(p/k)] <- rep(1, k)
+#' Data <- gen.data(n, p, k, rho, family = "gaussian", beta = Tbeta, seed = seed)
 #' x <- Data$x[1:140, ]
 #' y <- Data$y[1:140]
 #' x_new <- Data$x[141:200, ]
@@ -43,7 +43,7 @@
 #'
 #' #-------------------logistic model----------------------#
 #' #Generate simulated data
-#' Data = gen.data(n, p, k, rho, family = "binomial", cortype = cortype, snr = SNR, seed = seed)
+#' Data <- gen.data(n, p, k, rho, family = "binomial", beta = Tbeta, seed = seed)
 #'
 #' x <- Data$x[1:140, ]
 #' y <- Data$y[1:140]
@@ -59,7 +59,7 @@
 #'
 #' #-------------------coxph model----------------------#
 #' #Generate simulated data
-#' Data <- gen.data(n, p, k, rho, family = "cox", scal = 10)
+#' Data <- gen.data(n, p, k, rho, family = "cox", beta = Tbeta, scal = 10)
 #'
 #' x <- Data$x[1:140, ]
 #' y <- Data$y[1:140, ]
@@ -74,12 +74,12 @@
 #'
 #'#-------------------group selection----------------------#
 #'beta <- rep(c(rep(1,2),rep(0,3)), 4)
-#'Data <- gen.data(n, p, rho=0.4, beta = beta, snr = 100, seed =10)
+#'Data <- gen.data(200, 20, 5, rho=0.4, beta = beta, seed =10)
 #'x <- Data$x
 #'y <- Data$y
 #'
 #'group.index <- c(rep(1, 2), rep(2, 3), rep(3, 2), rep(4, 3),
-#'rep(5, 2), rep(6, 3), rep(7, 2), rep(8, 3))
+#'                 rep(5, 2), rep(6, 3), rep(7, 2), rep(8, 3))
 #'lm.group <- bess(x, y, s.min=1, s.max = 8, type = "bss", group.index = group.index)
 #'lm.groupbsrr <- bess(x, y, type = "bsrr", s.min = 1, s.max = 8, group.index = group.index)
 #'
