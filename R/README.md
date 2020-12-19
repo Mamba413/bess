@@ -46,11 +46,14 @@ devtools::install_github("Mamba413/bess")
 Compared with selective R packages available for datasets in metric spaces:
 | |[leaps](https://cran.r-project.org/package=leaps)|[lmSubset](https://cran.r-project.org/web/packages/lmSubsets/index.html) |[L0learn](https://cran.r-project.org/package=L0Learn)|[BeSS](https://cran.r-project.org/web/packages/BeSS/index.html)
 | :-------------------------------- | :----------------------------------------------------------: | :--------------------------------------------------------: | :--------------------------------------------------: | :----------------------------------------------------: |
-| Computational efficiency          | :walking::walking::walking: |:walking::walking::running:|:running::running::running:|:running::running::walking:|
-| Capability for ultra-high dimensional data (variable screening) |:x:|:x:|:heavy_check_mark:     |:heavy_check_mark:     |
+| Solve generalized linear models|:x:|:x:|:x:|:heavy_check_mark:     |
+|  Feature screening |:x:|:x:|:heavy_check_mark:     |:heavy_check_mark:     |
 | Tuning parameter determination on information criterion |:x:|:heavy_check_mark:|:x:|:heavy_check_mark:|
 | Tuning parameter determination on cross-validation |:x:|:x:|:heavy_check_mark:|:heavy_check_mark:|
+| Include specified variables|:x:|:heavy_check_mark:|:x:|:heavy_check_mark:|
 | Options for coefficient shrinkage|:x:|:x:|:heavy_check_mark:|:heavy_check_mark:|
+| Computational efficiency          | :walking::walking::walking: |:walking::walking::running:|:running::running::running:|:running::running::walking:|
+
 
 See the following documents for more details about the **[BeSS](https://cran.r-project.org/web/packages/BeSS/index.html)** package:
 
@@ -60,6 +63,7 @@ See the following documents for more details about the **[BeSS](https://cran.r-p
 
 - [JSS paper](https://www.jstatsoft.org/v094/i04) (detailed)
 
-
-
+References
+----------
+- Wen, C. , Zhang, A. , Quan, S. , & Wang, X. . (2017). [Bess: an r package for best subset selection in linear, logistic and coxph models](https://arxiv.org/pdf/1709.06254.pdf)
 
