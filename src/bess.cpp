@@ -50,9 +50,8 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              double tao)
 {
     #ifndef R_BUILD
-        srand(123);
+     srand(123);
     #endif
-    // cout << "always_" << always_select.size() << endl;
     int p = x.cols();
     Eigen::VectorXi screening_A;
     if (is_screening)
@@ -206,7 +205,6 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
         }
         result["beta"] = beta;
         result.push_back(screening_A, "screening_A");
-        cout << "screening AA";
 #endif
     }
 
