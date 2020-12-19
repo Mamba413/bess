@@ -55,7 +55,7 @@ Compared with selective R packages available for datasets in metric spaces:
 | Tuning parameter determination on cross-validation |:x:|:x:|:heavy_check_mark:|:x:|:heavy_check_mark:|
 | Include specified variables|:x:|:heavy_check_mark:|:x:|:x:|:heavy_check_mark:|
 | Options for coefficient shrinkage|:x:|:x:|:x:|:x:|:heavy_check_mark:|
-| Computational efficiency          | :walking::walking::walking: (impossible for glm with variable number greater than 15) |:walking::walking::running:|:walking::walking::walking: (impossible for glm with variable number greater than 32) |:walking::walking::walking:|:running::running::running:|
+| Computational efficiency          | :walking::walking: |:walking::running:|:walking::walking:(impossible for glm with variable number greater than 15)|:walking::running: (impossible for glm with variable number greater than 32) |:running::running:|
 
 
 See the following documents for more details about the **[BeSS](https://cran.r-project.org/web/packages/BeSS/index.html)** package:
