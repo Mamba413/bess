@@ -39,7 +39,7 @@ Or try the development version on GitHub:
 
 ```r
 # install.packages("devtools")
-devtools::install_github("Mamba413/bess")
+devtools::install_github("Mamba413/bess/R")
 ```
 
 Compared with selective R packages available for datasets in metric spaces:
