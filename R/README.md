@@ -21,8 +21,7 @@ The best subset selection is up to these challenge, which enjoy following admira
 
 - It provides an objective way to reduce the number of variables.
 
-Based on the best subset selection, the best subset ridge regression provides a more sophisticated trade-off between model parsimony and prediction through introducing a shrinkage on the coefficients.
-
+By introducing a shrinkage on the coefficients the best subset ridge regression provides a more sophisticated trade-off between model parsimony and prediction on the based of the best subset selection
 
 
 
@@ -59,7 +58,7 @@ See the following documents for more details about the **[BeSS](https://cran.r-p
 
 - [github page](https://github.com/Mamba413/bess/tree/master/R) (short)
 
-- [vignette]can be opened with `vignette("BeSS")` in R (moderate)
+- vignette can be opened with `vignette("BeSS")` in R (moderate)
 
 - [JSS paper](https://www.jstatsoft.org/v094/i04) (detailed)
 
