@@ -44,7 +44,7 @@ devtools::install_github("Mamba413/bess/R")
 
 Compared with selective R packages available for datasets in metric spaces:
 | |[leaps](https://cran.r-project.org/package=leaps)|[lmSubset](https://cran.r-project.org/web/packages/lmSubsets/index.html) |[bestglm](https://cran.r-project.org/package=bestglm)|[glmuti](https://cran.r-project.org/package=glmulti)|[BeSS](https://cran.r-project.org/web/packages/BeSS/index.html)
-| :-------------------------------- | :----------------------------------------------------------: | :--------------------------------------------------------: | :--------------------------------------------------: | :----------------------------------------------------: | :--------------------------------------------------: | :----------------------------------------------------: |
+| :-------------------------------- | :----------------------------------------------------------: | :--------------------------------------------------------: | :--------------------------------------------------: | :----------------------------------------------------: | :--------------------------------------------------: | 
 | Solve linear regression models|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:     |:heavy_check_mark:     |
 | Solve logistic regression models|:x:|:x:|:heavy_check_mark:     |:heavy_check_mark:     |:heavy_check_mark:     |
 | Solve poisson regression models|:x:|:x:|:heavy_check_mark:     |:heavy_check_mark:     |:heavy_check_mark:     |
@@ -55,7 +55,7 @@ Compared with selective R packages available for datasets in metric spaces:
 | Tuning parameter determination on cross-validation |:x:|:x:|:heavy_check_mark:|:x:|:heavy_check_mark:|
 | Include specified variables|:x:|:heavy_check_mark:|:x:|:x:|:heavy_check_mark:|
 | Options for coefficient shrinkage|:x:|:x:|:x:|:x:|:heavy_check_mark:|
-| Computational efficiency          | :walking::walking::walking: |:walking::walking::running:|:walking::walking::running: (impossible for glm with variables number greater than 15)|:walking::walking::running: (impossible for glm with variables number greater than 32)|:running::running::running:|
+| Computational efficiency          | :walking::walking::walking: (impossible for glm with variable number greater than 15) |:walking::walking::running:|:walking::walking::walking: (impossible for glm with variable number greater than 32) |:walking::walking::walking:|:running::running::running:|
 
 
 See the following documents for more details about the **[BeSS](https://cran.r-project.org/web/packages/BeSS/index.html)** package:
