@@ -24,7 +24,7 @@ for optimal k determination. Besides a grid search method, the two tuning parame
 
 ## Installation
 
-To download and install `msaenet` from CRAN:
+To download and install **BeSS** from CRAN:
 
 ```r
 install.packages("BeSS")
