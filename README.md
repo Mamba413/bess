@@ -13,7 +13,7 @@ Occam's razor is widely accepted as a heuristic rule for statistical modeling,
 which balances goodness of fit and model complexity. This rule leads to a relative 
 small subset of important predictors. 
 
-**bess** package provides solutions for best subset selection problem for sparse LM,
+**BeSS** package provides solutions for best subset selection problem for sparse LM,
 and GLM models.
 
 We consider a primal-dual active set (PDAS) approach to exactly solve the best subset
@@ -26,12 +26,6 @@ general convex loss functions with the best subset constraint.
 ## Installation
 
 ### Python 
-
-Python Version
-- Python >= 3.5
-
-Modules needed
-- numpy 
 
 The package has been publish in PyPI. You can easy install by:
 ```sh
