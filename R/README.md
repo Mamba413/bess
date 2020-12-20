@@ -1,9 +1,12 @@
 # BeSS: An R Package for Best Subset Selection and Best Subset Ridge Regression
 
-## Introduction
 
-There are at
-least three challenges for regression methods under the high dimensional setting:
+Introdution
+----------
+
+The advance in modern technology, including computing power and storage, brings about more and more high-dimensional data in which the number of features can be much larger than the number of observations (Hastie et al. 2009). Examples include gene, microarray, and proteomics data, high-resolution images, high-frequency financial data, e-commerce data, warehouse data, resonance imaging, signal processing, among many others (Fan et al. 2011). 
+
+Since it is not easy to explain the relation between the response and the variables if the model is too complicated, associated with a lot of predictors for example, and reducing the number of variable resorting to subjective approachs can be influenced by one's own interests and hypotheses. There are at least three challenges for regression methods under the high dimensional setting:
 
 - How to find
 models with good prediction performance?
@@ -21,7 +24,9 @@ The best subset selection is up to these challenges, which enjoy the following a
 
 - It provides an objective way to reduce the number of variables.
 
-By introducing a shrinkage on the coefficients the best subset ridge regression provides a more sophisticated trade-off between model parsimony and prediction on the based of the best subset selection
+- By excluding irrelative variables, the best subset selection earns improved out-of-sample accuracy and avoids overfitting in some sence.
+
+By introducing a shrinkage on the coefficients the best subset ridge regression provides a more sophisticated trade-off between model parsimony and prediction on the based of the best subset selection.
 
 
 
@@ -41,8 +46,7 @@ Or try the development version on GitHub:
 # install.packages("devtools")
 devtools::install_github("Mamba413/bess/R")
 ```
-
-Compared with selective R packages available for datasets in metric spaces:
+Following are comparisons with some R packages aiming at best subset selection in several metrics:
 | |[leaps](https://cran.r-project.org/package=leaps)|[lmSubset](https://cran.r-project.org/web/packages/lmSubsets/index.html) |[bestglm](https://cran.r-project.org/package=bestglm)|[glmuti](https://cran.r-project.org/package=glmulti)|[BeSS](https://cran.r-project.org/web/packages/BeSS/index.html)
 | :-------------------------------- | :----------------------------------------------------------: | :--------------------------------------------------------: | :--------------------------------------------------: | :----------------------------------------------------: | :--------------------------------------------------: | 
 | Solve linear regression models|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:     |:heavy_check_mark:     |

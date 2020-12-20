@@ -1,4 +1,4 @@
-# bess: An python Package for Best Subset Selection
+# bess: An python/R Package for Best Subset Selection
 
 
 ## Introduction
@@ -29,6 +29,8 @@ for optimal k determination.
 
 ## Install
 
+### Python 
+
 Python Version
 - python >= 3.5
 
@@ -38,6 +40,21 @@ Modules needed
 The package has been publish in PyPI. You can easy install by:
 ```sh
 $ pip install bess
+```
+
+### R
+
+To download and install **BeSS** from CRAN:
+
+```r
+install.packages("BeSS")
+```
+
+Or try the development version on GitHub:
+
+```r
+# install.packages("devtools")
+devtools::install_github("Mamba413/bess/R")
 ```
 
 ## Example
