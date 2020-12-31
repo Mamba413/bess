@@ -81,7 +81,7 @@ round(n/log(n)))}.}
 \item{nlambda}{The number of \eqn{\lambda}s for the Powell path with sequential line search method.
 Only valid for \code{method = "psequential"}.}
 
-\item{always.include}{A vector containing the index of variables that should always be included in the model.}
+\item{always.include}{An integer vector containing the indexes of variables that should always be included in the model.}
 
 \item{screening.num}{Users can pre-exclude some irrelevant variables according to maximum marginal likelihood estimators before fitting a
 model by passing an integer to \code{screening.num} and the sure independence screening will choose a set of variables of this size.

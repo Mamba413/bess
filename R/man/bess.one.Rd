@@ -40,7 +40,7 @@ and \code{type = "bsrr"} for the best subset ridge regression.}
 
 \item{lambda}{A shrinkage parameter for \code{"bsrr"}.}
 
-\item{always.include}{A vector containing the index of variables that should always be included in the model.}
+\item{always.include}{An integer vector containing the indexes of variables that should always be included in the model.}
 
 \item{screening.num}{Users can pre-exclude some irrelevant variables according to maximum marginal likelihood estimators before fitting a
 model by passing an integer to \code{screening.num} and the sure independence screening will choose a set of variables of this size.
@@ -70,8 +70,10 @@ please set \code{group.index = NULL}. Default is \code{NULL}.}
 }
 \value{
 A list with class attribute 'bess' and named components:
-\item{beta}{The best fitting coefficients.} \item{coef0}{The best fitting
+\item{beta}{The best fitting coefficients.}
+ \item{coef0}{The best fitting
 intercept.}
+\item{bestmodel}{The best fitted model for \code{type = "bss"}, the class of which is \code{"lm"}, \code{"glm"} or \code{"coxph"}.}
 \item{loss}{The training loss of the fitting model.}
 \item{s}{The model size.}
 \item{lambda}{The shrinkage parameter.}
