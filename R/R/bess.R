@@ -66,7 +66,7 @@
 #' "powell"}. Default is \code{100}.
 #' @param nlambda The number of \eqn{\lambda}s for the Powell path with sequential line search method.
 #' Only valid for \code{method = "psequential"}.
-#' @param always.include A vector containing the index of variables that should always be included in the model.
+#' @param always.include An integer vector containing the indexes of variables that should always be included in the model.
 #' @param screening.num Users can pre-exclude some irrelevant variables according to maximum marginal likelihood estimators before fitting a
 #' model by passing an integer to \code{screening.num} and the sure independence screening will choose a set of variables of this size.
 #' Then the active set updates are restricted on this subset.
@@ -339,7 +339,8 @@ bess <- function(x, y, family = c("gaussian", "binomial", "poisson", "cox"), typ
   if(missing(s.list)) s.list <- 1:min(ncol(x),round(nrow(x)/log(nrow(x))))
   if(missing(s.min)) s.min <- 1
   if(missing(s.max)) s.max <- min(ncol(x),round(nrow(x)/log(nrow(x))))
-  if(is.null(always.include)) always.include <- numeric(0) else always.include <- always.include - 1
+
+
   tune <- match.arg(tune)
   ic_type <- switch(tune,
                     "aic" = 1,
@@ -495,6 +496,19 @@ bess <- function(x, y, family = c("gaussian", "binomial", "poisson", "cox"), typ
       if(screening.num < s.list[length(s.list)]) stop("The number of screening features must be equal or greater than the maximum one in s.list!")
     } else{
       if(screening.num < s.max) stop("The number of screening features must be equal or greater than the s.max!")
+    }
+  }
+  if(is.null(always.include)) {
+    always.include <- numeric(0)
+  }else{
+    if(is.na(sum(as.integer(always.include)))) stop("always.include should be an integer vector")
+    if(sum(always.include <= 0)) stop("always.include should be an vector containing variable indexes which is possitive.")
+    always.include <- as.integer(always.include) - 1
+    if(length(always.include) > screening.num) stop("The number of variables in always.include should not exceed the sc")
+    if(path_type == 1){
+      if(length(always.include) > s.list[length(s.list)]) stop("always.include containing too many variables. The length of it should not exceed the maximum in s.list.")
+    }else{
+      if(length(always.include)>s.max) stop("always.include containing too many variables. The length of it should not exceed the s.max.")
     }
   }
   # if(is.null(screening.num)){
