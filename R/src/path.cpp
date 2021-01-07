@@ -60,7 +60,6 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
             if (algorithm->warm_start)
             {
                 beta_init = algorithm->get_beta();
-
                 coef0_init = algorithm->get_coef0();
             }
 
@@ -68,11 +67,8 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
             coef0_sequence[j].resize(sequence_size);
             loss_sequence[j].resize(sequence_size);
             beta_matrix[j].col(i) = algorithm->get_beta();
-
             coef0_sequence[j](i) = algorithm->get_coef0();
-
             loss_sequence[j](i) = metric->train_loss(algorithm, data);
-
             ic_sequence(i, j) = metric->ic(algorithm, data);
         }
     }

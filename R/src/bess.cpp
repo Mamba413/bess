@@ -49,9 +49,9 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
              Eigen::VectorXi always_select,
              double tao)
 {
-    #ifndef R_BUILD
-    // srand(123);
-    #endif
+#ifndef R_BUILD
+    srand(123);
+#endif
     int p = x.cols();
     Eigen::VectorXi screening_A;
     if (is_screening)
@@ -60,7 +60,7 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
     }
     Data data(x, y, data_type, weight, is_normal, g_index);
 
-    Algorithm *algorithm;
+    Algorithm *algorithm = nullptr;
 
     /// ### keep
     // if (algorithm_type == 1 || algorithm_type == 5) {
@@ -137,7 +137,7 @@ List bessCpp(Eigen::MatrixXd x, Eigen::VectorXd y, int data_type, Eigen::VectorX
     }
 #endif
 
-    Metric *metric;
+    Metric *metric = nullptr;
     if (model_type == 1)
     {
         metric = new LmMetric(ic_type, is_cv, K);

@@ -47,6 +47,8 @@ public:
 
   Algorithm() = default;
 
+  virtual ~Algorithm(){};
+
   Algorithm(Data &data, int model_type, int algorithm_type, int max_iter = 100)
   {
     this->data = data;
@@ -231,6 +233,8 @@ public:
     this->algorithm_type = algorithm_type;
   };
 
+  ~PdasLm(){};
+
   void get_A(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd beta, double coef0, int T0, Eigen::VectorXd weights,
              Eigen::VectorXi index, Eigen::VectorXi gsize, int N, Eigen::VectorXi &A_out)
   {
@@ -256,6 +260,8 @@ class PdasLogistic : public Algorithm
 {
 public:
   PdasLogistic(Data &data, int algorithm_type, unsigned int max_iter) : Algorithm(data, 2, algorithm_type, max_iter){};
+
+  ~PdasLogistic(){};
 
   void primary_model_fit(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
@@ -416,6 +422,8 @@ public:
     this->algorithm_type = algorithm_type;
   };
 
+  ~PdasPoisson(){};
+
   void primary_model_fit(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
     int n = x.rows();
@@ -508,6 +516,8 @@ public:
   {
     this->algorithm_type = algorithm_type;
   };
+
+  ~PdasCox(){};
 
   void primary_model_fit(Eigen::MatrixXd X, Eigen::VectorXd status, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
@@ -657,6 +667,8 @@ public:
   {
   }
 
+  ~L0L2Lm(){};
+
   void get_A(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd beta, double coef0, int T0, Eigen::VectorXd weights,
              Eigen::VectorXi index, Eigen::VectorXi gsize, int N, Eigen::VectorXi &A_out)
   {
@@ -684,6 +696,8 @@ class L0L2Logistic : public Algorithm
 {
 public:
   L0L2Logistic(Data &data, int algorithm_type, int max_iter) : Algorithm(data, 2, algorithm_type, max_iter){};
+
+  ~L0L2Logistic(){};
 
   void primary_model_fit(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
@@ -787,6 +801,8 @@ public:
     this->model_fit_max = model_fit_max;
   };
 
+  ~L0L2Poisson(){};
+
   void primary_model_fit(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
     int n = x.rows();
@@ -889,6 +905,8 @@ public:
   {
     this->model_fit_max = model_fit_max;
   };
+
+  ~L0L2Cox(){};
 
   void primary_model_fit(Eigen::MatrixXd X, Eigen::VectorXd status, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
@@ -1070,6 +1088,8 @@ class GroupPdasLm : public Algorithm
 public:
   GroupPdasLm(Data &data, int algorithm_type, unsigned int max_iter) : Algorithm(data, 1, algorithm_type, max_iter){};
 
+  ~GroupPdasLm(){};
+
   void get_A(Eigen::MatrixXd X, Eigen::VectorXd y, Eigen::VectorXd beta, double coef0, int T0, Eigen::VectorXd weights,
              Eigen::VectorXi index, Eigen::VectorXi gsize, int N, Eigen::VectorXi &A_out)
   {
@@ -1118,6 +1138,8 @@ public:
   {
     this->algorithm_type = algorithm_type;
   };
+
+  ~GroupPdasLogistic(){};
 
   void primary_model_fit(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
@@ -1242,6 +1264,8 @@ class GroupPdasPoisson : public Algorithm
 public:
   GroupPdasPoisson(Data &data, int algorithm_type, unsigned int max_iter) : Algorithm(data, 3, algorithm_type, max_iter){};
 
+  ~GroupPdasPoisson(){};
+
   void primary_model_fit(Eigen::MatrixXd x, Eigen::VectorXd y, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
     int n = x.rows();
@@ -1343,6 +1367,8 @@ class GroupPdasCox : public Algorithm
 {
 public:
   GroupPdasCox(Data &data, int algorithm_type, unsigned int max_iter) : Algorithm(data, 4, algorithm_type, max_iter){};
+
+  ~GroupPdasCox(){};
 
   void primary_model_fit(Eigen::MatrixXd X, Eigen::VectorXd status, Eigen::VectorXd weights, Eigen::VectorXd &beta, double &coef0)
   {
