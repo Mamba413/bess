@@ -27,6 +27,8 @@ public:
 
     Metric() = default;
 
+    virtual ~Metric(){};
+
     Metric(int ic_type, bool is_cv, int K = 0)
     {
         this->is_cv = is_cv;
@@ -137,6 +139,8 @@ class LmMetric : public Metric
 {
 public:
     LmMetric(int ic_type, bool is_cv, int K = 0) : Metric(ic_type, is_cv, K){};
+
+    ~LmMetric(){};
 
     double train_loss(Algorithm *algorithm, Data &data)
     {
@@ -256,6 +260,8 @@ class LogisticMetric : public Metric
 {
 public:
     LogisticMetric(int ic_type, bool is_cv, int K = 0) : Metric(ic_type, is_cv, K){};
+
+    ~LogisticMetric(){};
 
     double train_loss(Algorithm *algorithm, Data &data)
     {
@@ -415,6 +421,8 @@ class PoissonMetric : public Metric
 public:
     PoissonMetric(int ic_type, bool is_cv, int K = 0) : Metric(ic_type, is_cv, K){};
 
+    ~PoissonMetric(){};
+
     double train_loss(Algorithm *algorithm, Data &data)
     {
         int n = data.get_n();
@@ -551,6 +559,8 @@ class CoxMetric : public Metric
 {
 public:
     CoxMetric(int ic_type, bool is_cv, int K = 0) : Metric(ic_type, is_cv, K){};
+
+    ~CoxMetric(){};
 
     double train_loss(Algorithm *algorithm, Data &data)
     {
