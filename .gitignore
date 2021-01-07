@@ -3,3 +3,9 @@
 .RData
 .Ruserdata
 BeSS_2.0.0.tar.gz
+python/bess.egg-info/dependency_links.txt
+python/bess.egg-info/PKG-INFO
+python/bess.egg-info/requires.txt
+python/bess.egg-info/SOURCES.txt
+python/bess.egg-info/top_level.txt
+python/dist/bess-0.0.12.tar.gz
