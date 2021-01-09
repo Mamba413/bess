@@ -39,12 +39,15 @@ This quick start guide walks you through the implementation of the best subset r
 
 ### 2.1 Regression: linear model
 
-We apply the methods to the data set reported in @scheetz2006regulation and is available in package **picasso**, which contains gene expression levels of 200 probes obtained from 120 rats. We are interested in finding probes that are related to that of gene TRIM32 using linear regression. This gene had been known to cause Bardet-Biedl syndrome, which is a genetic disease of multiple organ systems including the retina. 
+We apply the methods to the data set reported in @scheetz2006regulation, 
+<!-- and is available in package **picasso**,  -->
+which contains gene expression levels of 18975 probes obtained from 120 rats. We are interested in finding probes that are related to that of gene TRIM32 using linear regression. This gene had been known to cause Bardet-Biedl syndrome, which is a genetic disease of multiple organ systems including the retina. 
+For simplicity, the number of probes is reduced to 500 by picking out maximum 500 marginal correaltion to Trim32 gene.
 <!-- We take the probe from TRIM32, 1389163\_at, as the response variable, and the remaining 18975 probes predictors. Consequently, the number of dimension $p=18975$ is much greater than the number of observations $n=120$.  -->
 
 ```{r, warning=F, message=FALSE}
 library(BeSS)
-data("eyedata", package = "picasso")
+data("trim32")
 ```
 
 Supposed we wants to fit a best subset ridge regression model with $\lambda$ taking values in 100 grid points from 100 to 0.01 and the model size between $\max \{p, n/\log(n)\}$ (the decimal portion is rounded) and 1, which is the default model size range where $p$ denotes the number of total variables and $n$ the sample size, via Generalized Information Criterion. We call the `bess` function as follows:
@@ -64,9 +67,9 @@ If the option `newx` is omitted, the fitted linear predictors are used.
 
 ### 2.2 Classification: logistic regression
 
-We now turn to the classification task. We use the data set **duke** provided in the R package **dglars** [@west2001predicting]. This data set contains microarray experiment for 44 breast cancer patients. We are interested in classify the patients into estrogen receptor-positive (Status = 0) and estrogen receptor-negative (Status = 1) based on the expression level of the considered genes.
+We now turn to the classification task. We use the data set **duke** [@west2001predicting]. This data set contains microarray experiment for 86 breast cancer patients. We are interested in classify the patients into estrogen receptor-positive (Status = 0) and estrogen receptor-negative (Status = 1) based on the expression level of the considered genes. 
 ```{r, warning=FALSE, message = FALSE}
-data(duke, package = "dglars")
+data("duke")
 y <- duke$y
 x <- duke[, -1]
 ```
@@ -125,9 +128,9 @@ plot(logi.bsrr)
 
 ### 3.1 Censored response: Cox proportional hazard model
 
-The `BeSS` package also supports studying the relationship between predictors variables and survival time based on the Cox proportional hazard model. We now demonstrate the usage on a real data set, Alizadeh, Eisen, Davis, Ma, Lossos, Rosenwald, Boldrick, Sabet, Tran, Yu et al. (2000)[@alizadeh2000distinct]: gene-expression data in lymphoma patients. There were 240 patients with measurements on 7399 probes. 
+The `BeSS` package also supports studying the relationship between predictors variables and survival time based on the Cox proportional hazard model. We now demonstrate the usage on a real data set, Alizadeh, Eisen, Davis, Ma, Lossos, Rosenwald, Boldrick, Sabet, Tran, Yu et al. (2000)[@alizadeh2000distinct]: gene-expression data in lymphoma patients. There were 240 patients with measurements on 7399 probes.
 ```{r, warning=FALSE, message = FALSE}
-data(LymphomaData, package = "HCmodelSets") 
+data(LymphomaData, package = "HCmodelSets")
 
 x <- t(patient.data$x)
 y <- patient.data$time
@@ -139,7 +142,7 @@ To implement the best subset ridge regression on the Cox proportional hazard mod
 cox.bsrr <- bess(x, cbind(y, status), family = "cox", type = "bsrr")
 ```
 
-We use the `summary` function to draw a summary of the fitted `bess` object. 28 probes among the total 7399 are selected according to the result. 
+We use the `summary` function to draw a summary of the fitted `bess` object. 28 probes among the total 7399 are selected according to the result.
 ```{r}
 summary(cox.bsrr)
 ```

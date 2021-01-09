@@ -122,3 +122,7 @@ python/test/y_riboflavin_lm.csv
 python/test/y_seed1.csv
 python/test/y_sort.csv
 python/test/y.csv
+R/src/Algorithm.o
+R/src/Data.o
+R/src/Metric.o
+R/src/RcppExports.o

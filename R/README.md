@@ -47,7 +47,7 @@ Or try the development version on GitHub:
 devtools::install_github("Mamba413/bess/R")
 ```
 Following are comparisons with some R packages aiming at best subset selection in several metrics:
-| |[leaps](https://cran.r-project.org/package=leaps)|[lmSubset](https://cran.r-project.org/web/packages/lmSubsets/index.html) |[bestglm](https://cran.r-project.org/package=bestglm)|[glmuti](https://cran.r-project.org/package=glmulti)|[BeSS](https://cran.r-project.org/web/packages/BeSS/index.html)
+| |[leaps](https://cran.r-project.org/package=leaps)|[lmSubset](https://cran.r-project.org/package=lmSubsets) |[bestglm](https://cran.r-project.org/package=bestglm)|[glmuti](https://cran.r-project.org/package=glmulti)|[BeSS](https://cran.r-project.org/package=BeSS)
 | :-------------------------------- | :----------------------------------------------------------: | :--------------------------------------------------------: | :--------------------------------------------------: | :----------------------------------------------------: | :--------------------------------------------------: | 
 | Solve linear regression models|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:     |:heavy_check_mark:     |
 | Solve logistic regression models|:x:|:x:|:heavy_check_mark:     |:heavy_check_mark:     |:heavy_check_mark:     |
@@ -62,9 +62,9 @@ Following are comparisons with some R packages aiming at best subset selection i
 | Computational efficiency          | :walking::walking: |:walking::running:|:walking::walking:(impossible for glm with variable number greater than 15)|:walking::running: (impossible for glm with variable number greater than 32) |:running::running:|
 
 
-See the following documents for more details about the **[BeSS](https://cran.r-project.org/web/packages/BeSS/index.html)** package:
+See the following documents for more details about the **[BeSS](https://cran.r-project.org/package=BeSS)** package:
 
-- [github page](https://github.com/Mamba413/bess/tree/master/R) (short)
+<!--- - [github page](https://github.com/Mamba413/bess/tree/master/R) (short) -->
 
 - vignette can be opened with `vignette("BeSS")` in R (moderate)
 
