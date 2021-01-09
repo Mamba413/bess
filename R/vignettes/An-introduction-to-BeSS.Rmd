@@ -45,13 +45,15 @@ which contains gene expression levels of 18975 probes obtained from 120 rats. We
 For simplicity, the number of probes is reduced to 500 by picking out maximum 500 marginal correaltion to Trim32 gene.
 <!-- We take the probe from TRIM32, 1389163\_at, as the response variable, and the remaining 18975 probes predictors. Consequently, the number of dimension $p=18975$ is much greater than the number of observations $n=120$.  -->
 
-```{r, warning=F, message=FALSE}
+```{r, warning=F, message=FALSE, eval=TRUE}
 library(BeSS)
-data("trim32")
+data("trim32", package = "BeSS")
 ```
 
 Supposed we wants to fit a best subset ridge regression model with $\lambda$ taking values in 100 grid points from 100 to 0.01 and the model size between $\max \{p, n/\log(n)\}$ (the decimal portion is rounded) and 1, which is the default model size range where $p$ denotes the number of total variables and $n$ the sample size, via Generalized Information Criterion. We call the `bess` function as follows:
 ```{r}
+y <- trime32[, 1]
+x <- as.matrix(trime32[, -1])
 lm.bsrr <- bess(x, y, type = "bsrr")
 ```
 
@@ -71,7 +73,7 @@ We now turn to the classification task. We use the data set **duke** [@west2001p
 ```{r, warning=FALSE, message = FALSE}
 data("duke")
 y <- duke$y
-x <- duke[, -1]
+x <- as.matrix(duke[, -1])
 ```
 
 Supposed we wants to do this classification based on logistic regression with a BSRR model. This can be realized through calling the `bess` function with the parameter `family = "binomial` as follows:

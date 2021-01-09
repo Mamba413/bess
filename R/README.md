@@ -1,7 +1,7 @@
 # BeSS: An R Package for Best Subset Selection and Best Subset Ridge Regression
 
 
-Introdution
+Introduction
 ----------
 
 The advance in modern technology, including computing power and storage, brings about more and more high-dimensional data in which the number of features can be much larger than the number of observations (Hastie et al. 2009). Examples include gene, microarray, and proteomics data, high-resolution images, high-frequency financial data, e-commerce data, warehouse data, resonance imaging, signal processing, among many others (Fan et al. 2011). 
