@@ -52,8 +52,8 @@ data("trim32", package = "BeSS")
 
 Supposed we wants to fit a best subset ridge regression model with $\lambda$ taking values in 100 grid points from 100 to 0.01 and the model size between $\max \{p, n/\log(n)\}$ (the decimal portion is rounded) and 1, which is the default model size range where $p$ denotes the number of total variables and $n$ the sample size, via Generalized Information Criterion. We call the `bess` function as follows:
 ```{r}
-y <- trime32[, 1]
-x <- as.matrix(trime32[, -1])
+y <- trim32[, 1]
+x <- as.matrix(trim32[, -1])
 lm.bsrr <- bess(x, y, type = "bsrr")
 ```
 
