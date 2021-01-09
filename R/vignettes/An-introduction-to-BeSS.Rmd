@@ -5,7 +5,7 @@ vignette: >
   %\VignetteIndexEntry{An introduction to BeSS}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{dglars, HCmodelSets}
+  %\VignetteDepends{HCmodelSets}
 bibliography: ref.bib
 ---
 
