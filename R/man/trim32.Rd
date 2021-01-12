@@ -8,9 +8,6 @@
 A data frame with 120 rows and 501 variables, where the first variable is the expression level of TRIM32 gene,
 and the remaining 500 variables are 500 gene probes.
 }
-\source{
-\url{https://www.ncbi.nlm.nih.gov/geo} (accession no. GSE5680)
-}
 \description{
 Gene expression data (500 gene probes for 120 samples) from the microarray experiments of mammalianeye tissue samples of Scheetz et al. (2006).
 }
@@ -22,7 +19,7 @@ For the purposes of this analysis, we treat one of those genes, Trim32, as the o
 Trim32 is known to be linked with a genetic disorder called Bardet-Biedl Syndrome (BBS): the mutation (P130S) in Trim32 gives rise to BBS.
 }
 \note{
-This data set contains 120 samples with 500 predictors. The 500 predictors are features with maximum marginal correaltion to Trim32 gene.
+This data set contains 120 samples with 500 predictors. The 500 predictors are features with maximum marginal correlation to Trim32 gene.
 }
 \references{
 T. Scheetz, k. Kim, R. Swiderski, A. Philp, T. Braun, K. Knudtson, A. Dorrance, G. DiBona, J. Huang, T. Casavant, V. Sheffield, E. Stone. Regulation of gene expression in the mammalian eye and its relevance to eye disease. Proceedings of the National Academy of Sciences of the United States of America, 2006.

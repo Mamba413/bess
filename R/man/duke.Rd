@@ -9,9 +9,6 @@ A data frame with 86 rows and 501 variables,
 where the first variable is the label of estrogen receptor-positive/negative,
 and the remaining 500 variables are 500 gene.
 }
-\source{
-\url{www.kaggle.com/andreicosma/duke-breast-cancer-dataset}
-}
 \description{
 This data set details microarray experiment for breast cancer patients.
 }
