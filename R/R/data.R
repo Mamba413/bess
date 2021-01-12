@@ -15,8 +15,6 @@
 #' and the remaining 500 variables are 500 gene probes.
 #'
 #' @references T. Scheetz, k. Kim, R. Swiderski, A. Philp, T. Braun, K. Knudtson, A. Dorrance, G. DiBona, J. Huang, T. Casavant, V. Sheffield, E. Stone. Regulation of gene expression in the mammalian eye and its relevance to eye disease. Proceedings of the National Academy of Sciences of the United States of America, 2006.
-#'
-#' @source \url{https://www.ncbi.nlm.nih.gov/geo} (accession no. GSE5680)
 NULL
 
 
@@ -35,6 +33,4 @@ NULL
 #' and the remaining 500 variables are 500 gene.
 #'
 #' @references M. West, C. Blanchette, H. Dressman, E. Huang, S. Ishida, R. Spang, H. Zuzan, J.A. Olson, Jr., J.R. Marks and Joseph R. Nevins (2001) <doi:10.1073/pnas.201162998> Predicting the clinical status of human breast cancer by using gene expression profiles, Proceedings of the National Accademy of Sciences of the USA, Vol 98(20), 11462-11467.
-#'
-#' @source \url{www.kaggle.com/andreicosma/duke-breast-cancer-dataset}
 NULL

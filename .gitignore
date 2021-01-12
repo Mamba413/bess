@@ -126,3 +126,4 @@ R/src/Algorithm.o
 R/src/Data.o
 R/src/Metric.o
 R/src/RcppExports.o
+*.dll
