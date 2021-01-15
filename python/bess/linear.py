@@ -226,10 +226,10 @@ class bess_base:
         """
 
         if np.isnan(X).any():
-            raiseValueError("There is NAN value in X")
+            raise ValueError("There is NAN value in X")
 
         if np.isnan(y).any():
-            raiseValueError("There is NAN value in y")
+            raise ValueError("There is NAN value in y")
 
         self.p = X.shape[1]
         n = X.shape[0]
