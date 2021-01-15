@@ -225,6 +225,12 @@ class bess_base:
             Default: \code{group} = \code{numpy.ones(p)}.
         """
 
+        if np.isnan(X).any():
+            raiseValueError("There is NAN value in X")
+
+        if np.isnan(y).any():
+            raiseValueError("There is NAN value in y")
+
         self.p = X.shape[1]
         n = X.shape[0]
         p = X.shape[1]
