@@ -4,13 +4,17 @@
 #ifndef SRC_ALGORITHM_H
 #define SRC_ALGORITHM_H
 
+#ifndef R_BUILD
+#include <unsupported/Eigen/MatrixFunctions>
+#endif
+
 #include "Data.h"
 #include "utilities.h"
 #include "logistic.h"
 #include "poisson.h"
 #include "coxph.h"
 #include <iostream>
-#include <unsupported/Eigen/MatrixFunctions>
+
 #include <time.h>
 #include <cfloat>
 
