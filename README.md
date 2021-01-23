@@ -1,4 +1,4 @@
-# BeSS: A Python/R Package for Best Subset Selection
+# BeSS: A Python/R Package for Best Subset Selection <img src='https://raw.githubusercontent.com/Mamba413/git_picture/master/BeSS.png' align="right" height="120" />
 
 
 ## Introduction
