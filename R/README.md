@@ -1,5 +1,4 @@
-# BeSS: An R Package for Best Subset Selection and Best Subset Ridge Regression
-
+# BeSS: An R Package for Best Subset Selection and Best Subset Ridge Regression <img src='https://raw.githubusercontent.com/Mamba413/git_picture/master/BeSS_icon.png' align="right" height="120" />
 
 Introduction
 ----------
