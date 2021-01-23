@@ -2,7 +2,7 @@ Package: BeSS
 Type: Package
 Title: Best Subset Selection /Ridge Regression in Linear, Logistic, Poisson and CoxPH Models
 Version: 2.0.1
-Date: 2021-01-22
+Date: 2021-01-23
 Authors@R: c(
   person(given = "Canhong", family = "Wen", email = "wencanhong@gmail.com", role = c("aut", "cre")),
   person(given = "Aijun", family = "Zhang", email = "ajzhang@hku.hk", role = c("aut")),
@@ -35,3 +35,5 @@ Suggests:
     HCmodelSets,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/Mamba413/bess
+BugReports: https://github.com/Mamba413/bess/issues
