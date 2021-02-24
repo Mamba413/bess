@@ -75,7 +75,7 @@ List sequential_path(Data &data, Algorithm *algorithm, Metric *metric, Eigen::Ve
 
     if (data.is_normal)
     {
-        if (algorithm->model_type == 1)
+        if (data.data_type == 1)
         {
             for (j = 0; j < lambda_size; j++)
             {
@@ -329,7 +329,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
 
     if (data.is_normal)
     {
-        if (algorithm->model_type == 1)
+        if (data.data_type == 1)
         {
             best_beta = sqrt(double(n)) * best_beta.cwiseQuotient(data.x_norm);
             best_coef0 = data.y_mean - best_beta.dot(data.x_mean);
@@ -347,7 +347,7 @@ List gs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s_
 
     if (data.is_normal)
     {
-        if (algorithm->model_type == 1)
+        if (data.data_type == 1)
         {
             for (int k = 0; k < iter; k++)
             {
@@ -1244,7 +1244,7 @@ List pgs_path(Data &data, Algorithm *algorithm, Metric *metric, int s_min, int s
 
             if (data.is_normal)
             {
-                if (algorithm->model_type == 1)
+                if (data.data_type == 1)
                 {
                     for (int k = 0; k < ttt; k++)
                     {
